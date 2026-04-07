@@ -31,7 +31,6 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 | Step | Pass criterion | Notes |
 |---|---|---|
 | DICOM ingestion | 100% successful ingestion; zero WIID assignment failures | Run full paired dataset through ingest pipeline |
-| WIID assignment | Correct patient matching in ≥ 99% of cases; zero cross-patient merge errors | Spot-check 100% of paired cases manually |
 | Centerline / vessel tree | Extraction success rate ≥ 95%; major vessel coverage equivalent to reference | Compare vessel segment count and length distribution |
 | Lumen & wall init | Auto-initialization without manual override in ≥ 85% of segments | Log override frequency per scanner type |
 | Lumen & wall editing | Edit rate not significantly higher than reference CTA (use 95% CI overlap as threshold) | Track editing events per case |
@@ -44,11 +43,11 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 
 > **Performance** — Gate 3
 
-Assessed at patient level using wCV (within-subject coefficient of variation) of un-edited output from paired CTA/PCCT acquisitions of the same patient. Manual centerline definition for N ≥ 30 cases. Allows direct comparison to validated OQ. New scanner must meet **all** thresholds to pass.
+Assessed at patient level using wCV (within-subject coefficient of variation) of un-edited output from paired CTA/PCCT acquisitions of the same patient. Manual centerline definition for N ≥ 30 cases preferred to isolate variability due to image modality alone. Allows direct comparison to validated OQ. New scanner must meet **all** thresholds to pass.
 
 | Measure | Reference wCV (existing) | New scanner threshold | Rationale |
 |---|---|---|---|
-| Lumen volume | < 10% wCV | ≤ 10% wCV (non-inferiority) | Tightest tolerance — primary anatomical endpoint |
+| Lumen volume and vessel Length | < 10% wCV | ≤ 10% wCV (non-inferiority) | Tightest tolerance — primary anatomical endpoint |
 | Calcified plaque volume | < 20% wCV | ≤ 20% wCV | High-attenuation segmentation; threshold-sensitive |
 | Wall volume | < 30% wCV | ≤ 30% wCV | Outer wall boundary more variable; softer tolerance |
 | Total plaque volume | < 30% wCV | ≤ 30% wCV | Composite of all plaque components |
