@@ -33,9 +33,9 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 | DICOM ingestion | 100% successful ingestion; zero WIID assignment failures | Run full paired dataset through ingest pipeline |
 | Centerline / vessel tree | Extraction success rate ≥ 95%; major vessel coverage equivalent to reference | Compare vessel segment count and length distribution |
 | Lumen & wall init | Auto-initialization without manual override in ≥ 85% of segments | Log override frequency per scanner type |
-| Lumen & wall editing | Edit rate not significantly higher than reference CTA (use 95% CI overlap as threshold) | Track editing events per case |
+| Lumen & wall editing | Edit rate not significantly higher than reference CTA (use 95% CI overlap as threshold) | Track editing events per case, can we get this for ones Carolyn already did? |
 | Plaque quantification | See section 3 — core quantitative criteria | |
-| Report generation | All required fields populated; no missing-data warnings | ECR Review in physician viewer and pdf reports for N ≥ 10 cases |
+| Report generation | All required fields populated; no missing-data warnings | ECR Review in physician viewer and pdf reports for N ≥ 10 cases use ones Carolyn already did|
 
 ---
 
@@ -82,7 +82,7 @@ Assessed at patient level using wCV (within-subject coefficient of variation) of
 | HU calibration stability | Verify calcified plaque HU threshold (typically 130 HU) remains valid on new scanner. If PCCT uses spectral data, map to conventional HU equivalent before thresholding. |
 | Radiation dose | Document DLP/CTDI; confirm scanner does not require dose increases that offset clinical utility |
 | Patient subgroup stratification | Report wCV separately for high vs. low calcium burden and BMI to check for heterogeneity |
-| Reader/operator variability | Confirm inter-reader editing variability is within expected range on new scanner images |
+| Reader/operator variability | Confirm inter-reader editing variability is within expected range on new scanner images, second analyst completes N = 10 Carolyn already did |
 | Compatability with ongoing projects | Confirm no _new_ failure modes with AVTE/AWAL |
 | Software version lock | Qualify against software version where plaque algos equivalent to Nov2025 or later; re-qualification required for major algorithm updates |
 
