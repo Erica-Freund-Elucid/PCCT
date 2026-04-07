@@ -18,7 +18,6 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 | Criterion | Threshold | Method |
 |---|---|---|
 | DICOM compliance | Full DICOM 3.0; mandatory tags present | Automated tag validation on ingestion |
-| Spatial resolution | ≤ 0.625 mm reconstruction slice thickness available | Phantom or DICOM header check |
 | Contrast timing | Peak aortic HU ≥ 300 in ≥ 90% of cases | Aortic ROI measurement across paired dataset |
 | Image noise (SNR/CNR) | Non-inferior to reference CTA (±15%) | Uniform phantom or aortic ROI SD comparison |
 | Reconstruction kernel | Soft-tissue kernel available; sharp kernel documented | Protocol review + DICOM header |
@@ -37,8 +36,7 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 | Lumen & wall init | Auto-initialization without manual override in ≥ 85% of segments | Log override frequency per scanner type |
 | Lumen & wall editing | Edit rate not significantly higher than reference CTA (use 95% CI overlap as threshold) | Track editing events per case |
 | Plaque quantification | See section 3 — core quantitative criteria | |
-| FFRct prediction (if applicable) | Validated separately; not a gate criterion for scanner qualification unless FFRct is a named deliverable | Requires dedicated hemodynamic validation study |
-| Report generation | All required fields populated; no missing-data warnings | Template field audit on N ≥ 30 cases |
+| Report generation | All required fields populated; no missing-data warnings | ECR Review in physician viewer and pdf reports for N ≥ 10 cases |
 
 ---
 
@@ -46,7 +44,7 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 
 > **Performance** — Gate 3
 
-Assessed at patient level using wCV (within-subject coefficient of variation) from paired CTA/PCCT acquisitions of the same patient. New scanner must meet **all** thresholds to pass.
+Assessed at patient level using wCV (within-subject coefficient of variation) of un-edited output from paired CTA/PCCT acquisitions of the same patient. Manual centerline definition for N ≥ 30 cases. Allows direct comparison to validated OQ. New scanner must meet **all** thresholds to pass.
 
 | Measure | Reference wCV (existing) | New scanner threshold | Rationale |
 |---|---|---|---|
@@ -61,7 +59,6 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 - Compute wCV = (SD of differences / mean) × 100 per patient, then average across cohort
 - Report **95% CI** on wCV
 - If CI upper bound exceeds threshold, the criterion **fails** even if point estimate passes
-- Pre-specify analysis in a study protocol before data collection
 
 ---
 
@@ -74,7 +71,6 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 | Mean bias — lumen volume | \|bias\| < 5% of mean lumen volume | Bland-Altman plot; report LoA |
 | Mean bias — calcified plaque | \|bias\| < 10% of mean calc volume | Bland-Altman plot; proportional bias test |
 | Limits of agreement | LoA within ±1.96 SD; no proportional bias (r² < 0.1) | Regress residuals on mean |
-| Lumen stenosis classification | Cohen's κ ≥ 0.80 vs. reference for CAD-RADS categories | Reclassification table vs. CTA-derived categories |
 
 ---
 
@@ -86,9 +82,10 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 |---|---|
 | HU calibration stability | Verify calcified plaque HU threshold (typically 130 HU) remains valid on new scanner. If PCCT uses spectral data, map to conventional HU equivalent before thresholding. |
 | Radiation dose | Document DLP/CTDI; confirm scanner does not require dose increases that offset clinical utility |
-| Patient subgroup stratification | Report wCV separately for high vs. low calcium burden and BMI terciles to check for heterogeneity |
-| Reader/operator variability | If editing step is involved, confirm inter-reader editing variability is within expected range on new scanner images |
-| Software version lock | Qualify against a specific software version; re-qualification required for major algorithm updates |
+| Patient subgroup stratification | Report wCV separately for high vs. low calcium burden and BMI to check for heterogeneity |
+| Reader/operator variability | Confirm inter-reader editing variability is within expected range on new scanner images |
+| Compatability with ongoing projects | Confirm no _new_ failure modes with AVTE/AWAL |
+| Software version lock | Qualify against software version where plaque algos equivalent to Nov2025 or later; re-qualification required for major algorithm updates |
 
 ---
 
