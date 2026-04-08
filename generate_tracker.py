@@ -1,18 +1,90 @@
-"""Generate PCCT Scanner Qualification Tracker workbook."""
+"""Generate PCCT Scanner Qualification Tracker workbook.
 
+Reads tracker/*.md files to pick up any Owner/Status/Evidence/Notes
+that have already been filled in, then writes the Excel workbook.
+"""
+
+import re
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.formatting.rule import CellIsRule
 
+# --- Parse markdown tracker files ---
+
+def parse_tracker_md(filepath):
+    """Parse a gate tracker markdown file and return a dict keyed by criterion ID."""
+    results = {}
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return results
+
+    # Split into sections by ### headers
+    sections = re.split(r"^### ", content, flags=re.MULTILINE)
+    for section in sections[1:]:  # skip preamble
+        lines = section.strip().splitlines()
+        # Extract ID from header like "1.4 Reconstruction Kernel" or "A.1 HU..."
+        header_match = re.match(r"(\w+\.\d+)\s", lines[0])
+        if not header_match:
+            continue
+        cid = header_match.group(1)
+
+        fields = {}
+        for line in lines:
+            for field in ["Owner", "Status", "Evidence", "Notes"]:
+                m = re.match(rf"^-\s+\*\*{field}:\*\*\s*(.*)", line)
+                if m:
+                    fields[field.lower()] = m.group(1).strip()
+        results[cid] = fields
+    return results
+
+
+TRACKER_FILES = {
+    "gate1": r"C:\Users\EricaFreund\OneDrive - Elucid Bioimaging Inc\PCCT\tracker\gate1-technical-prerequisites.md",
+    "gate2": r"C:\Users\EricaFreund\OneDrive - Elucid Bioimaging Inc\PCCT\tracker\gate2-workflow-integration.md",
+    "gate3": r"C:\Users\EricaFreund\OneDrive - Elucid Bioimaging Inc\PCCT\tracker\gate3-reproducibility.md",
+    "gate4": r"C:\Users\EricaFreund\OneDrive - Elucid Bioimaging Inc\PCCT\tracker\gate4-bias-agreement.md",
+    "advisory": r"C:\Users\EricaFreund\OneDrive - Elucid Bioimaging Inc\PCCT\tracker\advisory-operational-checks.md",
+}
+
+md_data = {}
+for key, path in TRACKER_FILES.items():
+    md_data.update(parse_tracker_md(path))
+
+# Map some status variations
+STATUS_MAP = {
+    "complete": "Pass",
+    "completed": "Pass",
+    "done": "Pass",
+    "pass": "Pass",
+    "fail": "Fail",
+    "failed": "Fail",
+    "in progress": "In progress",
+    "not started": "Not started",
+    "blocked": "Blocked",
+}
+
+
+def get_md_fields(cid):
+    """Get owner, status, evidence, notes from parsed markdown."""
+    fields = md_data.get(cid, {})
+    owner = fields.get("owner", "")
+    status_raw = fields.get("status", "Not started").lower().strip()
+    status = STATUS_MAP.get(status_raw, fields.get("status", "Not started"))
+    evidence = fields.get("evidence", "")
+    notes = fields.get("notes", "")
+    return owner, status, evidence, notes
+
+
+# --- Excel setup ---
 wb = openpyxl.Workbook()
 
-# --- Styles ---
 header_font = Font(bold=True, size=11, color="FFFFFF")
 header_fill = PatternFill(start_color="2F5496", end_color="2F5496", fill_type="solid")
 gate_header_font = Font(bold=True, size=14, color="2F5496")
-section_font = Font(bold=True, size=11, color="2F5496")
 wrap = Alignment(wrap_text=True, vertical="top")
 wrap_center = Alignment(wrap_text=True, vertical="top", horizontal="center")
 thin_border = Border(
@@ -109,7 +181,6 @@ def build_gate_sheet(ws, gate):
     ws.sheet_properties.tabColor = "2F5496"
     ws.add_data_validation(status_validation)
 
-    # Title
     ws.merge_cells("A1:J1")
     ws["A1"] = gate["title"]
     ws["A1"].font = gate_header_font
@@ -118,7 +189,6 @@ def build_gate_sheet(ws, gate):
     ws["A2"] = gate["subtitle"]
     ws["A2"].font = Font(italic=True, size=10, color="666666")
 
-    # Headers in row 4
     for col_idx, (col_name, col_width) in enumerate(COLUMNS, 1):
         cell = ws.cell(row=4, column=col_idx, value=col_name)
         cell.font = header_font
@@ -127,21 +197,30 @@ def build_gate_sheet(ws, gate):
         cell.border = thin_border
         ws.column_dimensions[get_column_letter(col_idx)].width = col_width
 
-    # Data rows
     for row_offset, (cid, name, threshold, method) in enumerate(gate["criteria"]):
         row = 5 + row_offset
-        values = [cid, name, threshold, method, "", "Not started", "", "", "", ""]
+
+        # Pull data from markdown if available
+        md_owner, md_status, md_evidence, md_notes = get_md_fields(cid)
+
+        values = [
+            cid, name, threshold, method,
+            md_owner,           # Owner
+            md_status,          # Status
+            md_evidence,        # Evidence Link
+            "",                 # Evidence Description
+            "",                 # Date Completed
+            md_notes,           # Notes
+        ]
         for col_idx, val in enumerate(values, 1):
             cell = ws.cell(row=row, column=col_idx, value=val)
             cell.alignment = wrap
             cell.border = thin_border
-            if col_idx == 6:  # Status column
+            if col_idx == 6:
                 cell.alignment = wrap_center
 
-        # Add status validation to status cell
         status_validation.add(ws.cell(row=row, column=6))
 
-    # Conditional formatting on status column
     last_row = 4 + len(gate["criteria"])
     status_range = f"F5:F{last_row}"
     ws.conditional_formatting.add(status_range, CellIsRule(operator="equal", formula=['"Pass"'], fill=green_fill))
@@ -150,12 +229,10 @@ def build_gate_sheet(ws, gate):
     ws.conditional_formatting.add(status_range, CellIsRule(operator="equal", formula=['"Blocked"'], fill=red_fill))
     ws.conditional_formatting.add(status_range, CellIsRule(operator="equal", formula=['"Not started"'], fill=gray_fill))
 
-    # Freeze panes
     ws.freeze_panes = "A5"
     ws.auto_filter.ref = f"A4:J{last_row}"
 
 
-# Build gate sheets
 first = True
 for sheet_name, gate in GATES.items():
     if first:
@@ -202,11 +279,9 @@ for row_offset, (label, sheet_ref, count) in enumerate(gate_info):
     row = 6 + row_offset
     ds.cell(row=row, column=1, value=label).border = thin_border
     ds.cell(row=row, column=1).alignment = wrap
-
     ds.cell(row=row, column=2, value=count).border = thin_border
     ds.cell(row=row, column=2).alignment = wrap_center
 
-    # COUNTIF formulas
     rng = f"{sheet_ref}!F5:F{4 + count}"
     ds.cell(row=row, column=3).border = thin_border
     ds.cell(row=row, column=3).alignment = wrap_center
@@ -220,14 +295,11 @@ for row_offset, (label, sheet_ref, count) in enumerate(gate_info):
     ds.cell(row=row, column=5).alignment = wrap_center
     ds.cell(row=row, column=5, value=f'=COUNTIF({rng},"In progress")')
 
-    # Gate result formula
     result_cell = ds.cell(row=row, column=6)
     result_cell.border = thin_border
     result_cell.alignment = wrap_center
-    c = get_column_letter(3)
     result_cell.value = f'=IF(C{row}=B{row},"PASS",IF(D{row}>0,"FAIL","PENDING"))'
 
-# Conditional formatting on Gate Result
 result_range = "F6:F10"
 ds.conditional_formatting.add(result_range, CellIsRule(operator="equal", formula=['"PASS"'], fill=green_fill))
 ds.conditional_formatting.add(result_range, CellIsRule(operator="equal", formula=['"FAIL"'], fill=red_fill))
@@ -235,7 +307,10 @@ ds.conditional_formatting.add(result_range, CellIsRule(operator="equal", formula
 
 ds.freeze_panes = "A6"
 
-# --- Save ---
 output = r"C:\Users\EricaFreund\OneDrive - Elucid Bioimaging Inc\PCCT\PCCT_Qualification_Tracker.xlsx"
 wb.save(output)
 print(f"Saved to {output}")
+print("\nData pulled from markdown files:")
+for cid, fields in sorted(md_data.items()):
+    if any(v for v in fields.values()):
+        print(f"  {cid}: {fields}")
