@@ -98,3 +98,24 @@ Assessed at patient level using wCV (within-subject coefficient of variation) of
 | **Gate 4** — Bias & agreement | All section 4 items pass | Flag for clinical review; may restrict use to specific indications |
 
 **Final sign-off requires passing all four gates.** Advisory checks (section 5) inform labelling and use restrictions but do not block qualification.
+
+---
+
+## Tracker
+
+Each criterion has a dedicated entry in the `tracker/` folder with fields for **Owner**, **Status**, **Evidence**, and **Notes**. Use these to assign work and document results.
+
+| File | Contents |
+|---|---|
+| [Gate 1 — Technical Prerequisites](tracker/gate1-technical-prerequisites.md) | DICOM compliance, contrast timing, noise, kernel |
+| [Gate 2 — Workflow Integration](tracker/gate2-workflow-integration.md) | Ingestion, centerline, lumen/wall, reporting |
+| [Gate 3 — Reproducibility](tracker/gate3-reproducibility.md) | wCV for lumen, calcified plaque, wall, total plaque |
+| [Gate 4 — Bias & Agreement](tracker/gate4-bias-agreement.md) | Bland-Altman, LoA, stenosis classification |
+| [Advisory Checks](tracker/advisory-operational-checks.md) | HU calibration, dose, subgroups, reader variability |
+
+### How to use the tracker
+
+1. **Assign an owner** — fill in the `Owner:` field for each criterion
+2. **Update status** — set to `Not started`, `In progress`, `Pass`, or `Fail`
+3. **Link evidence** — add file paths, links, or PR references in the `Evidence:` field (e.g., `results/gate3_wcv_analysis.pdf` or a link to a Confluence page)
+4. **Add notes** — record decisions, blockers, or re-test plans
