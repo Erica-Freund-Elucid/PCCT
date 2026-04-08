@@ -41,7 +41,7 @@
 
 - **Threshold:** Soft-tissue kernel available; sharp kernel documented
 - **Method:** Protocol review + DICOM header
-- **Owner:**
-- **Status:** Not started
-- **Evidence:**
-- **Notes:**
+- **Owner:** Murali
+- **Status:** Complete
+- **Evidence:** https://elucidbio.sharepoint.com/:w:/r/Technology/Documents/IP/PCCT/PT142_combined_analysis_COMPLETE_FINAL_v1.0.docx?d=w0fe5c7e3207c4790930cac6308e7bde7&csf=1&web=1&e=mQv35o
+- **Notes:** Kernel family influences local vessel segment and patient level plaque characterization. Recon settings shoud be standardized for subsequent evaluations especially reproducibility and bias-agreement analyses
