@@ -558,6 +558,155 @@ def _find_csv(directory, patient_id):
     return None
 
 
+# ── Gate 1: Technical Prerequisites (SNR / Contrast Timing) ──────────────────
+
+
+def load_snr_csv(path):
+    """Load an SNR results CSV. Returns list of dicts."""
+    if not os.path.exists(path):
+        return []
+    rows = []
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row.get("err"):
+                continue
+            try:
+                pid = row["case"]
+                if "_Bv_" in pid:
+                    pid = pid.split("_Bv_")[0]
+                rows.append({
+                    "patient_id": pid,
+                    "mean_hu": float(row["mean"]),
+                    "std": float(row["std"]),
+                    "snr": float(row["snr"]),
+                })
+            except (ValueError, KeyError):
+                pass
+    return rows
+
+
+def run_gate1():
+    """Gate 1: Contrast timing (1.2) and image noise/SNR (1.3)."""
+    pcct_snr_path = os.path.join(OUTPUT_DIR, "snr_pcct.csv")
+    eid_snr_path = os.path.join(OUTPUT_DIR, "snr_eid.csv")
+
+    pcct_data = load_snr_csv(pcct_snr_path)
+    eid_data = load_snr_csv(eid_snr_path)
+
+    lines = []
+    lines.append("=" * 70)
+    lines.append("GATE 1 -- TECHNICAL & IMAGE QUALITY PREREQUISITES")
+    lines.append("=" * 70)
+    lines.append("")
+
+    if not pcct_data and not eid_data:
+        lines.append("No SNR data available. Run compute_snr.py on ip3 first.")
+        lines.append("Expected files: gate_results/snr_pcct.csv, gate_results/snr_eid.csv")
+        lines.append("")
+        return "\n".join(lines)
+
+    # ── 1.2 Contrast Timing ──────────────────────────────────────────────
+    lines.append("--- 1.2 Contrast Timing ---")
+    lines.append("Threshold: Peak aortic HU >= 300 in >= 90% of cases")
+    lines.append("")
+
+    for label, data in [("PCCT (NAEOTOM Alpha)", pcct_data), ("EID (Somatom Force)", eid_data)]:
+        if not data:
+            lines.append(f"  {label}: no data")
+            lines.append("")
+            continue
+        hus = [d["mean_hu"] for d in data]
+        n_pass = sum(1 for h in hus if h >= 300)
+        pct = n_pass / len(hus) * 100
+        passed = pct >= 90
+
+        lines.append(f"  {label} (N={len(data)}):")
+        lines.append(f"    Mean aortic HU:   {np.mean(hus):.1f} (range: {min(hus):.1f} - {max(hus):.1f})")
+        lines.append(f"    >= 300 HU:        {n_pass}/{len(data)} ({pct:.0f}%)")
+        lines.append(f"    Result:           {'PASS' if passed else 'FAIL'}")
+
+        # List cases below 300
+        below = [d for d in data if d["mean_hu"] < 300]
+        if below:
+            lines.append(f"    Below threshold:")
+            for d in sorted(below, key=lambda x: x["mean_hu"]):
+                lines.append(f"      {d['patient_id']}: {d['mean_hu']:.1f} HU")
+        lines.append("")
+
+    # ── 1.3 Image Noise (SNR) ────────────────────────────────────────────
+    lines.append("--- 1.3 Image Noise (SNR/CNR) ---")
+    lines.append("Threshold: PCCT SNR non-inferior to EID reference (+/-15%)")
+    lines.append("Method: Aortic ROI SNR = mean_HU / std_HU (10mm cube at aortic centroid)")
+    lines.append("")
+
+    for label, data in [("PCCT (NAEOTOM Alpha)", pcct_data), ("EID (Somatom Force)", eid_data)]:
+        if not data:
+            lines.append(f"  {label}: no data")
+            lines.append("")
+            continue
+        snrs = [d["snr"] for d in data]
+        stds = [d["std"] for d in data]
+        lines.append(f"  {label} (N={len(data)}):")
+        lines.append(f"    Mean SNR:         {np.mean(snrs):.2f} (SD: {np.std(snrs, ddof=1):.2f})")
+        lines.append(f"    Median SNR:       {np.median(snrs):.2f}")
+        lines.append(f"    Range:            {min(snrs):.2f} - {max(snrs):.2f}")
+        lines.append(f"    Mean noise (std): {np.mean(stds):.2f} HU (range: {min(stds):.2f} - {max(stds):.2f})")
+        lines.append("")
+
+    # Paired SNR comparison
+    if pcct_data and eid_data:
+        pcct_lookup = {d["patient_id"]: d for d in pcct_data}
+        eid_lookup = {d["patient_id"]: d for d in eid_data}
+        paired_pids = sorted(set(pcct_lookup.keys()) & set(eid_lookup.keys()))
+
+        if paired_pids:
+            lines.append(f"  Paired comparison (N={len(paired_pids)}):")
+            lines.append(f"  {'Patient':<15s} {'PCCT SNR':>10s} {'EID SNR':>10s} {'Ratio':>8s} {'PCCT noise':>12s} {'EID noise':>12s}")
+            lines.append(f"  {'-'*70}")
+
+            ratios = []
+            noise_ratios = []
+            for pid in paired_pids:
+                p_snr = pcct_lookup[pid]["snr"]
+                e_snr = eid_lookup[pid]["snr"]
+                p_std = pcct_lookup[pid]["std"]
+                e_std = eid_lookup[pid]["std"]
+                ratio = p_snr / e_snr if e_snr > 0 else float("nan")
+                n_ratio = p_std / e_std if e_std > 0 else float("nan")
+                ratios.append(ratio)
+                noise_ratios.append(n_ratio)
+                lines.append(f"  {pid:<15s} {p_snr:>10.2f} {e_snr:>10.2f} {ratio:>8.2f} {p_std:>12.2f} {e_std:>12.2f}")
+
+            mean_ratio = np.mean(ratios)
+            # Non-inferiority: PCCT SNR / EID SNR >= 0.85 (within -15%)
+            passed_snr = mean_ratio >= 0.85
+            lines.append("")
+            lines.append(f"    Mean SNR ratio (PCCT/EID):     {mean_ratio:.2f}")
+            lines.append(f"    Mean noise ratio (PCCT/EID):   {np.mean(noise_ratios):.2f}")
+            lines.append(f"    Non-inferiority (ratio >= 0.85): {'PASS' if passed_snr else 'FAIL'}")
+
+            # Also report if PCCT noise is lower (better)
+            lower_noise = sum(1 for r in noise_ratios if r < 1.0)
+            lines.append(f"    PCCT lower noise in {lower_noise}/{len(noise_ratios)} pairs")
+        else:
+            lines.append("  No paired patients for SNR comparison")
+
+    lines.append("")
+
+    # Per-case detail table
+    lines.append("--- Per-case SNR detail ---")
+    lines.append(f"{'Patient':<15s} {'Scanner':<8s} {'Mean HU':>10s} {'Noise (std)':>12s} {'SNR':>10s}")
+    lines.append("-" * 60)
+    for d in sorted(pcct_data, key=lambda x: x["patient_id"]):
+        lines.append(f"{d['patient_id']:<15s} {'PCCT':<8s} {d['mean_hu']:>10.1f} {d['std']:>12.2f} {d['snr']:>10.2f}")
+    for d in sorted(eid_data, key=lambda x: x["patient_id"]):
+        lines.append(f"{d['patient_id']:<15s} {'EID':<8s} {d['mean_hu']:>10.1f} {d['std']:>12.2f} {d['snr']:>10.2f}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
 def _count_segments(csv_path):
     with open(csv_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -914,6 +1063,7 @@ if __name__ == "__main__":
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+    gate1_text = run_gate1()
     gate2_text = run_gate2(paired)
     gate3_text, gate3_detail = run_gate3(paired)
     gate4_text, gate4_detail = run_gate4(paired)
@@ -923,6 +1073,7 @@ if __name__ == "__main__":
         f"Reference: B.1P Delta Validation OQ (730-CVV-040 v0.1)",
         f"N = {len(paired)} paired patients (target: >=30)",
         f"{'PRELIMINARY' if len(paired) < 30 else 'FINAL'} results",
+        gate1_text,
         gate2_text,
         gate3_text,
         gate4_text,
