@@ -1,0 +1,24 @@
+patient_id,pcct_analyst,pcct_workitem,pcct_model,pcct_kernel,pcct_kvp,pcct_summary_csv,eid_analyst,eid_workitem,eid_model,eid_kernel,eid_kvp,eid_summary_csv,pair_status
+PT-116,layne.cassidy,wi-851bbb0b,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-119,layne.cassidy,wi-173e25a1,NAEOTOM Alpha,Bv44u\4,140,YES,,,,,,NO,NEEDS EID
+PT-121,layne.cassidy,wi-55f45c1e,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-124,mackenzie.kinney,wi-d28f293f,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-127,layne.cassidy,wi-5015b5e1,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-129,layne.cassidy,wi-aff6fdcf,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-130,layne.cassidy,wi-6f5671bb,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-131,layne.cassidy,wi-f5003da9,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-133,layne.cassidy,wi-b3859f2c,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-135,layne.cassidy,wi-3110d645,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-136,mackenzie.kinney,wi-36b184bc,NAEOTOM Alpha,Bv44u\4,120,NO,,,,,,NO,NEEDS PCCT CSV + EID
+PT-138,layne.cassidy,wi-b6c7c5d4,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-4473f084,Somatom Force,Bv40d\3,110,NO,NEEDS EID CSV
+PT-140,mackenzie.kinney,wi-313231c4,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-142,layne.cassidy,wi-b0dd5ac3,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-143,layne.cassidy,wi-d3a215cd,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-149,layne.cassidy,wi-75c06b7e,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-153,layne.cassidy,wi-48024a31,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-155,layne.cassidy,wi-dca4f60a,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-158,mackenzie.kinney,wi-8304e48f,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-159,layne.cassidy,wi-647edebc,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-161,layne.cassidy,wi-76afa109,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-162,layne.cassidy,wi-a18e64c6,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-165,layne.cassidy,wi-7a2415a8,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID

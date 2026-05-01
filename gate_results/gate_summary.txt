@@ -1,0 +1,244 @@
+PCCT Qualification Gate Analysis Report
+
+Reference: B.1P Delta Validation OQ (730-CVV-040 v0.1)
+
+N = 9 paired patients (target: >=30)
+
+PRELIMINARY results
+
+======================================================================
+GATE 2 — WORKFLOW INTEGRATION CHECKS
+======================================================================
+
+--- 2.2 Centerline / Vessel Tree Coverage ---
+
+Patient           PCCT Len    EID Len    Diff%   PCCT Segs   EID Segs
+----------------------------------------------------------------------
+PT-116               172.7      144.4    19.6%           9          7
+PT-127               536.0      524.1     2.3%          14         14
+PT-129               257.3      124.4   106.8%          10          5
+PT-138               333.2      308.2     8.1%          11         11
+PT-140               370.7      195.3    89.8%          14          8
+PT-155               471.1      293.2    60.7%          12         10
+PT-158               436.1      157.4   177.1%          12          5
+PT-162               440.5      191.8   129.6%          12          7
+PT-165               544.5      191.8   184.0%          14          8
+
+  Mean length difference:    +86.5%
+  Mean segment count diff:   +3.7
+  Pairs with data:           9/9
+  Threshold (>=95% coverage): REVIEW
+
+
+======================================================================
+GATE 3 — CORE QUANTITATIVE REPRODUCIBILITY
+======================================================================
+N = 9 paired patients (target: >=30)
+Acceptance: 95% CI overlap with B.1P Delta OQ (730-CVV-040)
+Primary metric: log-wCV for volumes, untransformed for length
+wCV method: sqrt(mean(d²/(2m²))) × 100
+95% CI: 2000-sample bootstrap
+Volumes normalized to vessel length per 730-CVV-040 methodology
+
+--- PRIMARY ENDPOINTS ---
+
+--- Lumen Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  28.23% [20.08%, 35.01%]
+  Log-wCV:            12.97% [8.98%, 16.21%]
+
+  Original OQ (4-B1P-033):  7.64% [5.52%, 8.55%] (log-transformed)
+  Delta OQ (730-CVV-040):   7.5% [5.9%, 9.3%] (log-wCV)
+  Delta OQ (730-CVV-040):   9.32% [7.09%, 11.58%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [8.98%, 16.21%]
+    Delta OQ:  [5.9%, 9.3%]
+    Overlap:   YES — PASS
+
+--- Wall Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  38.17% [22.01%, 52.76%]
+  Log-wCV:            24.91% [13.78%, 35.14%]
+
+  Original OQ (4-B1P-033):  9.51% [6.60%, 11.16%] (log-transformed)
+  Delta OQ (730-CVV-040):   13.1% [10.2%, 16.0%] (log-wCV)
+  Delta OQ (730-CVV-040):   23.50% [17.88%, 29.71%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [13.78%, 35.14%]
+    Delta OQ:  [10.2%, 16.0%]
+    Overlap:   YES — PASS
+
+--- Vessel Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  29.38% [20.29%, 36.66%]
+  Log-wCV:            12.44% [8.48%, 15.73%]
+
+  Original OQ (4-B1P-033):  6.03% [4.44%, 6.74%] (log-transformed)
+  Delta OQ (730-CVV-040):   8.7% [6.8%, 10.6%] (log-wCV)
+  Delta OQ (730-CVV-040):   10.18% [7.83%, 12.38%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [8.48%, 15.73%]
+    Delta OQ:  [6.8%, 10.6%]
+    Overlap:   YES — PASS
+  ACCEPTANCE (untransformed CI overlap with delta OQ):
+    PCCT:      [20.29%, 36.66%]
+    Delta OQ:  [7.83%, 12.38%]
+    Overlap:   NO — FAIL
+
+--- DESCRIPTIVE (vessel length) ---
+
+--- Vessel Length (mm) (DESCRIPTIVE) ---
+  N:                  9
+  Untransformed wCV:  44.37% [28.94%, 55.46%]
+  Log-wCV:            8.40% [5.44%, 10.51%]
+
+  Original OQ (4-B1P-033):  5.27% [3.43%, 6.52%] (log-transformed)
+  Delta OQ (730-CVV-040):   15.5% [12.2%, 18.8%] (log-wCV)
+  Delta OQ (730-CVV-040):   13.88% [10.72%, 17.38%] (untransformed)
+
+  DESCRIPTIVE ONLY — not a primary acceptance criterion
+  per 730-CVV-040 recommendation. Vessel length variability
+  reflects analyst termination judgment, not segmentation error.
+
+--- SECONDARY ENDPOINTS (plaque volumes) ---
+
+--- CALC Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  29.14% [16.00%, 39.83%]
+  Log-wCV:            26.17% [13.27%, 35.68%]
+
+  Original OQ (4-B1P-033):  13.9% (untransformed, no CI reported)
+  Delta OQ (730-CVV-040):   4.5% [3.5%, 5.4%] (log-wCV)
+  Delta OQ (730-CVV-040):   25.78% [18.70%, 35.75%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [13.27%, 35.68%]
+    Delta OQ:  [3.5%, 5.4%]
+    Overlap:   NO — FAIL
+
+--- LRNC Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  81.77% [56.39%, 105.03%]
+  Log-wCV:            80.52% [54.67%, 104.07%]
+
+  Original OQ (4-B1P-033):  59.3% (untransformed, no CI reported)
+  Delta OQ (730-CVV-040):   5.4% [4.1%, 6.9%] (log-wCV)
+  Delta OQ (730-CVV-040):   78.80% [48.09%, 163.40%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [54.67%, 104.07%]
+    Delta OQ:  [4.1%, 6.9%]
+    Overlap:   NO — FAIL
+
+--- NonCALC Matrix Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  46.84% [27.12%, 62.61%]
+  Log-wCV:            35.22% [19.69%, 48.21%]
+
+  Original OQ (4-B1P-033):  58.6% (untransformed, no CI reported)
+    Note: Original reported as Total NCP (untransformed); improved in delta OQ
+  Delta OQ (730-CVV-040):   13.6% [10.8%, 16.4%] (log-wCV)
+  Delta OQ (730-CVV-040):   32.61% [24.87%, 41.94%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [19.69%, 48.21%]
+    Delta OQ:  [10.8%, 16.4%]
+    Overlap:   NO — FAIL
+
+--- Total Plaque Volume (mm³) [length-normalized] ---
+  N:                  9
+  Untransformed wCV:  39.58% [24.16%, 54.44%]
+  Log-wCV:            27.37% [16.16%, 38.63%]
+
+  Original OQ (4-B1P-033):  44.1% (untransformed, no CI reported)
+  Delta OQ (730-CVV-040):   13.2% [10.4%, 16.0%] (log-wCV)
+  Delta OQ (730-CVV-040):   27.08% [20.68%, 34.74%] (untransformed)
+
+  ACCEPTANCE (log-wCV CI overlap with delta OQ):
+    PCCT:      [16.16%, 38.63%]
+    Delta OQ:  [10.4%, 16.0%]
+    Overlap:   NO — FAIL
+
+
+======================================================================
+GATE 4 — SYSTEMATIC BIAS & AGREEMENT
+======================================================================
+N = 9 paired patients
+Method: Bland-Altman on log(x+1) scale, raw volumes (PCCT minus EID)
+Note: Raw (not length-normalized) volumes used for direct
+      comparability with delta OQ reference (730-CVV-040 Table 6)
+
+--- Lumen Volume (mm³) ---
+  N:                     9
+  Log-scale bias:        0.2184
+  Log-scale LoA:         [-0.2253, 0.6621]
+  Untransformed bias:    333.24 (20.9% of mean)
+  Bias threshold:        |bias| < 5% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.013 [0.000, 0.661]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- CALC Volume (mm³) ---
+  N:                     9
+  Log-scale bias:        0.5187
+  Log-scale LoA:         [-0.3464, 1.3839]
+  Untransformed bias:    58.17 (42.7% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Delta OQ ref bias:     0.02
+  Delta OQ ref LoA:      [-0.17, 0.21]
+  Proportional bias r²:  0.090 [0.003, 0.567]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- LRNC Volume (mm³) ---
+  N:                     9
+  Log-scale bias:        0.8589
+  Log-scale LoA:         [-1.4541, 3.1719]
+  Untransformed bias:    11.98 (64.8% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Delta OQ ref bias:     -0.03
+  Delta OQ ref LoA:      [-0.21, 0.14]
+  Proportional bias r²:  0.055 [0.000, 0.855]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- NonCALC Matrix Volume (mm³) ---
+  N:                     9
+  Log-scale bias:        0.0831
+  Log-scale LoA:         [-0.8046, 0.9708]
+  Untransformed bias:    2.67 (1.0% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           PASS
+  Delta OQ ref bias:     -0.07
+  Delta OQ ref LoA:      [-0.82, 0.67]
+  Proportional bias r²:  0.225 [0.019, 0.808]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- Total Plaque Volume (mm³) ---
+  N:                     9
+  Log-scale bias:        0.2486
+  Log-scale LoA:         [-0.5907, 1.0880]
+  Untransformed bias:    72.82 (17.6% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Delta OQ ref bias:     -0.05
+  Delta OQ ref LoA:      [-0.89, 0.78]
+  Proportional bias r²:  0.188 [0.005, 0.765]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- Limits of Agreement Summary (all variables, log(x+1) scale, raw volumes) ---
+
+Variable                           Bias  LoA Lower  LoA Upper     r2          r2 95% CI   Result
+-----------------------------------------------------------------------------------------------
+Lumen Volume (mm³)               0.2184    -0.2253     0.6621  0.013     [0.000, 0.661]     PASS
+Wall Volume (mm³)                0.2101    -0.5080     0.9282  0.140     [0.003, 0.672]     PASS
+Vessel Volume (mm³)              0.2143    -0.1745     0.6031  0.119     [0.001, 0.605]     PASS
+CALC Volume (mm³)                0.5187    -0.3464     1.3839  0.090     [0.003, 0.567]     PASS
+LRNC Volume (mm³)                0.8589    -1.4541     3.1719  0.055     [0.000, 0.855]     PASS
+NonCALC Matrix Volume (mm³)      0.0831    -0.8046     0.9708  0.225     [0.019, 0.808]     PASS
+Total Plaque Volume (mm³)        0.2486    -0.5907     1.0880  0.188     [0.005, 0.765]     PASS
+
+Proportional bias: PASS if r2 95% CI lower bound < 0.1

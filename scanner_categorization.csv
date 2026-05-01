@@ -1,0 +1,20 @@
+patient_id,scanner_category,make,model,kernel,kVp,slice_thickness
+PT-116_Bv_Bv44u_4,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-119,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,140,0.600000
+PT-121,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-127,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-129,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-130,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-131,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-133,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-135,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-138,EID,Siemens Healthcare,Somatom Force,Bv40d\3,110,0.600000
+PT-142,PCCT,Siemens Healthineers,NAEOTOM Alpha,Bv64u\4,120,0.200000
+PT-143,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-149,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-153,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-155,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-159,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-161,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-162,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000
+PT-165,PCCT,Siemens Healthcare,NAEOTOM Alpha,Bv44u\4,120,0.600000

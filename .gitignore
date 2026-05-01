@@ -1,0 +1,16 @@
+# Patient data - do not commit
+workitem_summaries/
+
+# Confidential documents - reference by doc number in QMS
+*.pdf
+*.xlsx
+
+# SNR verification grids (large PNGs, generated on ip3)
+gate_results/SNR_verification_grids/
+
+# Claude Code config
+.claude/
+
+# Python
+__pycache__/
+*.pyc
