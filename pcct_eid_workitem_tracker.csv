@@ -1,24 +1,31 @@
 patient_id,pcct_analyst,pcct_workitem,pcct_model,pcct_kernel,pcct_kvp,pcct_summary_csv,eid_analyst,eid_workitem,eid_model,eid_kernel,eid_kvp,eid_summary_csv,pair_status
-PT-116,layne.cassidy,wi-851bbb0b,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-119,layne.cassidy,wi-173e25a1,NAEOTOM Alpha,Bv44u\4,140,YES,,,,,,NO,NEEDS EID
-PT-121,layne.cassidy,wi-55f45c1e,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-124,mackenzie.kinney,wi-d28f293f,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-127,layne.cassidy,wi-5015b5e1,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-129,layne.cassidy,wi-aff6fdcf,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-130,layne.cassidy,wi-6f5671bb,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-131,layne.cassidy,wi-f5003da9,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-133,layne.cassidy,wi-b3859f2c,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-135,layne.cassidy,wi-3110d645,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-136,mackenzie.kinney,wi-36b184bc,NAEOTOM Alpha,Bv44u\4,120,NO,,,,,,NO,NEEDS PCCT CSV + EID
-PT-138,layne.cassidy,wi-b6c7c5d4,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-4473f084,Somatom Force,Bv40d\3,110,NO,NEEDS EID CSV
-PT-140,mackenzie.kinney,wi-313231c4,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-142,layne.cassidy,wi-b0dd5ac3,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-143,layne.cassidy,wi-d3a215cd,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-149,layne.cassidy,wi-75c06b7e,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-153,layne.cassidy,wi-48024a31,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-155,layne.cassidy,wi-dca4f60a,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-158,mackenzie.kinney,wi-8304e48f,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-159,layne.cassidy,wi-647edebc,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-161,layne.cassidy,wi-76afa109,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-162,layne.cassidy,wi-a18e64c6,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
-PT-165,layne.cassidy,wi-7a2415a8,NAEOTOM Alpha,Bv44u\4,120,YES,,,,,,NO,NEEDS EID
+PT-116,layne.cassidy,wi-851bbb0b,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-ea2750f8,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-119,layne.cassidy,wi-173e25a1,NAEOTOM Alpha,Bv44u\4,140,YES,layne.cassidy,wi-06c5f433,Somatom Force,Bv40d,130,YES,PAIRED
+PT-120,mackenzie.kinney,wi-9dd5c6c0,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-ea8ab689,Somatom Force,,,EID NA (analysis=NA in spreadsheet),NEEDS REVIEW
+PT-121,layne.cassidy,wi-55f45c1e,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-5866380d,Somatom Force,Bv40d,,YES,PAIRED
+PT-124,mackenzie.kinney,wi-d28f293f,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-769dc6f1,Somatom Force,Bv40d\3,110,YES,PAIRED (no overlap; PCCT=Left/EID=Right -- excluded from Gate 3/4)
+PT-125,mackenzie.kinney,wi-d3cf471f,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-36f6fb1f,Somatom Force,Bv40d,110,YES,PAIRED
+PT-127,layne.cassidy,wi-5015b5e1,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-60ad8e68,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-129,layne.cassidy,wi-aff6fdcf,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-8622f0aa,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-130,layne.cassidy,wi-6f5671bb,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-d80e8e1e,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-131,layne.cassidy,wi-f5003da9,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-d02996c7,Somatom Force,Bv40d,,YES,PAIRED (partial overlap: Left only)
+PT-133,layne.cassidy,wi-b3859f2c,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-1089bdef,Somatom Force,Bv40d,,YES,PAIRED
+PT-135,layne.cassidy,wi-3110d645,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-58a50c3f,Somatom Force,Bv40d,110,YES,PAIRED
+PT-136,mackenzie.kinney,wi-36b184bc,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-45141053,Somatom Force,Bv40d,110,YES,PAIRED (partial overlap: Left only)
+PT-138,layne.cassidy,wi-b6c7c5d4,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-4473f084,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-140,mackenzie.kinney,wi-313231c4,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-9c1158eb,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-142,layne.cassidy,wi-b0dd5ac3,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-ba36c00d,Somatom Force,Bv40d,,YES,PAIRED (partial overlap: Left only) [Layne's wi-e5b7995e wi-61c53cda no Aorta.nrrd; using Mackenzie's wi-ba36c00d]
+PT-143,layne.cassidy,wi-d3a215cd,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-931da97b,Somatom Force,Bv40d,,YES,PAIRED
+PT-149,layne.cassidy,wi-75c06b7e,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-8345757a,Somatom Force,,,EID REJECT (analysis=Reject in spreadsheet),NEEDS REVIEW
+PT-150,mackenzie.kinney,wi-bbb9f25c,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-378daa95,Somatom Force,Bv40d,130,YES,PAIRED (partial overlap: Left only)
+PT-152,mackenzie.kinney,wi-bb33e995,NAEOTOM Alpha,Bv44u\4,120,NO (PCCT pending),mackenzie.kinney,wi-278eddca,Somatom Force,,,YES (Aorta.nrrd missing),EID-ONLY -- PCCT pending; SNR pending Aorta.nrrd
+PT-153,layne.cassidy,wi-48024a31,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-78ed1e81,Somatom Force,Bv40d,120,YES,PAIRED
+PT-155,layne.cassidy,wi-dca4f60a,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-506dd6bf,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-156,mackenzie.kinney,wi-0d793397,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-4024e298,Somatom Force,Bv40d,120,YES,PAIRED
+PT-157,mackenzie.kinney,wi-2e15cb65,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-ea76223b,Somatom Force,Bv40d,120,YES,PAIRED
+PT-158,mackenzie.kinney,wi-8304e48f,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-21a4ec32,Somatom Force,Bv40d\3,110,YES,PAIRED (partial overlap: Right only; SNR pending Aorta.nrrd)
+PT-159,layne.cassidy,wi-647edebc,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-73552728,Somatom Force,Bv40d,,YES,PAIRED
+PT-161,layne.cassidy,wi-76afa109,NAEOTOM Alpha,Bv44u\4,120,YES,mackenzie.kinney,wi-3904013a,Somatom Force,Bv40d,120,YES,PAIRED (partial overlap: Right only)
+PT-162,layne.cassidy,wi-a18e64c6,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-1b014db2,Somatom Force,Bv40d\3,110,YES,PAIRED
+PT-163,layne.cassidy,wi-5622d81e,NAEOTOM Alpha,Bv44u\4,120,HELD,layne.cassidy,wi-526b81de,Somatom Force,,,HELD,HELD for separate 1024x1024 evaluation
+PT-165,layne.cassidy,wi-7a2415a8,NAEOTOM Alpha,Bv44u\4,120,YES,layne.cassidy,wi-27008d2e,Somatom Force,Bv40d\3,110,YES,PAIRED

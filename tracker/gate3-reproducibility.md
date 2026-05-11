@@ -6,7 +6,7 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 
 **Acceptance criterion:** 95% CI overlap between PCCT wCV and B.1P Delta Validation OQ wCV (730-CVV-040). Cross-scanner variability must be non-inferior to validated inter-operator variability.
 
-**Primary metric:** Log-wCV for volume endpoints. Untransformed for length (descriptive only).
+**Metric per endpoint:** Log-wCV for process outputs (Lumen, Wall, Vessel vol -- matches 4-B1P-033 Table 7). Untransformed wCV for plaque volumes (matches 4-B1P-033 Table 9 reporting). Untransformed wCV for length (descriptive only).
 
 **Reference studies:**
 - Original B.1P OQ (4-B1P-033 v2.0): log-transformed for process outputs, untransformed for plaque volumes
@@ -14,15 +14,17 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 
 **Statistical design:** N >= 30 paired patients. wCV = sqrt(mean(d^2 / (2m^2))) x 100. 95% CI via 2000-sample bootstrap.
 
+**Per-pair vessel-overlap restriction (canonical as of 2026-05-08):** for each PCCT/EID pair, only the (bodySite, vessel-location) intersection is summed -- so the same anatomical extent is measured on each scanner. Pairs with no overlapping vessel are excluded entirely. PT-124 excluded (PCCT=Left vessels, EID=Right vessel only). Most pairs are partial-overlap; PCCT typically traces 1-3 additional distal vessels (PDA, PLB, Diagonals, marginals). Restricting to the intersection eliminates Length-normalization dilution from PCCT's longer trace -- this is what flipped Wall log-wCV from FAIL (target-overlap) to PASS at N=25.
+
 ---
 
 ### 3.1 Lumen Volume
 
 - **Reference:** Delta OQ log-wCV 7.5% [5.9%, 9.3%]; Original OQ 7.64% [5.52%, 8.55%]
 - **Owner:**
-- **Status:** PASS (N=9, preliminary)
+- **Status:** PASS (N=25, vessel-overlap, preliminary)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 12.97% [8.98%, 16.21%]. CI overlaps with delta OQ. Elevated point estimate expected for cross-scanner comparison vs inter-operator.
+- **Notes:** Log-wCV 8.72% [6.99%, 10.30%]. CI overlaps delta OQ [5.9%, 9.3%]. Tightened from target-overlap [8.27%, 12.28%].
 
 ---
 
@@ -30,9 +32,9 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 
 - **Reference:** Delta OQ log-wCV 13.1% [10.2%, 16.0%]; Original OQ 9.51% [6.60%, 11.16%]
 - **Owner:**
-- **Status:** PASS (N=9, preliminary)
+- **Status:** PASS (N=25, vessel-overlap, preliminary -- recovered from FAIL on target-overlap)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 24.91% [13.78%, 35.14%]. CI overlaps with delta OQ. Wide CI at N=9 will narrow with more data. Wall collapse design change (730-CVV-017) applies equally to both scan types.
+- **Notes:** Log-wCV 18.48% [14.07%, 22.55%]. CI lower bound (14.07%) below delta OQ upper bound (16.0%) -- overlaps. Was 23.58% [17.18%, 30.02%] FAIL on target-overlap; switching to vessel-overlap eliminated the artifactual length-normalization dilution caused by PCCT tracing additional thin-walled distal vessels.
 
 ---
 
@@ -40,9 +42,9 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 
 - **Reference:** Delta OQ log-wCV 8.7% [6.8%, 10.6%]; Original OQ 6.03% [4.44%, 6.74%]
 - **Owner:**
-- **Status:** PASS on log / FAIL on untransformed (N=9, preliminary)
+- **Status:** PASS on log / FAIL on untransformed (N=25, vessel-overlap, preliminary)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 12.44% [8.48%, 15.73%] -- CI overlaps delta OQ on log scale. Untransformed CI [20.29%, 36.66%] does not overlap [7.83%, 12.38%] -- consistent with vessel volume inheriting wall variability (VesselVol = Lumen + Wall).
+- **Notes:** Log-wCV 8.40% [6.83%, 9.85%] -- CI overlaps delta OQ on log scale. Untransformed CI [16.67%, 24.24%] does not overlap [7.83%, 12.38%] -- consistent with raw-scale heteroscedasticity at high disease.
 
 ---
 
@@ -52,44 +54,44 @@ Assessed at patient level using wCV (within-subject coefficient of variation) fr
 - **Owner:**
 - **Status:** Descriptive only (not acceptance criterion)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Untransformed wCV 44.37% [28.94%, 55.46%]. Elevated due to different vessel tracing extent between PCCT and EID scans. Per 730-CVV-040 recommendation, length variability reflects analyst termination judgment, not segmentation error. Controlled by length normalization in volume analyses.
+- **Notes:** Untransformed wCV 24.64% [18.88%, 29.60%] (down from 33.6% with target-overlap). Mean PCCT-EID length difference dropped from +44% to +26% on overlapping vessels -- residual difference reflects analyst termination judgment within shared vessels.
 
 ---
 
 ### 3.5 CALC Volume
 
-- **Reference:** Delta OQ log-wCV 4.5% [3.5%, 5.4%]; Original OQ 13.9% (untransformed)
+- **Reference:** Delta OQ untransformed wCV 25.78% [18.70%, 35.75%]; Original OQ 13.9% (untransformed)
 - **Owner:**
-- **Status:** FAIL (N=9, preliminary)
+- **Status:** PASS (N=25, vessel-overlap, preliminary)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 26.17% [13.27%, 35.68%]. CI does not overlap delta OQ [3.5%, 5.4%]. CALC segmentation is HU-threshold sensitive and may be affected by kVp differences between PCCT (120 kVp) and EID (90-130 kVp).
+- **Notes:** Untransformed wCV 21.08% [16.57%, 25.03%]. CI overlaps delta OQ [18.70%, 35.75%]. Tightened from target-overlap [18.65%, 30.91%].
 
 ---
 
 ### 3.6 LRNC Volume
 
-- **Reference:** Delta OQ log-wCV 5.4% [4.1%, 6.9%]; Original OQ 59.3% (untransformed)
+- **Reference:** Delta OQ untransformed wCV 78.80% [48.09%, 163.40%]; Original OQ 59.3% (untransformed)
 - **Owner:**
-- **Status:** FAIL (N=9, preliminary)
+- **Status:** PASS (N=25, vessel-overlap, preliminary)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 80.52% [54.67%, 104.07%]. Highly elevated. LRNC delineation is the most challenging plaque component on CT and is sensitive to differences in image texture between PCCT and EID photon-counting vs energy-integrating detectors.
+- **Notes:** Untransformed wCV 94.24% [78.29%, 108.83%]. CI overlaps delta OQ [48.09%, 163.40%]. LRNC inherently the most variable plaque component.
 
 ---
 
 ### 3.7 NonCALC Matrix Volume
 
-- **Reference:** Delta OQ log-wCV 13.6% [10.8%, 16.4%]; Original OQ 58.6% (untransformed, Total NCP)
+- **Reference:** Delta OQ untransformed wCV 32.61% [24.87%, 41.94%]; Original OQ 58.6% (Total NCP, untransformed)
 - **Owner:**
-- **Status:** FAIL (N=9, preliminary)
+- **Status:** PASS (N=25, vessel-overlap, preliminary)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 35.22% [19.69%, 48.21%]. CI does not overlap delta OQ on log scale. May improve with more data.
+- **Notes:** Untransformed wCV 39.46% [30.22%, 47.73%]. CI lower bound (30.22%) below delta OQ upper bound (41.94%) -- overlaps.
 
 ---
 
 ### 3.8 Total Plaque Volume
 
-- **Reference:** Delta OQ log-wCV 13.2% [10.4%, 16.0%]; Original OQ 44.1% (untransformed)
+- **Reference:** Delta OQ untransformed wCV 27.08% [20.68%, 34.74%]; Original OQ 44.1% (untransformed)
 - **Owner:**
-- **Status:** FAIL (N=9, preliminary)
+- **Status:** PASS (N=25, vessel-overlap, preliminary)
 - **Evidence:** gate_results/gate_summary.txt
-- **Notes:** Log-wCV 27.37% [16.16%, 38.63%]. CI lower bound (16.16%) overlaps with delta OQ upper bound (16.0%) -- marginal. May pass with more paired data.
+- **Notes:** Untransformed wCV 31.40% [24.65%, 37.47%]. CI lower bound (24.65%) below delta OQ upper bound (34.74%) -- overlaps. Tightened from target-overlap [28.58%, 46.69%].
