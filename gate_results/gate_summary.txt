@@ -2,7 +2,7 @@ PCCT Qualification Gate Analysis Report
 
 Reference: B.1P Delta Validation OQ (730-CVV-040 v0.1)
 
-N = 9 paired patients (target: >=30)
+N = 25 paired patients (target: >=30)
 
 PRELIMINARY results
 
@@ -11,26 +11,19 @@ GATE 1 -- TECHNICAL & IMAGE QUALITY PREREQUISITES
 ======================================================================
 
 --- 1.2 Contrast Timing ---
-Threshold: Peak aortic HU >= 300 in >= 90% of cases
+Threshold: Peak aortic HU >= 250 in >= 90% of cases
 
   PCCT (NAEOTOM Alpha) (N=28):
     Mean aortic HU:   380.2 (range: 278.3 - 488.8)
-    >= 300 HU:        26/28 (93%)
+    >= 250 HU:        28/28 (100%)
+    Result:           PASS
+
+  EID (Somatom Force) (N=25):
+    Mean aortic HU:   315.6 (range: 242.0 - 411.1)
+    >= 250 HU:        24/25 (96%)
     Result:           PASS
     Below threshold:
-      PT-125: 278.3 HU
-      PT-124: 281.8 HU
-
-  EID (Somatom Force) (N=9):
-    Mean aortic HU:   312.3 (range: 251.7 - 411.1)
-    >= 300 HU:        4/9 (44%)
-    Result:           FAIL
-    Below threshold:
-      PT-140: 251.7 HU
-      PT-130: 265.7 HU
-      PT-116: 267.2 HU
-      PT-162: 278.7 HU
-      PT-129: 284.2 HU
+      PT-124: 242.0 HU
 
 --- 1.3 Image Noise (SNR/CNR) ---
 Threshold: PCCT SNR non-inferior to EID reference (+/-15%)
@@ -42,29 +35,45 @@ Method: Aortic ROI SNR = mean_HU / std_HU (10mm cube at aortic centroid)
     Range:            7.90 - 25.89
     Mean noise (std): 21.51 HU (range: 15.19 - 43.39)
 
-  EID (Somatom Force) (N=9):
-    Mean SNR:         9.73 (SD: 2.26)
-    Median SNR:       9.83
-    Range:            7.09 - 14.40
-    Mean noise (std): 32.81 HU (range: 23.10 - 38.98)
+  EID (Somatom Force) (N=25):
+    Mean SNR:         9.43 (SD: 2.76)
+    Median SNR:       8.91
+    Range:            4.90 - 18.85
+    Mean noise (std): 35.49 HU (range: 20.15 - 72.44)
 
-  Paired comparison (N=9):
+  Paired comparison (N=25):
   Patient           PCCT SNR    EID SNR    Ratio   PCCT noise    EID noise
   ----------------------------------------------------------------------
   PT-116                7.90       7.57     1.04        43.39        35.31
+  PT-119               25.89      18.85     1.37        15.19        20.15
+  PT-121               13.70       4.90     2.80        32.14        72.44
+  PT-124               15.61       9.15     1.71        18.06        26.47
+  PT-125               14.39       7.56     1.90        19.34        35.52
   PT-127               23.55      14.40     1.64        17.46        27.25
   PT-129               13.64       7.78     1.75        23.48        36.56
   PT-130               21.97       7.09     3.10        15.95        37.46
+  PT-131               14.44       7.60     1.90        26.20        45.69
+  PT-133               17.10      11.93     1.43        20.09        28.43
+  PT-135               21.72       8.24     2.63        16.17        31.63
+  PT-136               20.92      11.00     1.90        21.16        33.19
   PT-138               22.90      10.94     2.09        21.34        37.58
   PT-140               23.95      10.89     2.20        17.50        23.10
+  PT-142               19.36       8.55     2.26        17.48        34.39
+  PT-143               14.55       7.47     1.95        21.73        41.27
+  PT-150               19.88       8.70     2.28        20.24        34.99
+  PT-153               25.33       9.04     2.80        16.67        38.89
   PT-155               17.75      10.13     1.75        23.66        30.67
+  PT-156               19.73      10.87     1.82        21.45        29.96
+  PT-157               14.17       8.21     1.73        28.74        35.34
+  PT-159               19.12       7.15     2.68        21.13        54.34
+  PT-161               14.98       8.91     1.68        21.24        29.23
   PT-162               20.65       9.83     2.10        18.05        28.36
   PT-165               21.76       8.95     2.43        17.55        38.98
 
-    Mean SNR ratio (PCCT/EID):     2.01
-    Mean noise ratio (PCCT/EID):   0.68
+    Mean SNR ratio (PCCT/EID):     2.04
+    Mean noise ratio (PCCT/EID):   0.63
     Non-inferiority (ratio >= 0.85): PASS
-    PCCT lower noise in 8/9 pairs
+    PCCT lower noise in 24/25 pairs
 
 --- Per-case SNR detail ---
 Patient         Scanner     Mean HU  Noise (std)        SNR
@@ -98,12 +107,28 @@ PT-161          PCCT          318.3        21.24      14.98
 PT-162          PCCT          372.6        18.05      20.65
 PT-165          PCCT          381.9        17.55      21.76
 PT-116          EID           267.2        35.31       7.57
+PT-119          EID           379.8        20.15      18.85
+PT-121          EID           354.8        72.44       4.90
+PT-124          EID           242.0        26.47       9.15
+PT-125          EID           268.5        35.52       7.56
 PT-127          EID           392.5        27.25      14.40
 PT-129          EID           284.2        36.56       7.78
 PT-130          EID           265.7        37.46       7.09
+PT-131          EID           347.1        45.69       7.60
+PT-133          EID           339.0        28.43      11.93
+PT-135          EID           260.7        31.63       8.24
+PT-136          EID           365.0        33.19      11.00
 PT-138          EID           411.1        37.58      10.94
 PT-140          EID           251.7        23.10      10.89
+PT-142          EID           294.0        34.39       8.55
+PT-143          EID           308.2        41.27       7.47
+PT-150          EID           304.4        34.99       8.70
+PT-153          EID           351.5        38.89       9.04
 PT-155          EID           310.6        30.67      10.13
+PT-156          EID           325.7        29.96      10.87
+PT-157          EID           290.2        35.34       8.21
+PT-159          EID           388.3        54.34       7.15
+PT-161          EID           260.4        29.23       8.91
 PT-162          EID           278.7        28.36       9.83
 PT-165          EID           348.9        38.98       8.95
 
@@ -116,26 +141,42 @@ GATE 2 — WORKFLOW INTEGRATION CHECKS
 
 Patient           PCCT Len    EID Len    Diff%   PCCT Segs   EID Segs
 ----------------------------------------------------------------------
-PT-116               172.7      144.4    19.6%           9          7
+PT-116               151.8      144.4     5.2%           9          7
+PT-119               300.7      404.6   -25.7%          11         12
+PT-121               224.8      182.8    23.0%          10          8
+PT-125               111.4      175.4   -36.5%           5          6
 PT-127               536.0      524.1     2.3%          14         14
-PT-129               257.3      124.4   106.8%          10          5
+PT-129               233.8      124.4    88.0%          10          5
+PT-130               343.2      157.8   117.5%          12          7
+PT-131               162.4      194.3   -16.4%          11          7
+PT-133               411.7      512.1   -19.6%          11         13
+PT-135               190.8      127.9    49.2%           9          6
+PT-136               237.2      159.7    48.5%          11          7
 PT-138               333.2      308.2     8.1%          11         11
-PT-140               370.7      195.3    89.8%          14          8
-PT-155               471.1      293.2    60.7%          12         10
-PT-158               436.1      157.4   177.1%          12          5
-PT-162               440.5      191.8   129.6%          12          7
-PT-165               544.5      191.8   184.0%          14          8
+PT-140               328.3      195.3    68.1%          14          8
+PT-142               469.5      301.8    55.6%          13          8
+PT-143               177.3      189.9    -6.6%           8          8
+PT-150               119.9      102.4    17.1%           7         10
+PT-153               423.2      404.3     4.7%          14         12
+PT-155               454.6      293.2    55.1%          12         10
+PT-156               390.2      390.8    -0.2%          14         11
+PT-157               452.2      318.7    41.9%          14         12
+PT-158               196.3      157.4    24.7%          12          5
+PT-159               172.4      167.4     3.0%           7          7
+PT-161               130.3      120.4     8.2%           3          6
+PT-162               314.2      191.8    63.8%          12          7
+PT-165               341.2      191.8    77.9%          14          8
 
-  Mean length difference:    +86.5%
-  Mean segment count diff:   +3.7
-  Pairs with data:           9/9
+  Mean length difference:    +26.3%
+  Mean segment count diff:   +2.1
+  Pairs with data:           25/25
   Threshold (>=95% coverage): REVIEW
 
 
 ======================================================================
 GATE 3 — CORE QUANTITATIVE REPRODUCIBILITY
 ======================================================================
-N = 9 paired patients (target: >=30)
+N = 25 paired patients (target: >=30)
 Acceptance: 95% CI overlap with B.1P Delta OQ (730-CVV-040)
 Primary metric: log-wCV for volumes, untransformed for length
 wCV method: sqrt(mean(d²/(2m²))) × 100
@@ -145,57 +186,57 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 --- PRIMARY ENDPOINTS ---
 
 --- Lumen Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  28.23% [20.08%, 35.01%]
-  Log-wCV:            12.97% [8.98%, 16.21%]
+  N:                  25
+  Untransformed wCV:  19.49% [15.91%, 22.84%]
+  Log-wCV:            8.72% [6.99%, 10.30%]
 
   Original OQ (4-B1P-033):  7.64% [5.52%, 8.55%] (log-transformed)
   Delta OQ (730-CVV-040):   7.5% [5.9%, 9.3%] (log-wCV)
   Delta OQ (730-CVV-040):   9.32% [7.09%, 11.58%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [8.98%, 16.21%]
+    PCCT:      [6.99%, 10.30%]
     Delta OQ:  [5.9%, 9.3%]
     Overlap:   YES — PASS
 
 --- Wall Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  38.17% [22.01%, 52.76%]
-  Log-wCV:            24.91% [13.78%, 35.14%]
+  N:                  25
+  Untransformed wCV:  29.96% [23.22%, 36.17%]
+  Log-wCV:            18.48% [14.07%, 22.55%]
 
   Original OQ (4-B1P-033):  9.51% [6.60%, 11.16%] (log-transformed)
   Delta OQ (730-CVV-040):   13.1% [10.2%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   23.50% [17.88%, 29.71%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [13.78%, 35.14%]
+    PCCT:      [14.07%, 22.55%]
     Delta OQ:  [10.2%, 16.0%]
     Overlap:   YES — PASS
 
 --- Vessel Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  29.38% [20.29%, 36.66%]
-  Log-wCV:            12.44% [8.48%, 15.73%]
+  N:                  25
+  Untransformed wCV:  20.56% [16.67%, 24.24%]
+  Log-wCV:            8.40% [6.83%, 9.85%]
 
   Original OQ (4-B1P-033):  6.03% [4.44%, 6.74%] (log-transformed)
   Delta OQ (730-CVV-040):   8.7% [6.8%, 10.6%] (log-wCV)
   Delta OQ (730-CVV-040):   10.18% [7.83%, 12.38%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [8.48%, 15.73%]
+    PCCT:      [6.83%, 9.85%]
     Delta OQ:  [6.8%, 10.6%]
     Overlap:   YES — PASS
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [20.29%, 36.66%]
+    PCCT:      [16.67%, 24.24%]
     Delta OQ:  [7.83%, 12.38%]
     Overlap:   NO — FAIL
 
 --- DESCRIPTIVE (vessel length) ---
 
 --- Vessel Length (mm) (DESCRIPTIVE) ---
-  N:                  9
-  Untransformed wCV:  44.37% [28.94%, 55.46%]
-  Log-wCV:            8.40% [5.44%, 10.51%]
+  N:                  25
+  Untransformed wCV:  24.64% [18.88%, 29.60%]
+  Log-wCV:            4.63% [3.50%, 5.62%]
 
   Original OQ (4-B1P-033):  5.27% [3.43%, 6.52%] (log-transformed)
   Delta OQ (730-CVV-040):   15.5% [12.2%, 18.8%] (log-wCV)
@@ -208,139 +249,141 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 --- SECONDARY ENDPOINTS (plaque volumes) ---
 
 --- CALC Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  29.14% [16.00%, 39.83%]
-  Log-wCV:            26.17% [13.27%, 35.68%]
+  N:                  25
+  Untransformed wCV:  21.09% [16.58%, 25.04%]
+  Log-wCV:            18.22% [13.70%, 22.21%]
 
   Original OQ (4-B1P-033):  13.9% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   4.5% [3.5%, 5.4%] (log-wCV)
   Delta OQ (730-CVV-040):   25.78% [18.70%, 35.75%] (untransformed)
 
-  ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [13.27%, 35.68%]
-    Delta OQ:  [3.5%, 5.4%]
-    Overlap:   NO — FAIL
+  ACCEPTANCE (untransformed CI overlap with delta OQ):
+    PCCT:      [16.58%, 25.04%]
+    Delta OQ:  [18.70%, 35.75%]
+    Overlap:   YES — PASS
 
 --- LRNC Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  81.77% [56.39%, 105.03%]
-  Log-wCV:            80.52% [54.67%, 104.07%]
+  N:                  25
+  Untransformed wCV:  94.24% [78.29%, 108.83%]
+  Log-wCV:            93.00% [77.11%, 107.80%]
 
   Original OQ (4-B1P-033):  59.3% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   5.4% [4.1%, 6.9%] (log-wCV)
   Delta OQ (730-CVV-040):   78.80% [48.09%, 163.40%] (untransformed)
 
-  ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [54.67%, 104.07%]
-    Delta OQ:  [4.1%, 6.9%]
-    Overlap:   NO — FAIL
+  ACCEPTANCE (untransformed CI overlap with delta OQ):
+    PCCT:      [78.29%, 108.83%]
+    Delta OQ:  [48.09%, 163.40%]
+    Overlap:   YES — PASS
 
 --- NonCALC Matrix Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  46.84% [27.12%, 62.61%]
-  Log-wCV:            35.22% [19.69%, 48.21%]
+  N:                  25
+  Untransformed wCV:  39.46% [30.22%, 47.73%]
+  Log-wCV:            29.23% [22.03%, 35.74%]
 
   Original OQ (4-B1P-033):  58.6% (untransformed, no CI reported)
     Note: Original reported as Total NCP (untransformed); improved in delta OQ
   Delta OQ (730-CVV-040):   13.6% [10.8%, 16.4%] (log-wCV)
   Delta OQ (730-CVV-040):   32.61% [24.87%, 41.94%] (untransformed)
 
-  ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [19.69%, 48.21%]
-    Delta OQ:  [10.8%, 16.4%]
-    Overlap:   NO — FAIL
+  ACCEPTANCE (untransformed CI overlap with delta OQ):
+    PCCT:      [30.22%, 47.73%]
+    Delta OQ:  [24.87%, 41.94%]
+    Overlap:   YES — PASS
 
 --- Total Plaque Volume (mm³) [length-normalized] ---
-  N:                  9
-  Untransformed wCV:  39.58% [24.16%, 54.44%]
-  Log-wCV:            27.37% [16.16%, 38.63%]
+  N:                  25
+  Untransformed wCV:  31.40% [24.65%, 37.47%]
+  Log-wCV:            20.88% [15.84%, 25.27%]
 
   Original OQ (4-B1P-033):  44.1% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   13.2% [10.4%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   27.08% [20.68%, 34.74%] (untransformed)
 
-  ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [16.16%, 38.63%]
-    Delta OQ:  [10.4%, 16.0%]
-    Overlap:   NO — FAIL
+  ACCEPTANCE (untransformed CI overlap with delta OQ):
+    PCCT:      [24.65%, 37.47%]
+    Delta OQ:  [20.68%, 34.74%]
+    Overlap:   YES — PASS
 
 
 ======================================================================
 GATE 4 — SYSTEMATIC BIAS & AGREEMENT
 ======================================================================
-N = 9 paired patients
-Method: Bland-Altman on log(x+1) scale, raw volumes (PCCT minus EID)
-Note: Raw (not length-normalized) volumes used for direct
-      comparability with delta OQ reference (730-CVV-040 Table 6)
+N = 25 paired patients
+Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.
+  Process outputs (Lumen, Wall, Vessel): log(x+1) scale -- matches 730-CVV-040 Table 6.
+  Plaque (CALC, LRNC, NonCALC, Total): untransformed -- matches 4-B1P-033 Table 9.
 
---- Lumen Volume (mm³) ---
-  N:                     9
-  Log-scale bias:        0.2184
-  Log-scale LoA:         [-0.2253, 0.6621]
-  Untransformed bias:    333.24 (20.9% of mean)
+--- Lumen Volume (mm³)  [BA scale: log] ---
+  N:                     25
+  Log-scale bias:        -0.0158
+  Log-scale LoA:         [-0.4917, 0.4601]
+  Untransformed bias:    -26.89 (1.6% of mean)
   Bias threshold:        |bias| < 5% of mean
-  Bias result:           FAIL
-  Proportional bias r²:  0.013 [0.000, 0.661]
+  Bias result:           PASS
+  Proportional bias r²:  0.005 [0.000, 0.207]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- CALC Volume (mm³) ---
-  N:                     9
-  Log-scale bias:        0.5187
-  Log-scale LoA:         [-0.3464, 1.3839]
-  Untransformed bias:    58.17 (42.7% of mean)
-  Bias threshold:        |bias| < 10% of mean
-  Bias result:           FAIL
-  Delta OQ ref bias:     0.02
-  Delta OQ ref LoA:      [-0.17, 0.21]
-  Proportional bias r²:  0.090 [0.003, 0.567]
-  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
-
---- LRNC Volume (mm³) ---
-  N:                     9
-  Log-scale bias:        0.8589
-  Log-scale LoA:         [-1.4541, 3.1719]
-  Untransformed bias:    11.98 (64.8% of mean)
-  Bias threshold:        |bias| < 10% of mean
-  Bias result:           FAIL
-  Delta OQ ref bias:     -0.03
-  Delta OQ ref LoA:      [-0.21, 0.14]
-  Proportional bias r²:  0.055 [0.000, 0.855]
-  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
-
---- NonCALC Matrix Volume (mm³) ---
-  N:                     9
-  Log-scale bias:        0.0831
-  Log-scale LoA:         [-0.8046, 0.9708]
-  Untransformed bias:    2.67 (1.0% of mean)
+--- Wall Volume (mm³)  [BA scale: log] ---
+  N:                     25
+  Log-scale bias:        -0.0682
+  Log-scale LoA:         [-0.5958, 0.4594]
+  Untransformed bias:    -51.05 (9.3% of mean)
   Bias threshold:        |bias| < 10% of mean
   Bias result:           PASS
-  Delta OQ ref bias:     -0.07
-  Delta OQ ref LoA:      [-0.82, 0.67]
-  Proportional bias r²:  0.225 [0.019, 0.808]
+  Proportional bias r²:  0.016 [0.000, 0.233]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- Total Plaque Volume (mm³) ---
-  N:                     9
-  Log-scale bias:        0.2486
-  Log-scale LoA:         [-0.5907, 1.0880]
-  Untransformed bias:    72.82 (17.6% of mean)
+--- CALC Volume (mm³)  [BA scale: untransformed] ---
+  N:                     25
+  Bias (raw):            27.66
+  LoA (raw):             [-33.99, 89.31]
+  Untransformed bias:    27.66 (19.2% of mean)
   Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
-  Delta OQ ref bias:     -0.05
-  Delta OQ ref LoA:      [-0.89, 0.78]
-  Proportional bias r²:  0.188 [0.005, 0.765]
+  Proportional bias r²:  0.145 [0.010, 0.703]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- Limits of Agreement Summary (all variables, log(x+1) scale, raw volumes) ---
+--- LRNC Volume (mm³)  [BA scale: untransformed] ---
+  N:                     25
+  Bias (raw):            5.65
+  LoA (raw):             [-49.58, 60.87]
+  Untransformed bias:    5.65 (21.0% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.051 [0.001, 0.725]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
-Variable                           Bias  LoA Lower  LoA Upper     r2          r2 95% CI   Result
------------------------------------------------------------------------------------------------
-Lumen Volume (mm³)               0.2184    -0.2253     0.6621  0.013     [0.000, 0.661]     PASS
-Wall Volume (mm³)                0.2101    -0.5080     0.9282  0.140     [0.003, 0.672]     PASS
-Vessel Volume (mm³)              0.2143    -0.1745     0.6031  0.119     [0.001, 0.605]     PASS
-CALC Volume (mm³)                0.5187    -0.3464     1.3839  0.090     [0.003, 0.567]     PASS
-LRNC Volume (mm³)                0.8589    -1.4541     3.1719  0.055     [0.000, 0.855]     PASS
-NonCALC Matrix Volume (mm³)      0.0831    -0.8046     0.9708  0.225     [0.019, 0.808]     PASS
-Total Plaque Volume (mm³)        0.2486    -0.5907     1.0880  0.188     [0.005, 0.765]     PASS
+--- NonCALC Matrix Volume (mm³)  [BA scale: untransformed] ---
+  N:                     25
+  Bias (raw):            -65.20
+  LoA (raw):             [-281.70, 151.29]
+  Untransformed bias:    -65.20 (24.6% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.437 [0.056, 0.725]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- Total Plaque Volume (mm³)  [BA scale: untransformed] ---
+  N:                     25
+  Bias (raw):            -31.90
+  LoA (raw):             [-289.64, 225.84]
+  Untransformed bias:    -31.90 (7.3% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           PASS
+  Proportional bias r²:  0.167 [0.001, 0.542]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
+
+--- Limits of Agreement Summary (per-variable scale; raw volumes) ---
+
+Variable                                Scale       Bias    LoA Lower    LoA Upper     r2          r2 95% CI   Result
+-------------------------------------------------------------------------------------------------------------------
+Lumen Volume (mm³)                        log    -0.0158      -0.4917       0.4601  0.005     [0.000, 0.207]     PASS
+Wall Volume (mm³)                         log    -0.0682      -0.5958       0.4594  0.016     [0.000, 0.233]     PASS
+Vessel Volume (mm³)                       log    -0.0233      -0.4064       0.3598  0.001     [0.000, 0.180]     PASS
+CALC Volume (mm³)               untransformed      27.66       -33.99        89.31  0.145     [0.010, 0.703]     PASS
+LRNC Volume (mm³)               untransformed       5.65       -49.58        60.87  0.051     [0.001, 0.725]     PASS
+NonCALC Matrix Volume (mm³)     untransformed     -65.20      -281.70       151.29  0.437     [0.056, 0.725]     PASS
+Total Plaque Volume (mm³)       untransformed     -31.90      -289.64       225.84  0.167     [0.001, 0.542]     PASS
 
 Proportional bias: PASS if r2 95% CI lower bound < 0.1
