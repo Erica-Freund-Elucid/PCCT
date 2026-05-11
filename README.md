@@ -114,6 +114,21 @@ PT-119 / PT-133 (acquisition-condition artifacts) and PT-142 (likely true modali
 
 Wall bias drops further on the cleaner subset (4.0%) — consistent with PT-142 contributing the high-disease modality signal. CALC prop-bias FAILing on the smaller-volume subset reflects loss of the high-disease anchor cases that flatten the regression slope — a low-N artifact, expected to resolve at N≥30. Sensitivity BA plots in `gate_results/bland_altman_plots/sensitivity_excl_119_133_142/`.
 
+### Supplementary — Bland-Altman on length-normalized volumes
+
+The canonical Gate 4 above uses **raw** volumes (matches 730-CVV-040 Table 6 ref values). Even with vessel-overlap restriction, PCCT length on shared vessels is +26% on average -- residual extent differential within named vessels inflates PCCT raw volumes. Below repeats the BA on **volume per mm** so the read is unaffected by length differential. **Delta-OQ Table 6 ref values do NOT apply on this scale** (they are raw-only); use this as a cross-scanner cleanness check, not a regulatory criterion.
+
+| Variable | Raw bias (canonical) | /mm bias (supplementary) | Reading |
+|---|---|---|---|
+| Lumen | **PASS** (1.6%) | FAIL (20.5%) | PCCT under-calls lumen per mm |
+| Wall | PASS (9.3%) | FAIL (22.4%) | PCCT under-calls wall per mm |
+| CALC | FAIL (19.2%) | **PASS** (2.6%) | Raw bias was largely length-driven |
+| LRNC | FAIL (21.0%) | FAIL (34.4%) | Same direction (PCCT > EID) |
+| NonCALC | FAIL (-24.5%) | FAIL (-35.5%) | PCCT consistently lower NonCALC per mm |
+| Total Plaque | **PASS** (-7.3%) | FAIL (-19.2%) | Raw agreement masks per-mm under-call |
+
+All 7 still pass the proportional-bias test on /mm scale. Plots in `gate_results/bland_altman_plots/length_normalized/`. The pattern of PCCT < EID for per-mm densities (lumen, wall, plaque components except CALC) is the inverse of the raw-volume pattern (PCCT > EID for total volumes) — consistent with PCCT analysts tracing further into the same named vessels, so PCCT's longer trace covers more "normal" distal vessel (thin wall, thin plaque) and dilutes the per-mm averages.
+
 ---
 
 ## 5 - Advisory Checks

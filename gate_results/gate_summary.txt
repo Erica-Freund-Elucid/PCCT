@@ -387,3 +387,87 @@ NonCALC Matrix Volume (mm³)     untransformed     -65.20      -281.70       151
 Total Plaque Volume (mm³)       untransformed     -31.90      -289.64       225.84  0.167     [0.001, 0.542]     PASS
 
 Proportional bias: PASS if r2 95% CI lower bound < 0.1
+
+
+======================================================================
+GATE 4 SUPPLEMENTARY -- BLAND-ALTMAN ON LENGTH-NORMALIZED VOLUMES
+======================================================================
+N = 25 paired patients (vessel-overlap)
+Same per-pair vessel-overlap totals as canonical Gate 4,
+but all volumes divided by total Length (mm) before BA.
+Strips residual length differential (~+26% PCCT vs EID
+on shared vessels at N=25). Delta-OQ Table 6 ref values
+DO NOT apply -- those are raw-scale.
+
+--- Lumen Volume (mm³) / mm  [BA scale: log] ---
+  Log-scale bias:        -0.1746
+  Log-scale LoA:         [-0.4996, 0.1504]
+  Untransformed bias:    -1.2853 (20.5% of mean)
+  Bias threshold:        |bias| < 5% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.016 [0.000, 0.285]
+  Prop. bias result:     PASS
+
+--- Wall Volume (mm³) / mm  [BA scale: log] ---
+  Log-scale bias:        -0.1682
+  Log-scale LoA:         [-0.6576, 0.3212]
+  Untransformed bias:    -0.5396 (22.4% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.000 [0.000, 0.248]
+  Prop. bias result:     PASS
+
+--- Vessel Volume (mm³) / mm  [BA scale: log] ---
+  Log-scale bias:        -0.1878
+  Log-scale LoA:         [-0.5534, 0.1777]
+  Untransformed bias:    -1.8248 (21.0% of mean)
+  Proportional bias r²:  0.006 [0.000, 0.261]
+  Prop. bias result:     PASS
+
+--- CALC Volume (mm³) / mm  [BA scale: untransformed] ---
+  Bias (raw, /mm):       0.0167
+  LoA (raw, /mm):        [-0.4642, 0.4975]
+  Untransformed bias:    0.0167 (2.6% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           PASS
+  Proportional bias r²:  0.050 [0.000, 0.585]
+  Prop. bias result:     PASS
+
+--- LRNC Volume (mm³) / mm  [BA scale: untransformed] ---
+  Bias (raw, /mm):       0.0371
+  LoA (raw, /mm):        [-0.3361, 0.4103]
+  Untransformed bias:    0.0371 (34.4% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.230 [0.000, 0.824]
+  Prop. bias result:     PASS
+
+--- NonCALC Matrix Volume (mm³) / mm  [BA scale: untransformed] ---
+  Bias (raw, /mm):       -0.4272
+  LoA (raw, /mm):        [-1.7033, 0.8489]
+  Untransformed bias:    -0.4272 (35.5% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.046 [0.000, 0.450]
+  Prop. bias result:     PASS
+
+--- Total Plaque Volume (mm³) / mm  [BA scale: untransformed] ---
+  Bias (raw, /mm):       -0.3734
+  LoA (raw, /mm):        [-2.2296, 1.4827]
+  Untransformed bias:    -0.3734 (19.2% of mean)
+  Bias threshold:        |bias| < 10% of mean
+  Bias result:           FAIL
+  Proportional bias r²:  0.000 [0.000, 0.435]
+  Prop. bias result:     PASS
+
+--- Summary (length-normalized) ---
+
+Variable                                Scale      Bias/mm    LoA Lower    LoA Upper  % mean   bias   prop
+----------------------------------------------------------------------------------------------------
+Lumen Volume (mm³)                        log      -0.1746      -0.4996       0.1504   20.5%   FAIL   PASS
+Wall Volume (mm³)                         log      -0.1682      -0.6576       0.3212   22.4%   FAIL   PASS
+Vessel Volume (mm³)                       log      -0.1878      -0.5534       0.1777   21.0%     --   PASS
+CALC Volume (mm³)               untransformed       0.0167      -0.4642       0.4975    2.6%   PASS   PASS
+LRNC Volume (mm³)               untransformed       0.0371      -0.3361       0.4103   34.4%   FAIL   PASS
+NonCALC Matrix Volume (mm³)     untransformed      -0.4272      -1.7033       0.8489   35.5%   FAIL   PASS
+Total Plaque Volume (mm³)       untransformed      -0.3734      -2.2296       1.4827   19.2%   FAIL   PASS

@@ -84,6 +84,22 @@
 
 ---
 
+### 4.6b Supplementary -- length-normalized Bland-Altman
+
+- **Threshold:** N/A (supplementary / advisory)
+- **Method:** Same per-pair vessel-overlap totals as the canonical Gate 4 sections above, but volumes divided by total Length (mm) before BA. Strips the residual length differential (PCCT +26% on shared vessels). Delta-OQ Table 6 ref values do NOT apply on this scale.
+- **Owner:**
+- **Status:** Supplementary; not used for gate qualification.
+- **Evidence:** gate_results/bland_altman_plots/length_normalized/, gate_results/gate_summary.txt (Supplementary section).
+- **Notes:**
+  - Lumen / Wall / Vessel: bias rises substantially on /mm scale (Lumen 1.6 -> 20.5%, Wall 9.3 -> 22.4%, Vessel 3.6 -> 21.0%) -- direction is PCCT < EID per mm. PCCT analysts trace further into the same named vessels; the extra distal trace covers thin-walled, thin-plaque territory that dilutes PCCT per-mm averages.
+  - CALC bias improves dramatically (19.2 -> 2.6%) -- the raw-volume bias was largely length-driven; per-mm CALC density agrees well.
+  - LRNC, NonCALC, Total Plaque biases worsen on /mm (LRNC 21 -> 34%; NonCALC 24.5 -> 35.5%; Total Plaque 7.3 -> 19.2%) -- same directional pattern as CALC's raw bias was hiding: PCCT lower per mm.
+  - All 7 variables still PASS proportional bias on /mm.
+  - **Interpretation:** the raw-scale Gate 4 PASS for Lumen/Wall/Total Plaque is partly a length-disparity artifact, NOT pure segmentation agreement. The /mm view exposes a systematic PCCT-vs-EID density gap. This is information for clinical interpretation; it doesn't change the regulatory criterion (730-CVV-040 raw-scale comparison is the canonical basis).
+
+---
+
 ### 4.7 Sensitivity -- exclude case-review-flagged patients
 
 - **Threshold:** N/A (sensitivity / advisory only)

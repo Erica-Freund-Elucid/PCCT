@@ -1140,6 +1140,117 @@ def run_gate4(paired):
     return "\n".join(lines), "\n".join(detail)
 
 
+def run_gate4_length_normalized(paired):
+    """Supplementary Bland-Altman analysis on length-normalized volumes (per mm).
+
+    Canonical Gate 4 uses raw volumes per 730-CVV-040 Table 6 (and its
+    ref_bias / ref_loa reference values). On cross-scanner comparison the
+    residual length differential within shared vessels (PCCT analysts
+    typically trace a bit further into the same named vessel) inflates
+    PCCT raw volumes. This supplementary section repeats the BA analysis
+    on length-normalized values (vol / mm of total length over the
+    vessel-overlap set) so the read is unaffected by residual length
+    differences.
+
+    Delta OQ reference values do not apply here (they are raw-scale only);
+    we report bias as % of mean and proportional-bias r^2 with bootstrap CI
+    on the same scale as the canonical analysis (log for process outputs,
+    untransformed for plaque).
+    """
+    from pathlib import Path
+    lines = []
+    plot_dir = Path(OUTPUT_DIR) / "bland_altman_plots" / "length_normalized"
+
+    process_vars = set(GATE3_PRIMARY.keys())
+    plaque_vars = set(GATE3_SECONDARY.keys())
+    def ba_scale_for(var, cfg):
+        if "ba_scale" in cfg:
+            return cfg["ba_scale"]
+        if var in plaque_vars:
+            return "untransformed"
+        return "log"
+
+    lines.append("=" * 70)
+    lines.append("GATE 4 SUPPLEMENTARY -- BLAND-ALTMAN ON LENGTH-NORMALIZED VOLUMES")
+    lines.append("=" * 70)
+    lines.append(f"N = {len(paired)} paired patients (vessel-overlap)")
+    lines.append("Same per-pair vessel-overlap totals as canonical Gate 4,")
+    lines.append("but all volumes divided by total Length (mm) before BA.")
+    lines.append("Strips residual length differential (~+26% PCCT vs EID")
+    lines.append("on shared vessels at N=25). Delta-OQ Table 6 ref values")
+    lines.append("DO NOT apply -- those are raw-scale.")
+    lines.append("")
+
+    all_vars = {}
+    all_vars.update(GATE3_PRIMARY)
+    all_vars.update(GATE3_SECONDARY)
+
+    rows = []
+    for var, cfg in all_vars.items():
+        pcct_vals, eid_vals, pids = _get_paired_values(paired, var, normalize=True)
+        if len(pcct_vals) < 2:
+            continue
+        scale = ba_scale_for(var, cfg)
+        log_t = (scale == "log")
+        mb, sd, lo, hi, rsq = bland_altman(pcct_vals, eid_vals, log_transform=log_t)
+        rsq_lb, rsq_ub = bootstrap_rsq_ci(pcct_vals, eid_vals, log_transform=log_t)
+
+        # Untransformed bias and % of mean for reporting
+        mb_ut, _, lo_ut, hi_ut, _ = bland_altman(pcct_vals, eid_vals, log_transform=False)
+        pair_means_ut = [(p + e) / 2 for p, e in zip(pcct_vals, eid_vals)]
+        overall_mean_ut = np.mean(pair_means_ut)
+        bias_pct = abs(mb_ut) / overall_mean_ut * 100 if overall_mean_ut != 0 else 0
+        threshold = GATE4_VARIABLES.get(var, {}).get("bias_threshold_pct")
+        if threshold is not None:
+            bias_pass = "PASS" if bias_pct < threshold else "FAIL"
+        else:
+            bias_pass = "--"
+        prop_pass = "PASS" if (rsq_lb is not None and rsq_lb < 0.1) else "FAIL"
+
+        plot_bland_altman(
+            pcct_vals, eid_vals, f"{cfg['label']} / mm",
+            plot_dir / f"BA_{var}.png",
+            log_transform=log_t, pids=pids,
+        )
+
+        rows.append({
+            "var": var, "label": cfg["label"], "scale": scale,
+            "bias": mb, "lo": lo, "hi": hi, "rsq": rsq,
+            "rsq_lb": rsq_lb, "rsq_ub": rsq_ub,
+            "bias_ut": mb_ut, "bias_pct": bias_pct, "threshold": threshold,
+            "bias_pass": bias_pass, "prop_pass": prop_pass,
+        })
+
+    # Per-variable detail
+    for r in rows:
+        lines.append(f"--- {r['label']} / mm  [BA scale: {r['scale']}] ---")
+        if r['scale'] == 'log':
+            lines.append(f"  Log-scale bias:        {r['bias']:.4f}")
+            lines.append(f"  Log-scale LoA:         [{r['lo']:.4f}, {r['hi']:.4f}]")
+        else:
+            lines.append(f"  Bias (raw, /mm):       {r['bias']:.4f}")
+            lines.append(f"  LoA (raw, /mm):        [{r['lo']:.4f}, {r['hi']:.4f}]")
+        lines.append(f"  Untransformed bias:    {r['bias_ut']:.4f} ({r['bias_pct']:.1f}% of mean)")
+        if r['threshold'] is not None:
+            lines.append(f"  Bias threshold:        |bias| < {r['threshold']}% of mean")
+            lines.append(f"  Bias result:           {r['bias_pass']}")
+        if r['rsq_lb'] is not None:
+            lines.append(f"  Proportional bias r²:  {r['rsq']:.3f} [{r['rsq_lb']:.3f}, {r['rsq_ub']:.3f}]")
+            lines.append(f"  Prop. bias result:     {r['prop_pass']}")
+        lines.append("")
+
+    # Summary table (mirrors canonical)
+    lines.append("--- Summary (length-normalized) ---")
+    lines.append("")
+    lines.append(f"{'Variable':<30s} {'Scale':>14s} {'Bias/mm':>12s} {'LoA Lower':>12s} {'LoA Upper':>12s} {'% mean':>7s} {'bias':>6s} {'prop':>6s}")
+    lines.append("-" * 100)
+    for r in rows:
+        lines.append(f"{r['label']:<30s} {r['scale']:>14s} {r['bias']:>12.4f} {r['lo']:>12.4f} {r['hi']:>12.4f} {r['bias_pct']:>6.1f}% {r['bias_pass']:>6s} {r['prop_pass']:>6s}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 
@@ -1169,6 +1280,7 @@ if __name__ == "__main__":
     gate2_text = run_gate2(paired)
     gate3_text, gate3_detail = run_gate3(paired)
     gate4_text, gate4_detail = run_gate4(paired)
+    gate4_norm_text = run_gate4_length_normalized(paired)
 
     summary = "\n\n".join([
         "PCCT Qualification Gate Analysis Report",
@@ -1179,6 +1291,7 @@ if __name__ == "__main__":
         gate2_text,
         gate3_text,
         gate4_text,
+        gate4_norm_text,
     ])
 
     summary_path = os.path.join(OUTPUT_DIR, "gate_summary.txt")
