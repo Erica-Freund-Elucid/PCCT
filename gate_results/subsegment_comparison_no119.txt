@@ -1,0 +1,32 @@
+========================================================================================================================
+PT-119 EXCLUDED — MATCHED COHORT (N=24)
+========================================================================================================================
+
+Variable                Canon bias   Canon %       Sub bias     Sub %        Δ%  notes
+------------------------------------------------------------------------------------------------------------------------
+CALCVol                      26.64     22.0%          21.63     21.7%     -0.2    unchanged
+LRNCVol                       4.89     18.3%           5.74     26.5%     +8.2    WORSE
+NonCALCMATXVol              -61.06     24.8%         -71.68     37.2%    +12.3    WORSE
+TotalPlaqueVolume           -29.53      7.5%         -44.31     14.1%     +6.6    WORSE
+LumenVol                     -3.36      0.2%         -90.63      8.0%     +7.8    WORSE
+WallVol                     -49.62      9.8%         -41.53      9.9%     +0.1    unchanged
+LumenAndWallVol             -52.97      2.5%        -132.16      8.5%     +6.0    WORSE
+
+Side-by-side with the prior N=25 (PT-119 included) result:
+
+Variable                N=25 canon %  N=25 sub % |  N=24 canon %  N=24 sub %      Δ from removing PT-119
+--------------------------------------------------------------------------------------------------------------
+CALCVol                        19.2%       21.3% |         22.0%       21.7%   sub  -0.4 canon  -2.8
+LRNCVol                        21.0%       29.7% |         18.3%       26.5%   sub  +3.2 canon  +2.7
+NonCALCMATXVol                 24.6%       36.6% |         24.8%       37.2%   sub  -0.5 canon  -0.3
+TotalPlaqueVolume               7.3%       13.0% |          7.5%       14.1%   sub  -1.1 canon  -0.2
+LumenVol                        1.6%        7.6% |          0.2%        8.0%   sub  -0.4 canon  +1.4
+WallVol                         9.3%        9.2% |          9.8%        9.9%   sub  -0.7 canon  -0.5
+LumenAndWallVol                 3.6%        8.1% |          2.5%        8.5%   sub  -0.4 canon  +1.1
+
+Interpretation: how much of the sub-segment 'worse' result is just PT-119?
+
+PT-119 contribution:
+  CALCVol: canon PCCT=716.51 EID=664.43 diff=+52.08   sub PCCT=590.09 EID=485.87 diff=+104.21
+  LRNCVol: canon PCCT=43.19 EID=19.31 diff=+23.89   sub PCCT=36.05 EID=12.23 diff=+23.83
+  NonCALCMATXVol: canon PCCT=654.61 EID=819.24 diff=-164.64   sub PCCT=505.07 EID=700.29 diff=-195.22

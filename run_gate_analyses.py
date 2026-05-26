@@ -44,6 +44,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PCCT_DIR = os.path.join(SCRIPT_DIR, "workitem_summaries", "PCCT")
 EID_DIR = os.path.join(SCRIPT_DIR, "workitem_summaries", "EID")
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "gate_results")
+SUBSEG_PCCT_DIR = os.path.join(SCRIPT_DIR, "workitem_summaries", "subsegment", "PCCT")
+SUBSEG_EID_DIR  = os.path.join(SCRIPT_DIR, "workitem_summaries", "subsegment", "EID")
 
 # ── Reference data ────────────────────────────────────────────────────────────
 #
@@ -326,7 +328,7 @@ def load_patient_totals(csv_path, vessel_filter=None):
     return totals
 
 
-def load_paired_data():
+def load_paired_data(pcct_dir=None, eid_dir=None):
     """Load all paired PCCT/EID data, restricting to vessels traced on BOTH scans.
 
     For each patient with both PCCT and EID summaries, the (bodySite, location)
@@ -337,15 +339,17 @@ def load_paired_data():
 
     Patients with no overlapping vessel are excluded from the paired analysis.
     """
-    pcct_files = sorted(glob.glob(os.path.join(PCCT_DIR, "*.csv")))
-    eid_files = sorted(glob.glob(os.path.join(EID_DIR, "*.csv")))
+    pcct_dir = pcct_dir or PCCT_DIR
+    eid_dir = eid_dir or EID_DIR
+    pcct_files = sorted(glob.glob(os.path.join(pcct_dir, "*.csv")))
+    eid_files = sorted(glob.glob(os.path.join(eid_dir, "*.csv")))
 
     if not pcct_files:
-        print(f"ERROR: No PCCT summary CSVs found in {PCCT_DIR}")
+        print(f"ERROR: No PCCT summary CSVs found in {pcct_dir}")
         return []
     if not eid_files:
-        print(f"ERROR: No EID summary CSVs found in {EID_DIR}")
-        print(f"  Place EID workitem summary CSVs in: {EID_DIR}")
+        print(f"ERROR: No EID summary CSVs found in {eid_dir}")
+        print(f"  Place EID workitem summary CSVs in: {eid_dir}")
         return []
 
     pcct_files_by_pid = {}
@@ -993,11 +997,11 @@ def run_gate3(paired):
 # ── Gate 4: Bias & Agreement ─────────────────────────────────────────────────
 
 
-def run_gate4(paired):
+def run_gate4(paired, plot_dir=None):
     lines = []
     detail = []
     from pathlib import Path
-    plot_dir = Path(OUTPUT_DIR) / "bland_altman_plots"
+    plot_dir = Path(plot_dir) if plot_dir else Path(OUTPUT_DIR) / "bland_altman_plots"
 
     # Map variable -> BA scale ("log" for process outputs, "untransformed" for plaque)
     process_vars = set(GATE3_PRIMARY.keys())  # Lumen, Wall, Vessel
@@ -1282,7 +1286,7 @@ if __name__ == "__main__":
     gate4_text, gate4_detail = run_gate4(paired)
     gate4_norm_text = run_gate4_length_normalized(paired)
 
-    summary = "\n\n".join([
+    summary_parts = [
         "PCCT Qualification Gate Analysis Report",
         f"Reference: B.1P Delta Validation OQ (730-CVV-040 v0.1)",
         f"N = {len(paired)} paired patients (target: >=30)",
@@ -1292,7 +1296,40 @@ if __name__ == "__main__":
         gate3_text,
         gate4_text,
         gate4_norm_text,
-    ])
+    ]
+
+    # Sub-segment intersection — parallel Gate 3 + Gate 4 on PCCT/EID volumes
+    # restricted to sub-segments where both scanner centerlines match by
+    # distance-from-ostium. Mitigates the named-vessel-overlap residual length
+    # differential that inflates raw PCCT plaque volumes.
+    sub_paired = []
+    if os.path.isdir(SUBSEG_PCCT_DIR) and os.path.isdir(SUBSEG_EID_DIR):
+        print("\n" + "=" * 70)
+        print("SUB-SEGMENT INTERSECTION — PARALLEL GATE 3 + GATE 4 PASS")
+        print("=" * 70)
+        print(f"PCCT subseg summaries: {SUBSEG_PCCT_DIR}")
+        print(f"EID  subseg summaries: {SUBSEG_EID_DIR}")
+        sub_paired = load_paired_data(SUBSEG_PCCT_DIR, SUBSEG_EID_DIR)
+
+    if len(sub_paired) >= 2:
+        sub_gate3_text, sub_gate3_detail = run_gate3(sub_paired)
+        sub_plot_dir = os.path.join(OUTPUT_DIR, "bland_altman_plots_subsegment")
+        sub_gate4_text, sub_gate4_detail = run_gate4(sub_paired, plot_dir=sub_plot_dir)
+        subseg_banner = "\n".join([
+            "#" * 70,
+            "# SUB-SEGMENT INTERSECTION ANALYSIS (PARALLEL TO CANONICAL ABOVE)",
+            "#" * 70,
+            "Volumes recomputed over sub-segment intersection of PCCT and EID",
+            "centerlines (distance-from-ostium match, sub-voxel SDF). This isolates",
+            "the systematic component of PCCT-EID bias from residual centerline-extent",
+            "differences within shared named vessels.",
+            f"N = {len(sub_paired)} paired patients with sub-segment data.",
+        ])
+        summary_parts.extend([subseg_banner, sub_gate3_text, sub_gate4_text])
+    else:
+        print(f"\nSub-segment pass skipped: {len(sub_paired)} paired patients available")
+
+    summary = "\n\n".join(summary_parts)
 
     summary_path = os.path.join(OUTPUT_DIR, "gate_summary.txt")
     with open(summary_path, "w", encoding="utf-8") as f:
@@ -1306,6 +1343,14 @@ if __name__ == "__main__":
         f.write(gate3_detail)
         f.write("\n\nGATE 4 — BLAND-ALTMAN DETAIL\n")
         f.write(gate4_detail)
+        if sub_paired:
+            f.write("\n\n" + "#" * 70 + "\n")
+            f.write("# SUB-SEGMENT INTERSECTION DETAIL\n")
+            f.write("#" * 70 + "\n")
+            f.write("\nGATE 3 — PER-PATIENT DETAIL (sub-segment)\n")
+            f.write(sub_gate3_detail)
+            f.write("\n\nGATE 4 — BLAND-ALTMAN DETAIL (sub-segment)\n")
+            f.write(sub_gate4_detail)
     print(f"Detail written to:  {detail_path}")
 
     # Paired data CSV for further analysis
