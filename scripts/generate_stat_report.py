@@ -23,10 +23,10 @@ OQ = {
     "LumenVol":        {"lab": "Lumen",       "log": (7.5, 5.9, 9.3),   "ut": (9.32, 7.09, 11.58)},
     "WallVol":         {"lab": "Wall",        "log": (13.1, 10.2, 16.0),"ut": (23.50, 17.88, 29.71)},
     "VesselVol":       {"lab": "Vessel",      "log": (8.7, 6.8, 10.6),  "ut": (10.18, 7.83, 12.38)},
-    "CALCVol":         {"lab": "CALC",        "log": (4.5, 3.5, 5.4),   "ut": (25.78, 18.70, 35.75)},
-    "LRNCVol":         {"lab": "LRNC",        "log": (5.4, 4.1, 6.9),   "ut": (78.80, 48.09, 163.40)},
-    "NonCALCMATXVol":  {"lab": "NonCALC Matrix","log": (13.6, 10.8, 16.4),"ut": (32.61, 24.87, 41.94)},
-    "TotalPlaqueVolume": {"lab": "Total Plaque","log": (13.2, 10.4, 16.0),"ut": (27.08, 20.68, 34.74)},
+    "CALCVol":         {"lab": "CALC",        "log": (4.5, 3.5, 5.4),   "ut": (25.78, 18.70, 35.75), "bias_ci": (-0.01, 0.05)},
+    "LRNCVol":         {"lab": "LRNC",        "log": (5.4, 4.1, 6.9),   "ut": (78.80, 48.09, 163.40), "bias_ci": (-0.06, -0.01)},
+    "NonCALCMATXVol":  {"lab": "NonCALC Matrix","log": (13.6, 10.8, 16.4),"ut": (32.61, 24.87, 41.94), "bias_ci": (-0.19, 0.05)},
+    "TotalPlaqueVolume": {"lab": "Total Plaque","log": (13.2, 10.4, 16.0),"ut": (27.08, 20.68, 34.74), "bias_ci": (-0.19, 0.08)},
 }
 PROCESS = ["LumenVol", "WallVol", "VesselVol"]
 PLAQUE = ["CALCVol", "LRNCVol", "NonCALCMATXVol", "TotalPlaqueVolume"]
@@ -87,6 +87,11 @@ def compute(path):
         rec["wcv_rand_log_ci"] = (float(np.percentile(bt_rand, 2.5)), float(np.percentile(bt_rand, 97.5)))
         rec["s2_scan_ci"] = (float(np.percentile(bt_scan, 2.5)), float(np.percentile(bt_scan, 97.5)))
         rec["wcv_scan_ci"] = (wl(rec["s2_scan_ci"][0]), wl(rec["s2_scan_ci"][1]))
+        # Gate 4 systematic bias (log-scale BA, length-normalized) vs OQ Table 6
+        bt_bias = [float(np.mean(dl[rng.randint(0, n, n)])) for _ in range(NBOOT)]
+        rec["bias_ci"] = (float(np.percentile(bt_bias, 2.5)), float(np.percentile(bt_bias, 97.5)))
+        oqb = meta.get("bias_ci")
+        rec["bias_overlap"] = overlap(rec["bias_ci"], oqb) if oqb else None
         rec["gate3_pass_log"] = overlap(rec["wcv_rand_log_ci"], meta["log"][1:])
         rec["scan_a_pass"] = rec["wcv_scan_log"] <= meta["log"][0]     # (a) scanner wCV <= OQ
         rec["scan_b_pass"] = rec["s2_scan_ci"][0] <= 0                 # (b) CI includes 0
@@ -244,7 +249,31 @@ def build_docx():
       "term; sub-segment removes it — scanner-attributable variance drops accordingly and is "
       "≤ OQ / CI-includes-0 for nearly all endpoints on sub-segment.", italic=True)
 
-    h("8. Interpretation")
+    h("8. Gate 4 — systematic bias (log-scale Bland-Altman) vs OQ Table 6")
+    p("Systematic PCCT−EID bias Δ on the log(x+1), length-normalized scale (the Gate-4 quantity, "
+      "separated from dispersion). Acceptance: PCCT bias 95% CI overlaps the 730-CVV-040 Table 6 "
+      "inter-observer bias 95% CI (which essentially includes 0). Plaque endpoints only (Table 6 "
+      "provides plaque BA references; process-output bias has no OQ BA reference). "
+      "P=overlap/pass, F=no overlap/fail.")
+    hdrb = ["Endpoint", "OQ bias [95% CI]"] + [c[1] for c in COLS]
+    rows = []
+    for v in PLAQUE:
+        oqb = OQ[v]["bias_ci"]
+        cells = []
+        for k, _ in COLS:
+            r = R[k][v]
+            cells.append(f'{r["delta"]:+.3f} [{r["bias_ci"][0]:+.3f},{r["bias_ci"][1]:+.3f}] '
+                         f'{"P" if r["bias_overlap"] else "F"}')
+        rows.append([OQ[v]["lab"], f'[{oqb[0]}, {oqb[1]}]'] + cells)
+    table(hdrb, rows)
+    p("Full BA bias/LoA/proportional-bias detail and the OQ-overlay plots are in "
+      "gate_results/qualification_report.html (canonical) and the gate_summary.txt sub-segment "
+      "section + gate_results/bland_altman_plots_subsegment/ (sub-segment). Note the systematic "
+      "plaque bias grew v1→v2 (07-07 re-work) and does NOT shrink to overlap on sub-segment — the "
+      "bias is within the shared centerline, not at the traced-extent tail (consistent with the "
+      "earlier sub-segment finding).", italic=True)
+
+    h("9. Interpretation")
     for b in [
         "With the scanner term (systematic bias removed), the process outputs (Lumen, Wall, Vessel) "
         "pass the OQ CI-overlap on BOTH data vintages, canonical region — no sub-segment alignment "
@@ -262,7 +291,7 @@ def build_docx():
     ]:
         doc.add_paragraph(b, style="List Bullet")
 
-    h("9. Caveats & future work")
+    h("10. Caveats & future work")
     for b in [
         "N = 25 canonical / 24 sub-segment, preliminary (target ≥ 30); passes are CI-overlap-driven "
         "with wide CIs.",
@@ -405,6 +434,17 @@ def build_pptx():
     table_slide("Scanner-attributable variance vs OQ (v2): canonical vs sub-segment",
                 ["Endpoint", "OQ", "canonical  wCV a/b", "sub-segment  wCV a/b"], sa,
                 colw=[3.2, 1.6, 3.9, 3.9], size=13)
+
+    # 6b Gate 4 systematic bias (log BA) vs OQ Table 6 — v2 canonical vs sub-segment
+    br = []
+    for v in PLAQUE:
+        oqb = OQ[v]["bias_ci"]; rc, rs = R["v2c"][v], R["v2s"][v]
+        br.append([OQ[v]["lab"], f'[{oqb[0]}, {oqb[1]}]',
+                   f'{rc["delta"]:+.3f}  {"P" if rc["bias_overlap"] else "F"}',
+                   f'{rs["delta"]:+.3f}  {"P" if rs["bias_overlap"] else "F"}'])
+    table_slide("Gate 4 — systematic bias (log BA) vs OQ Table 6 (v2, plaque)",
+                ["Endpoint", "OQ bias 95% CI", "canonical Δ (P/F)", "sub-segment Δ (P/F)"], br,
+                colw=[3.0, 3.0, 3.4, 3.4], size=14)
 
     # 7 conclusions
     s = slide("Conclusions & future work")
