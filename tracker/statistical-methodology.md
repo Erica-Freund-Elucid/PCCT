@@ -68,6 +68,47 @@ modality bias and compare only the random dispersion.
 
 ---
 
+## 2.1 Gate 4 bias acceptance criterion (`--bias-criterion`)
+
+The systematic bias removed by the scanner term (§2) is exactly what Gate 4
+should assess. Two criteria are available:
+
+- **`pct-threshold`** (default, legacy): `|untransformed bias| < 5%` (lumen) /
+  `10%` (wall, plaque) of the mean. **Project-specific — NOT derived from the OQ**
+  (the Gate 4 tracker §4.1b admits this for wall; it holds for all).
+- **`oq-ci-overlap`** (OQ-consistent): for the plaque endpoints, compute the PCCT
+  **log(x+1)** Bland-Altman bias with a bootstrap **95% CI** and require it to
+  **overlap the 730-CVV-040 Table 6 bias 95% CI** — the same CI-overlap philosophy
+  as the Gate 3 wCV acceptance, on the OQ's own (log) scale. The OQ Table 6
+  inter-operator bias CIs essentially include 0, so this asks "is the cross-scanner
+  bias distinguishable from OQ inter-operator bias?". Process outputs have no OQ
+  BA-bias reference (bias is *supporting*; wCV is primary per the OQ), so they are
+  reported descriptively under this criterion.
+
+OQ Table 6 references (log scale) wired into `GATE4_VARIABLES`:
+CALC bias [−0.01, 0.05]; LRNC [−0.06, −0.01]; NonCALCMATX [−0.19, 0.05];
+TotalPlaque [−0.19, 0.08].
+
+**Result on latest data (N=25, canonical):**
+| Endpoint | pct-threshold | oq-ci-overlap | note |
+|---|---|---|---|
+| CALC | PASS (2.7%) | PASS | bias ≈ 0 |
+| LRNC | FAIL (17.2%) | PASS | CI huge [−0.70, 0.39] — **low power**, can't reject |
+| NonCALC Matrix | FAIL (47%) | **FAIL** | PCCT lower, CI entirely below OQ |
+| Total Plaque | FAIL (31%) | **FAIL** | PCCT lower, CI entirely below OQ |
+
+**NonCALC Matrix and Total Plaque bias fail under both criteria — a real,
+statistically distinguishable modality bias (PCCT systematically lower on the log
+scale). This is the binding constraint.** LRNC "passes" the CI-overlap test only
+because it is too noisy to reject (low power) — do not read that as agreement.
+Wall bias is only tested under `pct-threshold` (project-specific, no OQ ref) and
+has been growing across re-processing: 9.3% (May) → 20.7% (07-06) → 28.3% (07-07).
+
+Caveat: sub-segment bias verdicts are on **stale** segmentations; regenerate
+before use.
+
+---
+
 ## 3. Analysis region: canonical vs sub-segment
 
 - **Canonical:** pairs by named-vessel `(bodySite, location)` overlap; whole-vessel

@@ -315,14 +315,13 @@ N = 25 paired patients
 Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.
   Process outputs (Lumen, Wall, Vessel): log(x+1) scale -- matches 730-CVV-040 Table 6.
   Plaque (CALC, LRNC, NonCALC, Total): untransformed -- matches 4-B1P-033 Table 9.
-Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/10% of mean.
 
 --- Lumen Volume (mm³)  [BA scale: log] ---
   N:                     25
   Log-scale bias:        0.0409
   Log-scale LoA:         [-0.4244, 0.5061]
   Untransformed bias:    39.79 (2.3% of mean)
-  Bias threshold:        |bias| < 5% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 5% of mean
   Bias result:           PASS
   Proportional bias r²:  0.002 [0.000, 0.200]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -332,7 +331,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Log-scale bias:        -0.2871
   Log-scale LoA:         [-0.8105, 0.2363]
   Untransformed bias:    -136.54 (28.3% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.003 [0.000, 0.158]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -342,7 +341,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            -3.18
   LoA (raw):             [-63.84, 57.49]
   Untransformed bias:    -3.18 (2.7% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           PASS
   Proportional bias r²:  0.212 [0.000, 0.633]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -352,7 +351,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            -4.18
   LoA (raw):             [-57.93, 49.57]
   Untransformed bias:    -4.18 (17.2% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.566 [0.002, 0.906]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -362,7 +361,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            -108.89
   LoA (raw):             [-300.88, 83.10]
   Untransformed bias:    -108.89 (47.0% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.484 [0.188, 0.744]
   Prop. bias result:     FAIL (threshold: 95% CI lower bound < 0.1)
@@ -372,7 +371,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            -116.25
   LoA (raw):             [-362.20, 129.71]
   Untransformed bias:    -116.25 (31.3% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.400 [0.071, 0.721]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -627,14 +626,13 @@ N = 25 paired patients
 Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.
   Process outputs (Lumen, Wall, Vessel): log(x+1) scale -- matches 730-CVV-040 Table 6.
   Plaque (CALC, LRNC, NonCALC, Total): untransformed -- matches 4-B1P-033 Table 9.
-Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/10% of mean.
 
 --- Lumen Volume (mm³)  [BA scale: log] ---
   N:                     25
   Log-scale bias:        -0.0990
   Log-scale LoA:         [-0.4302, 0.2322]
   Untransformed bias:    -87.34 (7.6% of mean)
-  Bias threshold:        |bias| < 5% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 5% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.079 [0.001, 0.262]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -644,7 +642,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Log-scale bias:        -0.0852
   Log-scale LoA:         [-0.5724, 0.4021]
   Untransformed bias:    -42.07 (9.2% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           PASS
   Proportional bias r²:  0.002 [0.000, 0.172]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -654,7 +652,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            24.93
   LoA (raw):             [-32.67, 82.54]
   Untransformed bias:    24.93 (21.3% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.384 [0.011, 0.859]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -664,7 +662,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            6.46
   LoA (raw):             [-39.62, 52.54]
   Untransformed bias:    6.46 (29.7% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.032 [0.001, 0.811]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -674,7 +672,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            -76.62
   LoA (raw):             [-307.90, 154.66]
   Untransformed bias:    -76.62 (36.6% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.395 [0.068, 0.673]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
@@ -684,7 +682,7 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Bias (raw):            -45.22
   LoA (raw):             [-299.22, 208.77]
   Untransformed bias:    -45.22 (13.0% of mean)
-  Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
+  Bias threshold:        |bias| < 10% of mean
   Bias result:           FAIL
   Proportional bias r²:  0.170 [0.003, 0.552]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)

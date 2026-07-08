@@ -212,25 +212,38 @@ GATE4_VARIABLES = {
         "ba_scale": "log",
         "project_specific": True,
     },
+    # Plaque: oq_bias_log_ci / oq_loa_log are the log(x+1) Bland-Altman references
+    # from 730-CVV-040 Table 6 (Patient-Level Plaque Volumes). Used by the
+    # --bias-criterion oq-ci-overlap path (compares PCCT log-scale BA bias 95% CI
+    # against the OQ's, matching the OQ's own scale). The delta-OQ bias CIs
+    # essentially include 0, so overlap ~ "no bias beyond OQ inter-operator".
     "CALCVol": {
         "label": "CALC Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "untransformed",
+        "oq_bias_log_ci": (-0.01, 0.05),
+        "oq_loa_log": (-0.17, 0.21),
     },
     "LRNCVol": {
         "label": "LRNC Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "untransformed",
+        "oq_bias_log_ci": (-0.06, -0.01),
+        "oq_loa_log": (-0.21, 0.14),
     },
     "NonCALCMATXVol": {
         "label": "NonCALC Matrix Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "untransformed",
+        "oq_bias_log_ci": (-0.19, 0.05),
+        "oq_loa_log": (-0.82, 0.67),
     },
     "TotalPlaqueVolume": {
         "label": "Total Plaque Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "untransformed",
+        "oq_bias_log_ci": (-0.19, 0.08),
+        "oq_loa_log": (-0.89, 0.78),
     },
 }
 
@@ -270,6 +283,18 @@ WCV_METHOD = "variance-component"
 # extent -- it is an UPPER BOUND on scanner-only variability, not a clean
 # isolation. Only affects method="variance-component". Set via --scanner-term.
 SCANNER_TERM = False
+
+# Gate 4 bias acceptance. Set via --bias-criterion.
+#   "pct-threshold" (default, legacy/project-specific): |untransformed bias| as a
+#       % of the mean must be below bias_threshold_pct (5% lumen, 10% wall/plaque).
+#       NOT derived from the OQ reference documents.
+#   "oq-ci-overlap": for plaque variables with a 730-CVV-040 Table 6 reference,
+#       compute the PCCT log(x+1) Bland-Altman bias 95% CI (bootstrap) and require
+#       it to OVERLAP the OQ's bias 95% CI -- the same CI-overlap philosophy as the
+#       Gate 3 wCV acceptance, on the OQ's own (log) scale. Process outputs have no
+#       OQ BA-bias reference (bias is supporting; wCV is primary), so they are
+#       reported descriptively under this criterion.
+BIAS_CRITERION = "pct-threshold"
 
 # ── Data Loading ──────────────────────────────────────────────────────────────
 
@@ -628,6 +653,24 @@ def plot_bland_altman(vals_a, vals_b, label, out_path,
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
+
+
+def bootstrap_bias_ci(vals_a, vals_b, log_transform=False,
+                      n_boot=N_BOOTSTRAP, alpha=0.05):
+    """Bootstrap 95% CI for the Bland-Altman mean bias (PCCT - EID)."""
+    rng = np.random.RandomState(RANDOM_SEED + 13)
+    n = len(vals_a)
+    if n < 2:
+        return None, None
+    if log_transform:
+        a = np.array([math.log(v + 1) for v in vals_a])
+        b = np.array([math.log(v + 1) for v in vals_b])
+    else:
+        a = np.array(vals_a); b = np.array(vals_b)
+    d = a - b
+    boots = [np.mean(d[rng.randint(0, n, size=n)]) for _ in range(n_boot)]
+    return (float(np.percentile(boots, 100 * alpha / 2)),
+            float(np.percentile(boots, 100 * (1 - alpha / 2))))
 
 
 def bootstrap_rsq_ci(vals_a, vals_b, log_transform=False,
@@ -1072,6 +1115,11 @@ def run_gate4(paired, plot_dir=None):
     lines.append(f"Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.")
     lines.append(f"  Process outputs (Lumen, Wall, Vessel): log(x+1) scale -- matches 730-CVV-040 Table 6.")
     lines.append(f"  Plaque (CALC, LRNC, NonCALC, Total): untransformed -- matches 4-B1P-033 Table 9.")
+    if BIAS_CRITERION == "oq-ci-overlap":
+        lines.append(f"Bias criterion: oq-ci-overlap -- plaque PCCT log(x+1) BA bias 95% CI vs 730-CVV-040")
+        lines.append(f"  Table 6 bias CI (OQ-consistent). Process outputs descriptive (no OQ BA-bias ref).")
+    else:
+        lines.append(f"Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/10% of mean.")
     lines.append("")
 
     for var, cfg in GATE4_VARIABLES.items():
@@ -1110,15 +1158,24 @@ def run_gate4(paired, plot_dir=None):
             lines.append(f"  Bias (raw):            {mean_bias:.2f}")
             lines.append(f"  LoA (raw):             [{loa_lo:.2f}, {loa_hi:.2f}]")
         lines.append(f"  Untransformed bias:    {mean_bias_ut:.2f} ({bias_pct_ut:.1f}% of mean)")
-        lines.append(f"  Bias threshold:        |bias| < {threshold}% of mean")
-        lines.append(f"  Bias result:           {'PASS' if passed_bias else 'FAIL'}")
 
-        # Delta OQ Table 6 references are log-scale -- only meaningful when scale="log"
-        ref_bias = cfg.get("ref_bias")
-        ref_loa = cfg.get("ref_loa")
-        if log_t and ref_loa:
-            lines.append(f"  Delta OQ ref bias:     {ref_bias}")
-            lines.append(f"  Delta OQ ref LoA:      [{ref_loa[0]}, {ref_loa[1]}]")
+        oq_bias_ci = cfg.get("oq_bias_log_ci")
+        if BIAS_CRITERION == "oq-ci-overlap" and oq_bias_ci:
+            # OQ-consistent: PCCT log(x+1) BA bias 95% CI vs 730-CVV-040 Table 6 bias CI
+            log_bias, _, _, _, _ = bland_altman(pcct_vals, eid_vals, log_transform=True)
+            b_lb, b_ub = bootstrap_bias_ci(pcct_vals, eid_vals, log_transform=True)
+            overlap = ci_overlap((b_lb, b_ub), oq_bias_ci)
+            oq_loa = cfg.get("oq_loa_log")
+            lines.append(f"  Log(x+1) BA bias:      {log_bias:.4f} [{b_lb:.4f}, {b_ub:.4f}]")
+            lines.append(f"  OQ Table 6 bias CI:    [{oq_bias_ci[0]}, {oq_bias_ci[1]}]" +
+                         (f"; LoA [{oq_loa[0]}, {oq_loa[1]}]" if oq_loa else ""))
+            lines.append(f"  Bias criterion:        95% CI overlap with OQ bias (log scale)")
+            lines.append(f"  Bias result:           {'PASS' if overlap else 'FAIL'}")
+        elif BIAS_CRITERION == "oq-ci-overlap":
+            lines.append(f"  Bias criterion:        no OQ BA-bias reference -- descriptive only (wCV is primary per OQ)")
+        else:
+            lines.append(f"  Bias threshold:        |bias| < {threshold}% of mean [project-specific, not OQ-derived]")
+            lines.append(f"  Bias result:           {'PASS' if passed_bias else 'FAIL'}")
 
         rsq_lb, rsq_ub = bootstrap_rsq_ci(pcct_vals, eid_vals, log_transform=log_t)
         if rsq_lb is not None:
@@ -1129,6 +1186,8 @@ def run_gate4(paired, plot_dir=None):
             lines.append(f"  Proportional bias r²:  {r_sq:.3f} (CI not estimable)")
         lines.append("")
 
+        ref_bias = cfg.get("ref_bias")  # legacy plot overlay refs (unpopulated)
+        ref_loa = cfg.get("ref_loa")
         plot_bland_altman(
             pcct_vals, eid_vals, label,
             plot_dir / f"BA_{var}.png",
@@ -1321,9 +1380,16 @@ if __name__ == "__main__":
                      help="include a PCCT-vs-EID scanner main effect: report wCV as the "
                           "bias-removed residual dispersion (Var(d)/2), the like-for-like "
                           "analogue of the OQ inter-operator wCV. variance-component only.")
+    _ap.add_argument("--bias-criterion", choices=["pct-threshold", "oq-ci-overlap"],
+                     default="pct-threshold",
+                     help="Gate 4 bias acceptance: 'pct-threshold' (default, legacy "
+                          "|bias|<5%%/10%% of mean, project-specific) or 'oq-ci-overlap' "
+                          "(plaque: PCCT log-scale BA bias 95%% CI overlaps 730-CVV-040 "
+                          "Table 6, matching the wCV CI-overlap philosophy).")
     _args = _ap.parse_args()
     WCV_METHOD = _args.wcv_method    # rebinds module globals read by compute_wcv
     SCANNER_TERM = _args.scanner_term
+    BIAS_CRITERION = _args.bias_criterion
 
     print("PCCT Qualification Gate Analyses")
     print("=" * 40)

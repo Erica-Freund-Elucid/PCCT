@@ -2,6 +2,15 @@
 
 > **Performance** -- Flag for clinical review on failure; may restrict use to specific indications
 
+> ⚠️ **Updated 2026-07-08 — numbers below are the LEGACY `pct-threshold` criterion on
+> pre-2026-07 data and are superseded.** The `|bias|<5%/10% of mean` threshold is
+> project-specific (not OQ-derived). An OQ-consistent alternative
+> (`--bias-criterion oq-ci-overlap`) now compares the PCCT log(x+1) BA bias 95% CI
+> against 730-CVV-040 Table 6. On latest data, **NonCALC Matrix and Total Plaque
+> bias FAIL under both criteria** (real modality bias, PCCT lower); Wall bias has
+> grown to 28% (07-07). See [`statistical-methodology.md`](statistical-methodology.md)
+> §2.1 and the config comparison in [`../gate_results/variants/`](../gate_results/variants/).
+
 **Method:** Bland-Altman on raw (not length-normalized) volumes summed over the per-pair vessel-overlap intersection (canonical as of 2026-05-08). **Process outputs (Lumen, Wall, Vessel) on log(x+1) scale** for comparability with delta OQ reference (730-CVV-040 Table 6); **plaque (CALC, LRNC, NonCALC, Total) on untransformed scale** to match 4-B1P-033 Table 9 reporting. PT-124 excluded (no overlapping vessel). Most pairs are partial vessel-overlap, analyzed on the intersection only.
 
 **Proportional bias:** r^2 with 95% bootstrap CI. PASS if CI lower bound < 0.1.
