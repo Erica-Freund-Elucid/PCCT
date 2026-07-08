@@ -62,6 +62,15 @@ goes to `workitem_summaries/subsegment/`; canonical sections stay untouched.
   (the wallPartition multi-NRRD slice region is `LumenAndWall`, not wall-only).
   CSV builder maps: `LumenAndWallVol = wall`, `WallVol = wall - lumen`,
   `LumenVol = lumen`. Confirmed by inspecting wallPartition NRRD slice metadata.
+  **[VERIFIED 2026-07-08]** Re-confirmed against live NRRD headers on ip3-manager:
+  `wallPartition` region = `LumenAndWall`, `lumenPartition` region = `Lumen`, and
+  the CSV identity `LumenAndWallVol = LumenVol + WallVol` is exact (55/55 patients).
+  This builder mapping is CORRECT — do NOT change to `WallVol = raw wall` (that
+  would over-count by one lumen). Plaque: `composition.multi.nrrd` has regions
+  `CALC, LRNC, IPH, PVAT, MATX, FIBL, NonCALCMATX`; `NonCALCMATX` is a precomputed
+  composite slice (extract directly, do NOT sum primitives), and
+  `TotalPlaqueVolume = CALC + NonCALCMATX`. Full write-up:
+  `PCCT/tracker/statistical-methodology.md` §4.
 - [x] Extended `run_gate_analyses.py` with a parallel sub-segment pass:
   `load_paired_data()` now accepts `pcct_dir, eid_dir` params; `run_gate4()` accepts
   `plot_dir`. Sub-segment Gate 3 + Gate 4 sections append to `gate_results/gate_summary.txt`.

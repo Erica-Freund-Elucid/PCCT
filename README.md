@@ -21,6 +21,8 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 
 **Final sign-off requires passing all four gates.** Advisory checks inform labelling and use restrictions but do not block qualification.
 
+> **Statistical methodology & verified definitions:** see [`tracker/statistical-methodology.md`](tracker/statistical-methodology.md) for the wCV estimator (variance-component / Quan-Shih, matching the OQ), the `--wcv-method` and `--scanner-term` options in `run_gate_analyses.py`, the canonical-vs-sub-segment analysis regions, and the empirically verified volume-component definitions (plaque regions, `LumenAndWall` = vessel, `TotalPlaque = CALC + NonCALCMATX`).
+
 ---
 
 ## 1 - Technical & Image Quality Prerequisites (Gate 1)

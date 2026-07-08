@@ -2,6 +2,17 @@
 
 > **Performance** -- Scanner conditionally failed on miss; may expand N or adjust acquisition protocol and re-test once
 
+> ⚠️ **Method updated 2026-07-08 — per-endpoint numbers below are from the LEGACY
+> `rms-rel` estimator on pre-2026-07 data and are superseded.** The wCV estimator
+> was corrected to the OQ's variance-component / random-effects method (Quan & Shih
+> 1996) and a `--scanner-term` option was added. This flips several verdicts (e.g.
+> Lumen/Vessel log-wCV FAIL under the corrected estimator on the canonical region,
+> but PASS with the scanner term and/or on the sub-segment region). See
+> [`statistical-methodology.md`](statistical-methodology.md) for the corrected
+> estimator, the verdict-impact tables, and verified component definitions. The
+> per-endpoint entries below will be refreshed once the estimator/region basis is
+> finalized and re-run at N≥30.
+
 Assessed at patient level using wCV (within-subject coefficient of variation) from paired PCCT/EID acquisitions of the same patient. Volumes are length-normalized before computing wCV to isolate variability due to image modality from vessel extent differences.
 
 **Acceptance criterion:** 95% CI overlap between PCCT wCV and B.1P Delta Validation OQ wCV (730-CVV-040). Cross-scanner variability must be non-inferior to validated inter-operator variability.

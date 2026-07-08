@@ -245,6 +245,32 @@ ALL_VARS.discard("VesselVol")
 N_BOOTSTRAP = 2000
 RANDOM_SEED = 42
 
+# wCV estimator. Set via --wcv-method.
+#   "variance-component" (default): random-effects / linear-mixed-model wCV per
+#       Quan & Shih (1996), matching the B.1P Delta OQ (730-CVV-040 §11, R 4.3.2,
+#       log(x+1) + linear mixed model). This is the like-for-like estimator for
+#       the CI-overlap acceptance test.
+#         untransformed: wCV = sqrt(sigma2_w) / grand_mean * 100
+#         log(x+1):      wCV = sqrt(exp(sigma2_w_log) - 1) * 100
+#       where for paired (k=2) data sigma2_w = mean(d^2 / 2).
+#   "rms-rel" (legacy): root-mean-square of each subject's relative variance,
+#       i.e. sqrt(mean(d^2/(2 m^2)))*100, applied to raw or log(x+1) values.
+#       Retained for reproducing prior results; NOT the OQ method on the log
+#       scale (it divides the log-difference by the mean of the logs).
+WCV_METHOD = "variance-component"
+
+# When True, include a scanner (PCCT vs EID) main effect: the within-subject
+# variance is taken ABOUT the mean PCCT-EID difference, i.e. the systematic
+# modality bias is removed (and belongs to Gate 4) so the wCV reflects only
+# random cross-scanner dispersion -- the like-for-like analogue of the OQ's
+# inter-operator wCV. Closed form for the balanced 2-condition case:
+#   sigma2_w = Var(d)/2   (vs mean(d^2)/2 without the scanner term).
+# NOTE: with one read per patient*scanner (and different analysts/extent per
+# scanner) this residual still confounds scanner with operator and traced
+# extent -- it is an UPPER BOUND on scanner-only variability, not a clean
+# isolation. Only affects method="variance-component". Set via --scanner-term.
+SCANNER_TERM = False
+
 # ── Data Loading ──────────────────────────────────────────────────────────────
 
 
@@ -420,32 +446,52 @@ def load_paired_data(pcct_dir=None, eid_dir=None):
 # ── Statistical Functions ─────────────────────────────────────────────────────
 
 
-def compute_wcv(vals_a, vals_b, log_transform=False):
-    """Compute within-subject coefficient of variation for paired measurements.
+def compute_wcv(vals_a, vals_b, log_transform=False, method=None):
+    """Within-subject coefficient of variation (%) for paired measurements.
 
-    If log_transform=True, applies log(x+1) transformation before computing
-    wCV on the transformed scale (consistent with 730-CVV-040 methodology).
+    method="variance-component" (default): random-effects wCV per Quan & Shih
+        (1996) / B.1P Delta OQ. sigma2_w = mean(d^2/2) is the within-subject
+        variance component (k=2 replicates). On the log(x+1) scale the CV is
+        recovered as sqrt(exp(sigma2_w)-1); untransformed it is
+        sqrt(sigma2_w)/grand_mean.
+    method="rms-rel" (legacy): sqrt(mean(d^2/(2 m^2)))*100 on raw or log(x+1)
+        values (root-mean-square of per-subject relative variance).
     """
-    if log_transform:
-        vals_a = [math.log(v + 1) for v in vals_a]
-        vals_b = [math.log(v + 1) for v in vals_b]
-
+    method = method or WCV_METHOD
     n = len(vals_a)
     if n == 0:
         return None
 
-    ratios = []
-    for a, b in zip(vals_a, vals_b):
-        m = (a + b) / 2.0
-        if m == 0:
-            continue
-        d = a - b
-        ratios.append((d ** 2) / (2.0 * m ** 2))
+    if method == "rms-rel":
+        a = [math.log(v + 1) for v in vals_a] if log_transform else list(vals_a)
+        b = [math.log(v + 1) for v in vals_b] if log_transform else list(vals_b)
+        ratios = []
+        for x, y in zip(a, b):
+            m = (x + y) / 2.0
+            if m == 0:
+                continue
+            ratios.append(((x - y) ** 2) / (2.0 * m ** 2))
+        if not ratios:
+            return None
+        return math.sqrt(np.mean(ratios)) * 100
 
-    if not ratios:
+    # variance-component (Quan & Shih 1996 random-effects) -- the OQ method.
+    # With SCANNER_TERM the within-subject variance is about the mean difference
+    # (systematic scanner bias removed): sigma2_w = Var(d)/2, else mean(d^2)/2.
+    if log_transform:
+        la = np.array([math.log(v + 1) for v in vals_a])
+        lb = np.array([math.log(v + 1) for v in vals_b])
+        d = la - lb
+        sigma2_w = (np.var(d, ddof=1) if SCANNER_TERM else np.mean(d ** 2)) / 2.0
+        return math.sqrt(math.exp(sigma2_w) - 1.0) * 100
+    a = np.array(vals_a, dtype=float)
+    b = np.array(vals_b, dtype=float)
+    d = a - b
+    grand = np.mean(np.concatenate([a, b]))               # grand mean of all measurements
+    if grand == 0:
         return None
-
-    return math.sqrt(np.mean(ratios)) * 100
+    sigma2_w = (np.var(d, ddof=1) if SCANNER_TERM else np.mean(d ** 2)) / 2.0
+    return math.sqrt(sigma2_w) / grand * 100
 
 
 def bootstrap_wcv_ci(vals_a, vals_b, log_transform=False,
@@ -971,7 +1017,13 @@ def run_gate3(paired):
     lines.append(f"N = {len(paired)} paired patients (target: >=30)")
     lines.append(f"Acceptance: 95% CI overlap with B.1P Delta OQ (730-CVV-040)")
     lines.append(f"Primary metric: log-wCV for volumes, untransformed for length")
-    lines.append(f"wCV method: sqrt(mean(d²/(2m²))) × 100")
+    if WCV_METHOD == "variance-component":
+        st = " + scanner term (bias-removed residual)" if SCANNER_TERM else ""
+        lines.append(f"wCV method: variance-component / random-effects (Quan & Shih 1996; OQ 730-CVV-040){st}")
+        lines.append(f"  untransformed: sqrt(sigma2_w)/grand_mean; log(x+1): sqrt(exp(sigma2_w)-1)")
+        lines.append(f"  sigma2_w = {'Var(d)/2 (scanner bias removed)' if SCANNER_TERM else 'mean(d^2)/2'}")
+    else:
+        lines.append(f"wCV method: rms-rel [LEGACY] sqrt(mean(d^2/(2m^2))) x 100")
     lines.append(f"95% CI: {N_BOOTSTRAP}-sample bootstrap")
     lines.append(f"Volumes normalized to vessel length per 730-CVV-040 methodology")
     lines.append("")
@@ -1259,9 +1311,24 @@ def run_gate4_length_normalized(paired):
 
 
 if __name__ == "__main__":
+    import argparse
+    _ap = argparse.ArgumentParser(description="PCCT qualification gate analyses")
+    _ap.add_argument("--wcv-method", choices=["variance-component", "rms-rel"],
+                     default="variance-component",
+                     help="wCV estimator: 'variance-component' (default, Quan & Shih / OQ method) "
+                          "or 'rms-rel' (legacy per-subject relative-CV formula)")
+    _ap.add_argument("--scanner-term", action="store_true",
+                     help="include a PCCT-vs-EID scanner main effect: report wCV as the "
+                          "bias-removed residual dispersion (Var(d)/2), the like-for-like "
+                          "analogue of the OQ inter-operator wCV. variance-component only.")
+    _args = _ap.parse_args()
+    WCV_METHOD = _args.wcv_method    # rebinds module globals read by compute_wcv
+    SCANNER_TERM = _args.scanner_term
+
     print("PCCT Qualification Gate Analyses")
     print("=" * 40)
     print(f"Reference: B.1P Delta Validation OQ (730-CVV-040)")
+    print(f"wCV method: {WCV_METHOD}")
     print(f"PCCT summaries: {PCCT_DIR}")
     print(f"EID summaries:  {EID_DIR}")
     print()
