@@ -23,6 +23,20 @@ Qualification criteria for Photon-Counting CT (PCCT) scanner validation against 
 
 > **Statistical methodology & verified definitions:** see [`tracker/statistical-methodology.md`](tracker/statistical-methodology.md) for the wCV estimator (variance-component / Quan-Shih, matching the OQ), the `--wcv-method` and `--scanner-term` options in `run_gate_analyses.py`, the canonical-vs-sub-segment analysis regions, and the empirically verified volume-component definitions (plaque regions, `LumenAndWall` = vessel, `TotalPlaque = CALC + NonCALCMATX`).
 
+## Analysis versions & where results live
+
+Open the `qualification_report.html` in either folder for a self-contained report (embedded figures + detailed results).
+
+| | Version 1 — original | Version 2 — current |
+|---|---|---|
+| Folder | [`gate_results_v1_original/`](gate_results_v1_original/) (frozen snapshot of commit `7fe43dc`) | [`gate_results/`](gate_results/) (live, re-runnable) |
+| Report | `gate_results_v1_original/qualification_report.html` | `gate_results/qualification_report.html` |
+| wCV estimator | legacy `rms-rel` | variance-component (Quan-Shih / OQ) — plus `--scanner-term`, `--bias-criterion` |
+| Data | original workitem summaries (pre-2026-07) | latest 2026-07-07 workitem summaries |
+| Config variants | — | [`gate_results/variants/`](gate_results/variants/) — legacy / var-comp / +scanner-term / OQ-bias, side by side |
+
+Version 1's input data was never version-controlled and was overwritten by the 2026-07 refresh, so it is a **frozen record only** (not re-runnable). Regenerate the current report with `python scripts/generate_html_report.py`; re-run the analysis with `python run_gate_analyses.py [--wcv-method … --scanner-term --bias-criterion …]`.
+
 ---
 
 ## 1 - Technical & Image Quality Prerequisites (Gate 1)

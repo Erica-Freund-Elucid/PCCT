@@ -1,0 +1,40 @@
+==================================================================================================================================
+Canonical vs sub-segment - all endpoints  (N=25 matched patients)
+==================================================================================================================================
+
+All values are PCCT - EID. bias / LoA are mm^3 (raw) or mm^3/mm (length-normalized).
+'% mean' = |bias| / mean(PCCT,EID) x 100. P/F vs Gate 4 thresholds (CALC/LRNC/NCMATX/TotalPlaque/Wall: 10%; Lumen: 5%).
+
+--- RAW VOLUMES (mm^3) ---
+Endpoint                Thr   N |  Canon bias    LoA Lo    LoA Hi  % mean   P/F |    Sub bias    LoA Lo    LoA Hi  % mean   P/F |  d_pct
+----------------------------------------------------------------------------------------------------------------------------------------
+CALC Volume             10%  25 |      +27.66    -33.99    +89.31   19.2%  FAIL |      +24.93    -32.67    +82.54   21.3%  FAIL |   +2.1
+LRNC Volume             10%  25 |       +5.65    -49.58    +60.87   21.0%  FAIL |       +6.46    -39.62    +52.54   29.7%  FAIL |   +8.7
+NonCALC Matrix Vol.     10%  25 |      -65.20   -281.70   +151.29   24.6%  FAIL |      -76.62   -307.90   +154.66   36.6%  FAIL |  +12.1
+Total Plaque Volume     10%  25 |      -31.90   -289.64   +225.84    7.3%  PASS |      -45.22   -299.22   +208.77   13.0%  FAIL |   +5.7
+Lumen Volume             5%  25 |      -26.89   -709.05   +655.27    1.6%  PASS |      -87.34   -415.96   +241.27    7.6%  FAIL |   +6.0
+Wall Volume             10%  25 |      -51.05   -360.74   +258.65    9.3%  PASS |      -42.07   -285.79   +201.65    9.2%  PASS |   -0.1
+LumenAndWall Volume       -  25 |      -77.94   -893.99   +738.12    3.6%     - |     -129.41   -564.10   +305.27    8.1%     - |   +4.5
+
+--- LENGTH-NORMALIZED (mm^3 per mm of vessel length) ---
+Endpoint                Thr   N |   Canon /mm    LoA Lo    LoA Hi  % mean   P/F |     Sub /mm    LoA Lo    LoA Hi  % mean   P/F |  d_pct
+----------------------------------------------------------------------------------------------------------------------------------------
+CALC Volume             10%  25 |     +0.0167   -0.4642   +0.4975    2.6%  PASS |     +0.1599   -0.2105   +0.5303   22.3%  FAIL |  +19.7
+LRNC Volume             10%  25 |     +0.0371   -0.3361   +0.4103   34.4%  FAIL |     +0.0523   -0.2998   +0.4045   45.2%  FAIL |  +10.8
+NonCALC Matrix Vol.     10%  25 |     -0.4272   -1.7033   +0.8489   35.5%  FAIL |     -0.4041   -1.6821   +0.8740   31.1%  FAIL |   -4.4
+Total Plaque Volume     10%  25 |     -0.3734   -2.2296   +1.4827   19.2%  FAIL |     -0.1918   -1.7109   +1.3274    9.0%  PASS |  -10.2
+Lumen Volume             5%  25 |     -1.2853   -3.7298   +1.1592   20.5%  FAIL |     -0.6319   -2.6870   +1.4231   10.0%  FAIL |  -10.5
+Wall Volume             10%  25 |     -0.5396   -2.6014   +1.5222   22.4%  FAIL |     -0.1857   -1.6609   +1.2895    6.7%  PASS |  -15.7
+LumenAndWall Volume       -  25 |     -1.8248   -5.6661   +2.0164   21.0%     - |     -0.8176   -3.2853   +1.6500    9.0%     - |  -12.0
+
+--- MEAN PER-PATIENT TOTALS (scale context) ---
+Endpoint               |   Canon PCCT    Canon EID |   Sub-seg PCCT    Sub-seg EID
+--------------------------------------------------------------------------------
+CALC Volume            |       157.96       130.30 |         129.49         104.55
+LRNC Volume            |        29.74        24.09 |          25.01          18.55
+NonCALC Matrix Vol.    |       232.98       298.18 |         171.02         247.64
+Total Plaque Volume    |       420.67       452.57 |         325.51         370.74
+Lumen Volume           |      1626.56      1653.45 |        1099.77        1187.11
+Wall Volume            |       522.08       573.13 |         434.14         476.21
+LumenAndWall Volume    |      2148.64      2226.58 |        1533.91        1663.32
+Vessel length (mm)     |       288.27       241.63 |         182.14         180.73

@@ -188,6 +188,64 @@ def plot_effort(pids, pcct_eff, ccta_eff):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
+def config_matrix_html():
+    """Build a cross-configuration Gate 3 verdict matrix (canonical region) from
+    gate_results/variants/, so the report presents all configs equally rather than
+    a single headline. Primary metric: log-wCV for process outputs, untransformed
+    for plaque."""
+    vdir = ROOT / "gate_results" / "variants"
+    configs = [
+        ("legacy rms-rel", "summary_A_legacy-rmsrel.txt"),
+        ("var-comp (default)", "summary_B_variance-component_DEFAULT.txt"),
+        ("var-comp + scanner-term", "summary_C_variance-component_scanner-term.txt"),
+        ("var-comp + OQ bias", "summary_D_oq-bias-criterion.txt"),
+    ]
+    endpoints = [("Lumen Volume", "log"), ("Wall Volume", "log"), ("Vessel Volume", "log"),
+                 ("CALC Volume", "unt"), ("LRNC Volume", "unt"),
+                 ("NonCALC Matrix Volume", "unt"), ("Total Plaque Volume", "unt")]
+    hdr_ep = re.compile(r"--- (.+?) \(mm.*\[length-normalized\] ---")
+    hdr_any = re.compile(r"^\s*---.*---\s*$")
+
+    def parse_canonical(path):
+        if not path.exists():
+            return {}
+        txt = path.read_text(encoding="utf-8").splitlines()
+        b = [i for i, l in enumerate(txt) if "SUB-SEGMENT INTERSECTION ANALYSIS" in l]
+        lines = txt[:b[0]] if b else txt
+        cur, blocks = None, {}
+        for l in lines:
+            m = hdr_ep.match(l.strip())
+            if m:
+                cur = m.group(1).strip(); blocks.setdefault(cur, {"log": None, "unt": None, "v": None})
+            elif hdr_any.match(l):
+                cur = None
+            if cur:
+                lm = re.search(r"Log-wCV:\s+([\d.]+)%", l); um = re.search(r"Untransformed wCV:\s+([\d.]+)%", l)
+                vm = re.search(r"Overlap:\s+.*?(PASS|FAIL)", l)
+                if lm and blocks[cur]["log"] is None: blocks[cur]["log"] = lm.group(1)
+                if um and blocks[cur]["unt"] is None: blocks[cur]["unt"] = um.group(1)
+                if vm and blocks[cur]["v"] is None: blocks[cur]["v"] = vm.group(1)
+        return blocks
+    data = {name: parse_canonical(vdir / fn) for name, fn in configs}
+
+    h = ['<table><tr><th>Endpoint (primary metric)</th>']
+    for name, _ in configs:
+        h.append(f"<th>{name}</th>")
+    h.append("</tr>\n")
+    for ep, metric in endpoints:
+        h.append(f"<tr><td>{ep} ({'log' if metric=='log' else 'untransf.'})</td>")
+        for name, _ in configs:
+            b = data.get(name, {}).get(ep)
+            if not b or b[metric] is None:
+                h.append("<td>—</td>")
+            else:
+                cls = "pass" if b["v"] == "PASS" else "fail"
+                h.append(f'<td>{b[metric]}% <span class="{cls}">{b["v"] or "?"}</span></td>')
+        h.append("</tr>\n")
+    h.append("</table>")
+    return "".join(h)
+
+
 def main():
     gate_summary = read(ROOT / "gate_results" / "gate_summary.txt")
     gate1 = extract_block(gate_summary, r"^GATE 1.*?$")
@@ -268,20 +326,29 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
     <button onclick="window.print()">Print / PDF</button>
 </div>
 
-<h1 contenteditable="true">PCCT Qualification — Gate Findings Report</h1>
-<p class="meta" contenteditable="true">Generated {now} from <code>gate_results/gate_summary.txt</code>, <code>tracker/*.md</code>, paired SNR data, and analyst case-summary spreadsheet. Reference: B.1P Delta Validation OQ (730-CVV-040 v0.1) and Original B.1P OQ (4-B1P-033 v2.0).</p>
+<h1 contenteditable="true">PCCT Qualification — Gate Findings Report <span style="font-size:0.6em;color:var(--accent)">· Version 2 (current)</span></h1>
+<p class="meta" contenteditable="true">Generated {now} from <code>gate_results/gate_summary.txt</code> (variance-component wCV, default config), <code>gate_results/variants/</code>, <code>tracker/*.md</code>, paired SNR, and case-summary spreadsheet. Reference: B.1P Delta Validation OQ (730-CVV-040 v0.1) and Original B.1P OQ (4-B1P-033 v2.0). The original analysis is frozen in <code>gate_results_v1_original/</code>.</p>
 
 <section>
 <h2>Executive Summary</h2>
-<div class="panel" contenteditable="true">
-<p><strong>N = 25 paired patients</strong> (vessel-overlap restricted; PT-124 excluded due to non-overlapping vessel territories). Preliminary results — target N ≥ 30.</p>
+<div class="callout callout-warn" contenteditable="true">
+<strong>No single headline verdict.</strong> Gate 3/4 outcomes depend on the estimator and region choice, which are still being finalized — the configurations are presented side by side below rather than as one result. Methodology: <code>tracker/statistical-methodology.md</code>. <strong>N = 25 paired patients</strong>, preliminary (target ≥ 30); PT-124 excluded (no overlapping vessel). Latest 2026-07-07 workitem data.
+</div>
 <table>
-<tr><th>Gate</th><th>Requirement</th><th>Status</th></tr>
-<tr><td><strong>Gate 1</strong> — Technical & Image Quality</td><td>DICOM compliance, contrast timing, SNR, kernel</td><td><span class="pass">PASS</span></td></tr>
-<tr><td><strong>Gate 2</strong> — Workflow Integration</td><td>Ingestion, centerline, lumen/wall editing</td><td><span class="warn">REVIEW</span> (centerline coverage diff)</td></tr>
-<tr><td><strong>Gate 3</strong> — Quantitative Reproducibility</td><td>95% CI overlap with delta OQ wCV</td><td><span class="pass">PASS</span> (all 7 endpoints)</td></tr>
-<tr><td><strong>Gate 4</strong> — Bias & Agreement</td><td>Bland-Altman bias + proportional bias</td><td><span class="warn">MIXED</span> — process outputs PASS, plaque components FAIL on bias</td></tr>
+<tr><th>Gate</th><th>Requirement</th><th>Status (see config matrix)</th></tr>
+<tr><td><strong>Gate 1</strong> — Technical & Image Quality</td><td>DICOM, contrast timing, SNR, kernel</td><td><span class="pass">PASS</span></td></tr>
+<tr><td><strong>Gate 2</strong> — Workflow Integration</td><td>Ingestion, centerline, lumen/wall editing</td><td><span class="warn">REVIEW</span></td></tr>
+<tr><td><strong>Gate 3</strong> — Reproducibility (wCV)</td><td>95% CI overlap with delta OQ</td><td>config-dependent — process outputs pass only with scanner-term or on sub-segment region</td></tr>
+<tr><td><strong>Gate 4</strong> — Bias & Agreement</td><td>BA bias vs OQ</td><td><span class="fail">NonCALC Matrix & Total Plaque bias FAIL</span> (both criteria)</td></tr>
 </table>
+</section>
+
+<section>
+<h2>Configuration Variants — Gate 3 wCV (canonical region, N=25)</h2>
+<p class="meta" contenteditable="true">Primary-metric within-subject CV and 95%-CI-overlap verdict vs the delta OQ, under each estimator/criterion. Full per-config reports in <code>gate_results/variants/</code>; corrected-estimator rationale in <code>tracker/statistical-methodology.md</code>. Sub-segment region (extent-matched) generally passes but is on stale segmentations pending regeneration.</p>
+{config_matrix_html()}
+<div class="callout" contenteditable="true">
+<strong>Reading it:</strong> legacy→variance-component corrects the wCV (esp. the log branch), flipping Lumen/Vessel PASS→FAIL on the canonical region; the scanner term (removing systematic modality bias) brings process outputs back within OQ. Plaque wCV passes broadly; the binding issue is plaque <em>bias</em> (Gate 4).
 </div>
 </section>
 
@@ -332,7 +399,7 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 <h2>Gate 3 — Quantitative Reproducibility</h2>
 <pre class="uneditable">{html_escape(gate3)}</pre>
 <div class="panel" contenteditable="true">
-<strong>Reviewer commentary:</strong> All 7 endpoints PASS at N=25 with vessel-overlap normalization. Wall recovered from FAIL on target-overlap to PASS on vessel-overlap, confirming the prior fail was a length-normalization artifact from PCCT's longer distal trace covering thin-walled regions.
+<strong>Reviewer commentary:</strong> The block above is the <em>variance-component (default)</em> config. Under the corrected (OQ-consistent) estimator the process outputs (Lumen/Wall/Vessel) FAIL the CI-overlap on the canonical region — the systematic modality bias inflates the raw cross-scanner wCV. They come within OQ with the <em>scanner-term</em> (bias removed) or on the <em>sub-segment</em> region (extent matched). See the configuration matrix above and <code>tracker/statistical-methodology.md</code>. Plaque wCV passes broadly.
 </div>
 </section>
 
@@ -349,7 +416,7 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
     html += """</div>
 
 <div class="panel" contenteditable="true">
-<strong>Reviewer commentary:</strong> Lumen, Wall, Vessel, Total Plaque bias all PASS. CALC, LRNC, NonCALC component biases FAIL — directional pattern consistent with case-review notes (PT-142 high-disease Wall modality bias).
+<strong>Reviewer commentary (latest 07-07 data):</strong> The Gate 4 bias criterion has two forms — the legacy project-specific <code>|bias|&lt;5%/10% of mean</code> and the OQ-consistent <code>oq-ci-overlap</code> (PCCT log-scale BA bias 95% CI vs 730-CVV-040 Table 6). <strong>NonCALC Matrix and Total Plaque bias FAIL under both</strong> — a real, statistically distinguishable modality bias (PCCT systematically lower). Wall bias has grown to ~28% across re-processing. LRNC "passes" the CI-overlap test only by low power (its CI is too wide to reject). Full detail in <code>gate_results/variants/</code> and <code>tracker/statistical-methodology.md §2.1</code>.
 </div>
 </section>
 

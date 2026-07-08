@@ -1,0 +1,25 @@
+==================================================================================================================================
+Canonical vs sub-segment - CALC and NCMATX focus  (N=25 matched patients)
+==================================================================================================================================
+
+All values are PCCT - EID. bias / LoA are mm^3 (raw) or mm^3/mm (length-normalized).
+'% mean' = |bias| / mean(PCCT,EID) x 100. P/F vs Gate 4 thresholds (CALC/LRNC/NCMATX/TotalPlaque/Wall: 10%; Lumen: 5%).
+
+--- RAW VOLUMES (mm^3) ---
+Endpoint                Thr   N |  Canon bias    LoA Lo    LoA Hi  % mean   P/F |    Sub bias    LoA Lo    LoA Hi  % mean   P/F |  d_pct
+----------------------------------------------------------------------------------------------------------------------------------------
+CALC Volume             10%  25 |      +27.66    -33.99    +89.31   19.2%  FAIL |      +24.93    -32.67    +82.54   21.3%  FAIL |   +2.1
+NonCALC Matrix Vol.     10%  25 |      -65.20   -281.70   +151.29   24.6%  FAIL |      -76.62   -307.90   +154.66   36.6%  FAIL |  +12.1
+
+--- LENGTH-NORMALIZED (mm^3 per mm of vessel length) ---
+Endpoint                Thr   N |   Canon /mm    LoA Lo    LoA Hi  % mean   P/F |     Sub /mm    LoA Lo    LoA Hi  % mean   P/F |  d_pct
+----------------------------------------------------------------------------------------------------------------------------------------
+CALC Volume             10%  25 |     +0.0167   -0.4642   +0.4975    2.6%  PASS |     +0.1599   -0.2105   +0.5303   22.3%  FAIL |  +19.7
+NonCALC Matrix Vol.     10%  25 |     -0.4272   -1.7033   +0.8489   35.5%  FAIL |     -0.4041   -1.6821   +0.8740   31.1%  FAIL |   -4.4
+
+--- MEAN PER-PATIENT TOTALS (scale context) ---
+Endpoint               |   Canon PCCT    Canon EID |   Sub-seg PCCT    Sub-seg EID
+--------------------------------------------------------------------------------
+CALC Volume            |       157.96       130.30 |         129.49         104.55
+NonCALC Matrix Vol.    |       232.98       298.18 |         171.02         247.64
+Vessel length (mm)     |       288.27       241.63 |         182.14         180.73
