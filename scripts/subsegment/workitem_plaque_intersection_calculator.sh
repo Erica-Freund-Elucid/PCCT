@@ -219,8 +219,10 @@ run_for_target() {
     --tolerance-mm 0.75
 }
 
-run_for_target "right"
-run_for_target "left"
+# Run each target independently so a missing/duplicate target on one side
+# (left-only, right-only, or duplicate-target workitems) does not abort the other.
+run_for_target "right" || echo "[warn] right target skipped (absent/duplicate/failed)"
+run_for_target "left"  || echo "[warn] left target skipped (absent/duplicate/failed)"
 
 echo "============================================================"
 echo "Completed both targets"

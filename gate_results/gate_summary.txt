@@ -540,12 +540,12 @@ Volumes recomputed over sub-segment intersection of PCCT and EID
 centerlines (distance-from-ostium match, sub-voxel SDF). This isolates
 the systematic component of PCCT-EID bias from residual centerline-extent
 differences within shared named vessels.
-N = 25 paired patients with sub-segment data.
+N = 24 paired patients with sub-segment data.
 
 ======================================================================
 GATE 3 — CORE QUANTITATIVE REPRODUCIBILITY
 ======================================================================
-N = 25 paired patients (target: >=30)
+N = 24 paired patients (target: >=30)
 Acceptance: 95% CI overlap with B.1P Delta OQ (730-CVV-040)
 Primary metric: log-wCV for volumes, untransformed for length
 wCV method: variance-component / random-effects (Quan & Shih 1996; OQ 730-CVV-040) + scanner term (bias-removed residual)
@@ -557,57 +557,57 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 --- PRIMARY ENDPOINTS ---
 
 --- Lumen Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  11.74% [7.86%, 15.80%]
-  Log-wCV:            10.00% [6.99%, 12.58%]
+  N:                  24
+  Untransformed wCV:  10.40% [7.09%, 13.40%]
+  Log-wCV:            10.40% [6.63%, 13.24%]
 
   Original OQ (4-B1P-033):  7.64% [5.52%, 8.55%] (log-transformed)
   Delta OQ (730-CVV-040):   7.5% [5.9%, 9.3%] (log-wCV)
   Delta OQ (730-CVV-040):   9.32% [7.09%, 11.58%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [6.99%, 12.58%]
+    PCCT:      [6.63%, 13.24%]
     Delta OQ:  [5.9%, 9.3%]
     Overlap:   YES — PASS
 
 --- Wall Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  19.32% [13.32%, 23.75%]
-  Log-wCV:            12.01% [8.97%, 14.25%]
+  N:                  24
+  Untransformed wCV:  26.40% [16.97%, 33.16%]
+  Log-wCV:            13.29% [8.88%, 16.84%]
 
   Original OQ (4-B1P-033):  9.51% [6.60%, 11.16%] (log-transformed)
   Delta OQ (730-CVV-040):   13.1% [10.2%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   23.50% [17.88%, 29.71%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [8.97%, 14.25%]
+    PCCT:      [8.88%, 16.84%]
     Delta OQ:  [10.2%, 16.0%]
     Overlap:   YES — PASS
 
 --- Vessel Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  9.81% [6.96%, 12.24%]
-  Log-wCV:            9.05% [6.87%, 10.69%]
+  N:                  24
+  Untransformed wCV:  9.33% [6.65%, 11.73%]
+  Log-wCV:            9.10% [6.43%, 11.38%]
 
   Original OQ (4-B1P-033):  6.03% [4.44%, 6.74%] (log-transformed)
   Delta OQ (730-CVV-040):   8.7% [6.8%, 10.6%] (log-wCV)
   Delta OQ (730-CVV-040):   10.18% [7.83%, 12.38%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [6.87%, 10.69%]
+    PCCT:      [6.43%, 11.38%]
     Delta OQ:  [6.8%, 10.6%]
     Overlap:   YES — PASS
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [6.96%, 12.24%]
+    PCCT:      [6.65%, 11.73%]
     Delta OQ:  [7.83%, 12.38%]
     Overlap:   YES — PASS
 
 --- DESCRIPTIVE (vessel length) ---
 
 --- Vessel Length (mm) (DESCRIPTIVE) ---
-  N:                  25
-  Untransformed wCV:  0.31% [0.22%, 0.38%]
-  Log-wCV:            0.31% [0.24%, 0.36%]
+  N:                  24
+  Untransformed wCV:  0.00% [0.00%, 0.00%]
+  Log-wCV:            0.00% [0.00%, 0.00%]
 
   Original OQ (4-B1P-033):  5.27% [3.43%, 6.52%] (log-transformed)
   Delta OQ (730-CVV-040):   15.5% [12.2%, 18.8%] (log-wCV)
@@ -620,37 +620,37 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 --- SECONDARY ENDPOINTS (plaque volumes) ---
 
 --- CALC Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  18.65% [12.48%, 25.96%]
-  Log-wCV:            5.25% [3.69%, 6.27%]
+  N:                  24
+  Untransformed wCV:  23.74% [13.99%, 32.09%]
+  Log-wCV:            6.52% [3.66%, 8.60%]
 
   Original OQ (4-B1P-033):  13.9% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   4.5% [3.5%, 5.4%] (log-wCV)
   Delta OQ (730-CVV-040):   25.78% [18.70%, 35.75%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [12.48%, 25.96%]
+    PCCT:      [13.99%, 32.09%]
     Delta OQ:  [18.70%, 35.75%]
     Overlap:   YES — PASS
 
 --- LRNC Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  109.61% [36.38%, 199.01%]
-  Log-wCV:            9.40% [3.78%, 14.40%]
+  N:                  24
+  Untransformed wCV:  95.11% [47.33%, 170.00%]
+  Log-wCV:            6.40% [2.87%, 9.54%]
 
   Original OQ (4-B1P-033):  59.3% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   5.4% [4.1%, 6.9%] (log-wCV)
   Delta OQ (730-CVV-040):   78.80% [48.09%, 163.40%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [36.38%, 199.01%]
+    PCCT:      [47.33%, 170.00%]
     Delta OQ:  [48.09%, 163.40%]
     Overlap:   YES — PASS
 
 --- NonCALC Matrix Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  35.49% [26.42%, 44.51%]
-  Log-wCV:            17.05% [12.42%, 20.84%]
+  N:                  24
+  Untransformed wCV:  45.11% [30.78%, 57.49%]
+  Log-wCV:            18.59% [13.52%, 22.34%]
 
   Original OQ (4-B1P-033):  58.6% (untransformed, no CI reported)
     Note: Original reported as Total NCP (untransformed); improved in delta OQ
@@ -658,21 +658,21 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
   Delta OQ (730-CVV-040):   32.61% [24.87%, 41.94%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [26.42%, 44.51%]
+    PCCT:      [30.78%, 57.49%]
     Delta OQ:  [24.87%, 41.94%]
     Overlap:   YES — PASS
 
 --- Total Plaque Volume (mm³) [length-normalized] ---
-  N:                  25
-  Untransformed wCV:  25.71% [17.97%, 32.20%]
-  Log-wCV:            14.67% [11.05%, 17.48%]
+  N:                  24
+  Untransformed wCV:  35.29% [22.49%, 46.26%]
+  Log-wCV:            16.08% [11.02%, 20.16%]
 
   Original OQ (4-B1P-033):  44.1% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   13.2% [10.4%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   27.08% [20.68%, 34.74%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [17.97%, 32.20%]
+    PCCT:      [22.49%, 46.26%]
     Delta OQ:  [20.68%, 34.74%]
     Overlap:   YES — PASS
 
@@ -680,7 +680,7 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 ======================================================================
 GATE 4 — SYSTEMATIC BIAS & AGREEMENT
 ======================================================================
-N = 25 paired patients
+N = 24 paired patients
 Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.
   Process outputs (Lumen, Wall, Vessel): log(x+1) scale.
   Plaque (CALC, LRNC, NonCALC, Total): log(x+1) scale -- matches 730-CVV-040 Table 6
@@ -688,76 +688,76 @@ Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersecti
 Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/10% of mean.
 
 --- Lumen Volume (mm³)  [BA scale: log] ---
-  N:                     25
-  Log-scale bias:        -0.0990
-  Log-scale LoA:         [-0.4302, 0.2322]
-  Untransformed bias:    -87.34 (7.6% of mean)
+  N:                     24
+  Log-scale bias:        -0.0191
+  Log-scale LoA:         [-0.3739, 0.3357]
+  Untransformed bias:    -17.38 (1.4% of mean)
   Bias threshold:        |bias| < 5% of mean [project-specific, not OQ-derived]
-  Bias result:           FAIL
-  Proportional bias r²:  0.079 [0.001, 0.262]
+  Bias result:           PASS
+  Proportional bias r²:  0.012 [0.000, 0.185]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- Wall Volume (mm³)  [BA scale: log] ---
-  N:                     25
-  Log-scale bias:        -0.0852
-  Log-scale LoA:         [-0.5724, 0.4021]
-  Untransformed bias:    -42.07 (9.2% of mean)
+  N:                     24
+  Log-scale bias:        -0.2849
+  Log-scale LoA:         [-0.7969, 0.2271]
+  Untransformed bias:    -111.60 (27.8% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
-  Bias result:           PASS
-  Proportional bias r²:  0.002 [0.000, 0.172]
+  Bias result:           FAIL
+  Proportional bias r²:  0.001 [0.000, 0.138]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- CALC Volume (mm³)  [BA scale: log] ---
-  N:                     25
-  Log-scale bias:        0.2482
-  Log-scale LoA:         [-0.0943, 0.5907]
-  Untransformed bias:    24.93 (21.3% of mean)
+  N:                     24
+  Log-scale bias:        -0.0163
+  Log-scale LoA:         [-0.6001, 0.5674]
+  Untransformed bias:    0.19 (0.2% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
-  Bias result:           FAIL
-  Proportional bias r²:  0.004 [0.000, 0.169]
+  Bias result:           PASS
+  Proportional bias r²:  0.028 [0.000, 0.289]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- LRNC Volume (mm³)  [BA scale: log] ---
-  N:                     25
-  Log-scale bias:        0.3930
-  Log-scale LoA:         [-2.5758, 3.3618]
-  Untransformed bias:    6.46 (29.7% of mean)
+  N:                     24
+  Log-scale bias:        0.1289
+  Log-scale LoA:         [-2.3758, 2.6336]
+  Untransformed bias:    -1.37 (6.6% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
-  Bias result:           FAIL
-  Proportional bias r²:  0.017 [0.000, 0.182]
+  Bias result:           PASS
+  Proportional bias r²:  0.001 [0.000, 0.121]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- NonCALC Matrix Volume (mm³)  [BA scale: log] ---
-  N:                     25
-  Log-scale bias:        -0.3354
-  Log-scale LoA:         [-1.2368, 0.5660]
-  Untransformed bias:    -76.62 (36.6% of mean)
+  N:                     24
+  Log-scale bias:        -0.7928
+  Log-scale LoA:         [-2.0651, 0.4795]
+  Untransformed bias:    -114.80 (64.8% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.026 [0.000, 0.244]
+  Proportional bias r²:  0.165 [0.000, 0.553]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- Total Plaque Volume (mm³)  [BA scale: log] ---
-  N:                     25
-  Log-scale bias:        -0.1186
-  Log-scale LoA:         [-0.7881, 0.5508]
-  Untransformed bias:    -45.22 (13.0% of mean)
+  N:                     24
+  Log-scale bias:        -0.5061
+  Log-scale LoA:         [-1.3247, 0.3126]
+  Untransformed bias:    -114.62 (42.3% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.000 [0.000, 0.139]
+  Proportional bias r²:  0.093 [0.000, 0.394]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- Limits of Agreement Summary (per-variable scale; raw volumes) ---
 
 Variable                                Scale       Bias    LoA Lower    LoA Upper     r2          r2 95% CI   Result
 -------------------------------------------------------------------------------------------------------------------
-Lumen Volume (mm³)                        log    -0.0990      -0.4302       0.2322  0.079     [0.001, 0.262]     PASS
-Wall Volume (mm³)                         log    -0.0852      -0.5724       0.4021  0.002     [0.000, 0.172]     PASS
-Vessel Volume (mm³)                       log    -0.0867      -0.3771       0.2037  0.044     [0.000, 0.273]     PASS
-CALC Volume (mm³)               untransformed      24.93       -32.67        82.54  0.384     [0.011, 0.859]     PASS
-LRNC Volume (mm³)               untransformed       6.46       -39.62        52.54  0.032     [0.001, 0.811]     PASS
-NonCALC Matrix Volume (mm³)     untransformed     -76.62      -307.90       154.66  0.395     [0.068, 0.673]     PASS
-Total Plaque Volume (mm³)       untransformed     -45.22      -299.22       208.77  0.170     [0.003, 0.552]     PASS
+Lumen Volume (mm³)                        log    -0.0191      -0.3739       0.3357  0.012     [0.000, 0.185]     PASS
+Wall Volume (mm³)                         log    -0.2849      -0.7969       0.2271  0.001     [0.000, 0.138]     PASS
+Vessel Volume (mm³)                       log    -0.0798      -0.3748       0.2153  0.002     [0.000, 0.171]     PASS
+CALC Volume (mm³)               untransformed       0.19       -48.01        48.38  0.003     [0.000, 0.270]     PASS
+LRNC Volume (mm³)               untransformed      -1.37       -46.94        44.19  0.576     [0.004, 0.935]     PASS
+NonCALC Matrix Volume (mm³)     untransformed    -114.80      -340.03       110.42  0.428     [0.148, 0.682]     FAIL
+Total Plaque Volume (mm³)       untransformed    -114.62      -367.96       138.73  0.317     [0.065, 0.603]     PASS
 
 Proportional bias: PASS if r2 95% CI lower bound < 0.1
 
@@ -765,54 +765,54 @@ Proportional bias: PASS if r2 95% CI lower bound < 0.1
 ======================================================================
 SCANNER-ATTRIBUTABLE VARIANCE (subsegment) -- decomposition vs OQ inter-observer
 ======================================================================
-N = 25 paired patients.  sigma2_scanner = Var(d_log)/2 - ln(1+(OQ_logCV/100)^2).
+N = 24 paired patients.  sigma2_scanner = Var(d_log)/2 - ln(1+(OQ_logCV/100)^2).
 OQ inter-observer log-CV from 730-CVV-040 ATTACHMENT 2 (patient level).
 (a) scanner wCV <= OQ limit;  (b) sigma2_scanner 95% CI includes 0.
 
 --- Lumen Volume (mm³) ---
-  sigma2_cross=0.00996  sigma2_OQ=0.00561  sigma2_scanner=0.00435 [-0.00070, 0.00966]
-  scanner wCV=6.60% [0.00%, 9.85%]   OQ inter-observer limit=7.50%
+  sigma2_cross=0.01075  sigma2_OQ=0.00561  sigma2_scanner=0.00515 [-0.00117, 0.01173]
+  scanner wCV=7.18% [0.00%, 10.86%]   OQ inter-observer limit=7.50%
   (a) scanner wCV <= OQ limit: PASS
   (b) sigma2_scanner 95% CI includes 0: PASS
 
 --- Wall Volume (mm³) ---
-  sigma2_cross=0.01431  sigma2_OQ=0.01702  sigma2_scanner=-0.00270 [-0.00893, 0.00312]
-  scanner wCV=0.00% [0.00%, 5.59%]   OQ inter-observer limit=13.10%
+  sigma2_cross=0.01751  sigma2_OQ=0.01702  sigma2_scanner=0.00050 [-0.00938, 0.01092]
+  scanner wCV=2.23% [0.00%, 10.48%]   OQ inter-observer limit=13.10%
   (a) scanner wCV <= OQ limit: PASS
   (b) sigma2_scanner 95% CI includes 0: PASS
 
 --- Vessel Volume (mm³) ---
-  sigma2_cross=0.00815  sigma2_OQ=0.00754  sigma2_scanner=0.00061 [-0.00274, 0.00375]
-  scanner wCV=2.47% [0.00%, 6.13%]   OQ inter-observer limit=8.70%
+  sigma2_cross=0.00825  sigma2_OQ=0.00754  sigma2_scanner=0.00071 [-0.00338, 0.00502]
+  scanner wCV=2.66% [0.00%, 7.10%]   OQ inter-observer limit=8.70%
   (a) scanner wCV <= OQ limit: PASS
   (b) sigma2_scanner 95% CI includes 0: PASS
 
 --- Vessel Length (mm) ---
-  sigma2_cross=0.00001  sigma2_OQ=0.02374  sigma2_scanner=-0.02373 [-0.02374, -0.02373]
+  sigma2_cross=0.00000  sigma2_OQ=0.02374  sigma2_scanner=-0.02374 [-0.02374, -0.02374]
   scanner wCV=0.00% [0.00%, 0.00%]   OQ inter-observer limit=15.50%
   (a) scanner wCV <= OQ limit: PASS
   (b) sigma2_scanner 95% CI includes 0: PASS
 
 --- CALC Volume (mm³) ---
-  sigma2_cross=0.00275  sigma2_OQ=0.00202  sigma2_scanner=0.00073 [-0.00061, 0.00191]
-  scanner wCV=2.70% [0.00%, 4.38%]   OQ inter-observer limit=4.50%
-  (a) scanner wCV <= OQ limit: PASS
-  (b) sigma2_scanner 95% CI includes 0: PASS
-
---- LRNC Volume (mm³) ---
-  sigma2_cross=0.00879  sigma2_OQ=0.00291  sigma2_scanner=0.00588 [-0.00155, 0.01720]
-  scanner wCV=7.68% [0.00%, 13.17%]   OQ inter-observer limit=5.40%
+  sigma2_cross=0.00425  sigma2_OQ=0.00202  sigma2_scanner=0.00222 [-0.00059, 0.00545]
+  scanner wCV=4.72% [0.00%, 7.40%]   OQ inter-observer limit=4.50%
   (a) scanner wCV <= OQ limit: FAIL
   (b) sigma2_scanner 95% CI includes 0: PASS
 
---- NonCALC Matrix Volume (mm³) ---
-  sigma2_cross=0.02866  sigma2_OQ=0.01833  sigma2_scanner=0.01033 [-0.00280, 0.02378]
-  scanner wCV=10.19% [0.00%, 15.51%]   OQ inter-observer limit=13.60%
+--- LRNC Volume (mm³) ---
+  sigma2_cross=0.00409  sigma2_OQ=0.00291  sigma2_scanner=0.00117 [-0.00209, 0.00636]
+  scanner wCV=3.43% [0.00%, 7.99%]   OQ inter-observer limit=5.40%
   (a) scanner wCV <= OQ limit: PASS
   (b) sigma2_scanner 95% CI includes 0: PASS
 
+--- NonCALC Matrix Volume (mm³) ---
+  sigma2_cross=0.03396  sigma2_OQ=0.01833  sigma2_scanner=0.01563 [0.00030, 0.02989]
+  scanner wCV=12.55% [1.75%, 17.42%]   OQ inter-observer limit=13.60%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
 --- Total Plaque Volume (mm³) ---
-  sigma2_cross=0.02129  sigma2_OQ=0.01727  sigma2_scanner=0.00402 [-0.00507, 0.01246]
-  scanner wCV=6.34% [0.00%, 11.20%]   OQ inter-observer limit=13.20%
+  sigma2_cross=0.02551  sigma2_OQ=0.01727  sigma2_scanner=0.00824 [-0.00549, 0.02151]
+  scanner wCV=9.10% [0.00%, 14.75%]   OQ inter-observer limit=13.20%
   (a) scanner wCV <= OQ limit: PASS
   (b) sigma2_scanner 95% CI includes 0: PASS

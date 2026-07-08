@@ -4,15 +4,18 @@
 
 ---
 
-## STATUS 2026-07-08 — regeneration on latest (07-07) data: STARTED, then DEFERRED
+## STATUS 2026-07-08 — regeneration on latest (07-07) data: COMPLETED (N=24)
 
-**Decision:** deferred. The CSV-level (canonical, vessel-overlap) analysis already tells the
-story cleanly — with the corrected variance-component estimator **+ scanner term**, the process
-outputs pass the OQ CI-overlap on the original *and* current data without any sub-segment
-alignment, and the variance decomposition shows the 07-07 re-work changed the *systematic bias*
-(Gate 4), not the *random dispersion* (Gate 3). Sub-segment is now tracked as **potential
-future granular work**, to (i) remove the traced-extent confound from the scanner-attributable
-minuend and (ii) confirm the process-output pass with extent matched.
+**Done.** Regenerated the sub-segment intersection volumes on the current (2026-07-07) workitem
+data and rebuilt the sub-segment CSVs (`workitem_summaries/subsegment/{PCCT,EID}`, N=24). Fixed
+the wrapper's `set -e` right-first bug (targets now run independently — see the two
+`run_for_target ... || echo skip` lines) which recovered the left-only/right-only patients.
+Excluded: PT-124 (no vessel overlap) and PT-136 (duplicate `LeftCoronary` in both workitems,
+left-only → unrecoverable). Exported paired data to `gate_results/paired_data_subsegment.csv`
+(v2) and `gate_results_v1_original/paired_data_subsegment.csv` (v1 vintage, preserved). The
+scanner-attributable analysis and the statistical-method report now show canonical vs sub-segment
+for both v1 and v2. Result: on the extent-matched sub-segment, scanner-attributable variance is
+≤ OQ / CI-includes-0 for nearly all endpoints (Wall 12.1→2.2, Vessel 9.1→2.7 canonical→subseg).
 
 **What was set up (still on the box, resumable):**
 - Compute env re-provisioned on **ip3-manager `i-00ed8d06ee63ee937`**: venv at

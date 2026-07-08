@@ -12,8 +12,10 @@ import csv, math, os
 import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-V1 = os.path.join(ROOT, "gate_results_v1_original", "paired_data.csv")
-V2 = os.path.join(ROOT, "gate_results", "paired_data.csv")
+V1C = os.path.join(ROOT, "gate_results_v1_original", "paired_data.csv")
+V1S = os.path.join(ROOT, "gate_results_v1_original", "paired_data_subsegment.csv")
+V2C = os.path.join(ROOT, "gate_results", "paired_data.csv")
+V2S = os.path.join(ROOT, "gate_results", "paired_data_subsegment.csv")
 NBOOT, SEED = 2000, 42
 
 # OQ inter-observer references (730-CVV-040 / ATTACHMENT 2 patient level): (pt, lo, hi)
@@ -104,7 +106,9 @@ def compute(path):
     return out
 
 
-R1, R2 = compute(V1), compute(V2)
+R = {"v1c": compute(V1C), "v1s": compute(V1S), "v2c": compute(V2C), "v2s": compute(V2S)}
+R1, R2 = R["v1c"], R["v2c"]  # canonical (back-compat)
+COLS = [("v1c", "v1 canonical"), ("v1s", "v1 sub-seg"), ("v2c", "v2 canonical"), ("v2s", "v2 sub-seg")]
 
 
 # ─────────────────────────────────────────────────────────── Word report ──
@@ -186,53 +190,59 @@ def build_docx():
           [[OQ[v]["lab"], f'{OQ[v]["log"][0]}% [{OQ[v]["log"][1]}, {OQ[v]["log"][2]}]',
             f'{OQ[v]["ut"][0]}% [{OQ[v]["ut"][1]}, {OQ[v]["ut"][2]}]'] for v in OQ])
 
-    h("5. Results — variance decomposition (log scale, canonical)")
-    def dec_rows(R):
+    h("5. Results — variance decomposition (log scale), canonical & sub-segment")
+    def dec_rows(rr):
         out = []
         for v in OQ:
-            r = R[v]
+            r = rr[v]
             out.append([OQ[v]["lab"], f'{r["delta"]:+.3f}', f'{r["s2_total"]:.5f}', f'{r["s2_rand"]:.5f}',
                         f'{r["s2_oq"]:.5f}', f'{r["s2_scan"]:.5f}', f'{r["wcv_total_log"]:.1f}',
                         f'{r["wcv_rand_log"]:.1f}', f'{r["wcv_scan_log"]:.1f}'])
         return out
     hdr = ["Endpoint", "Δ bias", "σ²_total", "σ²_rand", "σ²_OQ", "σ²_scan",
            "wCV_tot", "wCV_scanT", "wCV_attrib"]
-    p("v1 (original data):", bold=True); table(hdr, dec_rows(R1))
-    p("v2 (2026-07-07 data):", bold=True); table(hdr, dec_rows(R2))
-    p("Key: σ²_random (and σ²_scanner) are essentially unchanged v1→v2 for every endpoint; only Δ "
-      "(systematic bias) grew. The 07-07 re-work changed the bias (Gate 4), not the random "
+    for key, lab in COLS:
+        p(f"{lab}  (N={R[key]['n']}):", bold=True); table(hdr, dec_rows(R[key]))
+    p("Key: within a vintage, σ²_random / σ²_scanner shrink from canonical → sub-segment (the "
+      "traced-extent term is removed). Across vintages (canonical), σ²_random is stable while Δ "
+      "(systematic bias) grew v1→v2 — the 07-07 re-work changed the bias (Gate 4), not the random "
       "reproducibility (Gate 3).", italic=True)
 
-    h("6. Gate 3 acceptance — scanner-term wCV vs OQ (95% CI overlap)")
-    def g3_rows(R, scale):
-        out = []
-        vs = PROCESS + PLAQUE if scale == "log" else PLAQUE
-        for v in vs:
-            r = R[v]
-            if scale == "log":
-                wcv, ci, ok, oq = r["wcv_rand_log"], r["wcv_rand_log_ci"], r["gate3_pass_log"], OQ[v]["log"]
-            else:
-                wcv, ci, ok, oq = r["wcv_rand_ut"], r["wcv_rand_ut_ci"], r["gate3_pass_ut"], OQ[v]["ut"]
-            out.append([OQ[v]["lab"], f'{oq[0]}% [{oq[1]}, {oq[2]}]',
-                        f'{wcv:.1f}% [{ci[0]:.1f}, {ci[1]:.1f}]', "PASS" if ok else "FAIL"])
-        return out
-    hdr3 = ["Endpoint", "OQ wCV [95% CI]", "PCCT wCV [95% CI]", "Overlap"]
-    p("Log scale — process outputs (primary) + plaque:", bold=True)
-    p("v1:"); table(hdr3, g3_rows(R1, "log")); p("v2:"); table(hdr3, g3_rows(R2, "log"))
-    p("Untransformed scale — plaque (reported on both scales):", bold=True)
-    p("v1:"); table(hdr3, g3_rows(R1, "ut")); p("v2:"); table(hdr3, g3_rows(R2, "ut"))
+    def cell_g3(r, scale):
+        if scale == "log":
+            return f'{r["wcv_rand_log"]:.1f} {"P" if r["gate3_pass_log"] else "F"}'
+        return f'{r["wcv_rand_ut"]:.1f} {"P" if r["gate3_pass_ut"] else "F"}'
 
-    h("7. Scanner-attributable variance vs OQ (canonical; extent not yet removed)")
-    def sa_rows(R):
-        out = []
-        for v in OQ:
-            r = R[v]
-            out.append([OQ[v]["lab"], f'{r["wcv_scan_log"]:.1f}% [{r["wcv_scan_ci"][0]:.1f}, {r["wcv_scan_ci"][1]:.1f}]',
-                        f'{OQ[v]["log"][0]}%', "PASS" if r["scan_a_pass"] else "FAIL",
-                        "PASS" if r["scan_b_pass"] else "FAIL"])
-        return out
-    hdrsa = ["Endpoint", "scanner-attrib wCV [95% CI]", "OQ limit", "(a) ≤ OQ", "(b) CI incl 0"]
-    p("v1:"); table(hdrsa, sa_rows(R1)); p("v2:"); table(hdrsa, sa_rows(R2))
+    h("6. Gate 3 acceptance — scanner-term wCV vs OQ (95% CI overlap; P=pass/F=fail)")
+    hdr3 = ["Endpoint", "OQ wCV"] + [c[1] for c in COLS]
+    p("Log scale — process outputs (primary) + plaque:", bold=True)
+    rows = []
+    for v in PROCESS + PLAQUE:
+        rows.append([OQ[v]["lab"], f'{OQ[v]["log"][0]} [{OQ[v]["log"][1]},{OQ[v]["log"][2]}]']
+                    + [cell_g3(R[k][v], "log") for k, _ in COLS])
+    table(hdr3, rows)
+    p("Untransformed scale — plaque (reported on both scales):", bold=True)
+    rows = []
+    for v in PLAQUE:
+        rows.append([OQ[v]["lab"], f'{OQ[v]["ut"][0]} [{OQ[v]["ut"][1]},{OQ[v]["ut"][2]}]']
+                    + [cell_g3(R[k][v], "ut") for k, _ in COLS])
+    table(hdr3, rows)
+    p("Cells: scanner-term wCV% and overlap verdict; 95% CIs are in §5 / gate3_comparison.csv.",
+      italic=True)
+
+    h("7. Scanner-attributable variance vs OQ — canonical vs sub-segment (a: wCV≤OQ, b: CI∋0)")
+    hdrsa = ["Endpoint", "OQ limit"] + [c[1] for c in COLS]
+    rows = []
+    for v in OQ:
+        cells = []
+        for k, _ in COLS:
+            r = R[k][v]
+            cells.append(f'{r["wcv_scan_log"]:.1f} {"P" if r["scan_a_pass"] else "F"}/{"P" if r["scan_b_pass"] else "F"}')
+        rows.append([OQ[v]["lab"], f'{OQ[v]["log"][0]}'] + cells)
+    table(hdrsa, rows)
+    p("Cells: scanner-attributable wCV%  a/b (P/F). Canonical still contains the traced-extent "
+      "term; sub-segment removes it — scanner-attributable variance drops accordingly and is "
+      "≤ OQ / CI-includes-0 for nearly all endpoints on sub-segment.", italic=True)
 
     h("8. Interpretation")
     for b in [
@@ -245,18 +255,21 @@ def build_docx():
         "plaque endpoints overlap; on the log scale the tightest-limit component (CALC) is borderline "
         "and just fails on v2. Both scales are reported.",
         "Scanner-attributable variance (Var(d)/2 − σ²_OQ) is ≤ the OQ limit / CI-includes-0 for most "
-        "endpoints even before extent control; on the extent-controlled sub-segment region (preview) "
-        "it is ≤ OQ / CI-includes-0 for nearly all endpoints.",
+        "endpoints on the canonical region, and on the extent-controlled sub-segment region "
+        "(regenerated on v2, N=24) it is ≤ OQ / CI-includes-0 for nearly all endpoints — i.e. after "
+        "removing reader+repeat (OQ) and traced extent (sub-segment), the residual scanner-attributable "
+        "variability is within the OQ envelope.",
     ]:
         doc.add_paragraph(b, style="List Bullet")
 
     h("9. Caveats & future work")
     for b in [
-        "N = 25, preliminary (target ≥ 30); passes are CI-overlap-driven with wide CIs.",
+        "N = 25 canonical / 24 sub-segment, preliminary (target ≥ 30); passes are CI-overlap-driven "
+        "with wide CIs.",
         "Canonical region retains a traced-extent differential (PCCT traces ~+26% longer within "
-        "shared vessels; Gate 2 REVIEW). Sub-segment (distance-from-ostium) intersection removes it "
-        "and is tracked as potential future granular work (compute env provisioned; see "
-        "scripts/subsegment/RESUME.md).",
+        "shared vessels; Gate 2 REVIEW). The sub-segment (distance-from-ostium) intersection removes "
+        "it; regenerated on v2 (2026-07-07) data, N=24 (PT-124 no vessel overlap, PT-136 duplicate "
+        "LeftCoronary in workitem.json — both excluded). Pipeline: scripts/subsegment/.",
         "Scanner-attributable subtraction assumes the OQ reader+repeat variance is transportable to "
         "the PCCT setting, and that PCCT/EID reads are by independent readers (single read per "
         "patient·scanner; true scanner isolation would need replicate reads).",
@@ -385,16 +398,13 @@ def build_pptx():
                 ["Endpoint", "Δ bias (log)", "σ²_random", "wCV scanner-term %"], dec,
                 colw=[3.0, 4.0, 3.6, 3.0])
 
-    # 6 scanner-attributable
-    sa = []
-    for v in OQ:
-        r = R2[v]
-        sa.append([OQ[v]["lab"], f'{r["wcv_scan_log"]:.1f} [{r["wcv_scan_ci"][0]:.1f}, {r["wcv_scan_ci"][1]:.1f}]',
-                   f'{OQ[v]["log"][0]}', "PASS" if r["scan_a_pass"] else "FAIL",
-                   "PASS" if r["scan_b_pass"] else "FAIL"])
-    table_slide("Scanner-attributable variance vs OQ (v2, canonical)",
-                ["Endpoint", "scanner wCV [95% CI]", "OQ", "(a) ≤OQ", "(b) CI∋0"], sa,
-                colw=[2.8, 4.0, 1.4, 2.0, 2.0], size=11)
+    # 6 scanner-attributable — v2 canonical vs sub-segment
+    def sacell(r):
+        return f'{r["wcv_scan_log"]:.1f}  {"P" if r["scan_a_pass"] else "F"}/{"P" if r["scan_b_pass"] else "F"}'
+    sa = [[OQ[v]["lab"], f'{OQ[v]["log"][0]}', sacell(R["v2c"][v]), sacell(R["v2s"][v])] for v in OQ]
+    table_slide("Scanner-attributable variance vs OQ (v2): canonical vs sub-segment",
+                ["Endpoint", "OQ", "canonical  wCV a/b", "sub-segment  wCV a/b"], sa,
+                colw=[3.2, 1.6, 3.9, 3.9], size=13)
 
     # 7 conclusions
     s = slide("Conclusions & future work")
@@ -403,10 +413,10 @@ def build_pptx():
          "region — no sub-segment needed. Separating the systematic bias into Gate 4 is the key step.", 0, GREEN),
         ("Dispersion is vintage-stable; the 07-07 re-work increased systematic bias, not noise.", 0, None),
         ("Plaque: passes on untransformed scale (wide OQ CIs); CALC borderline on log scale — both reported.", 0, None),
-        ("Scanner-attributable variance ≤ OQ / CI-includes-0 for most endpoints (canonical), and nearly "
-         "all on the extent-controlled sub-segment preview.", 0, None),
-        ("Future granular work: regenerate sub-segment (extent-matched) volumes to finalize the "
-         "scanner-attributable minuend; expand to N ≥ 30.", 0, BLUE),
+        ("Scanner-attributable variance (Var(d)/2 − σ²_OQ) ≤ OQ / CI-includes-0 for most endpoints on "
+         "canonical, and nearly all on the extent-matched sub-segment (regenerated on v2, N=24).", 0, None),
+        ("After removing reader+repeat (OQ) and traced extent (sub-segment), the residual scanner "
+         "variability is within the OQ envelope. Next: expand to N ≥ 30.", 0, BLUE),
     ], top=1.5, size=17)
 
     out = os.path.join(ROOT, "PCCT_Statistical_Methods_and_Results.pptx")
