@@ -104,6 +104,15 @@ because it is too noisy to reject (low power) — do not read that as agreement.
 Wall bias is only tested under `pct-threshold` (project-specific, no OQ ref) and
 has been growing across re-processing: 9.3% (May) → 20.7% (07-06) → 28.3% (07-07).
 
+**Plaque Bland-Altman is on the log(x+1) scale** (changed 2026-07-08): the delta
+OQ Table 6 plaque BA is log-scale, and raw plaque volumes are heteroscedastic
+(spread grows with magnitude → funnel), so log is both OQ-consistent and the
+statistically correct representation. The BA plots overlay the OQ Table 6 **bias
+line, bias 95% CI band, and LoA band** against the **PCCT bias 95% CI band**, so
+the CI-overlap acceptance is visible (title annotates PASS/FAIL). OQ-vs-PCCT
+side-by-side tables with CIs are emitted to `gate_results/gate3_comparison.csv`
+(wCV) and `gate4_comparison.csv` (bias) and rendered in the report.
+
 Caveat: sub-segment bias verdicts are on **stale** segmentations; regenerate
 before use.
 

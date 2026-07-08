@@ -246,6 +246,45 @@ def config_matrix_html():
     return "".join(h)
 
 
+def comparison_table_html(kind):
+    """Render gate_results/{gate3,gate4}_comparison.csv as an OQ-vs-PCCT side-by-side
+    table with 95% CIs."""
+    path = ROOT / "gate_results" / f"{kind}_comparison.csv"
+    if not path.exists():
+        return "<p class='meta'><em>(comparison table not generated — re-run run_gate_analyses.py)</em></p>"
+    rows = list(csv.DictReader(open(path, encoding="utf-8")))
+
+    def verdict(v):
+        if v == "YES":
+            return '<span class="pass">overlap ✓</span>'
+        if v == "NO":
+            return '<span class="fail">no overlap ✗</span>'
+        return v
+
+    if kind == "gate3":
+        h = ['<table><tr><th>Endpoint</th><th>Metric</th>'
+             '<th>OQ delta wCV [95% CI]</th><th>PCCT wCV [95% CI]</th><th>CI overlap</th></tr>']
+        for r in rows:
+            h.append(f"<tr><td>{r['endpoint']}</td><td>{r['metric']}</td>"
+                     f"<td>{r['oq_wcv']}% [{r['oq_ci_lo']}, {r['oq_ci_hi']}]</td>"
+                     f"<td>{r['pcct_wcv']}% [{r['pcct_ci_lo']}, {r['pcct_ci_hi']}]</td>"
+                     f"<td>{verdict(r['ci_overlap'])}</td></tr>")
+        h.append("</table>")
+        return "".join(h)
+    # gate4
+    h = ['<table><tr><th>Endpoint (log scale)</th><th>OQ bias [95% CI]</th><th>OQ LoA</th>'
+         '<th>PCCT bias [95% CI]</th><th>PCCT LoA</th><th>bias CI overlap</th></tr>']
+    for r in rows:
+        h.append(f"<tr><td>{r['endpoint']}</td>"
+                 f"<td>{r['oq_bias']} [{r['oq_bias_ci_lo']}, {r['oq_bias_ci_hi']}]</td>"
+                 f"<td>[{r['oq_loa_lo']}, {r['oq_loa_hi']}]</td>"
+                 f"<td>{r['pcct_bias']} [{r['pcct_bias_ci_lo']}, {r['pcct_bias_ci_hi']}]</td>"
+                 f"<td>[{r['pcct_loa_lo']}, {r['pcct_loa_hi']}]</td>"
+                 f"<td>{verdict(r['bias_ci_overlap'])}</td></tr>")
+    h.append("</table>")
+    return "".join(h)
+
+
 def main():
     gate_summary = read(ROOT / "gate_results" / "gate_summary.txt")
     gate1 = extract_block(gate_summary, r"^GATE 1.*?$")
@@ -397,6 +436,9 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 
 <section>
 <h2>Gate 3 — Quantitative Reproducibility</h2>
+<h3>OQ reference vs PCCT result — wCV with 95% CIs</h3>
+<p class="meta" contenteditable="true">Primary metric per endpoint (log-wCV for process outputs, untransformed for plaque), variance-component estimator, canonical region, N=25. Acceptance = 95% CI overlap with the delta OQ.</p>
+{comparison_table_html("gate3")}
 <pre class="uneditable">{html_escape(gate3)}</pre>
 <div class="panel" contenteditable="true">
 <strong>Reviewer commentary:</strong> The block above is the <em>variance-component (default)</em> config. Under the corrected (OQ-consistent) estimator the process outputs (Lumen/Wall/Vessel) FAIL the CI-overlap on the canonical region — the systematic modality bias inflates the raw cross-scanner wCV. They come within OQ with the <em>scanner-term</em> (bias removed) or on the <em>sub-segment</em> region (extent matched). See the configuration matrix above and <code>tracker/statistical-methodology.md</code>. Plaque wCV passes broadly.
@@ -405,6 +447,9 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 
 <section>
 <h2>Gate 4 — Bias & Agreement</h2>
+<h3>OQ reference vs PCCT result — plaque Bland-Altman bias (log scale) with 95% CIs</h3>
+<p class="meta" contenteditable="true">Plaque BA on log(x+1) scale (matches 730-CVV-040 Table 6; raw plaque volumes are heteroscedastic). Acceptance = PCCT bias 95% CI overlaps the OQ Table 6 bias 95% CI. The BA plots below overlay the OQ bias line, OQ bias CI, and OQ LoA band so overlap is visible.</p>
+{comparison_table_html("gate4")}
 <pre class="uneditable">{html_escape(gate4)}</pre>
 
 <h3>Bland-Altman plots</h3>

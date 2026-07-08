@@ -313,8 +313,9 @@ GATE 4 — SYSTEMATIC BIAS & AGREEMENT
 ======================================================================
 N = 25 paired patients
 Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.
-  Process outputs (Lumen, Wall, Vessel): log(x+1) scale -- matches 730-CVV-040 Table 6.
-  Plaque (CALC, LRNC, NonCALC, Total): untransformed -- matches 4-B1P-033 Table 9.
+  Process outputs (Lumen, Wall, Vessel): log(x+1) scale.
+  Plaque (CALC, LRNC, NonCALC, Total): log(x+1) scale -- matches 730-CVV-040 Table 6
+    (raw plaque volumes are heteroscedastic; OQ plaque BA is log-scale).
 Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/10% of mean.
 
 --- Lumen Volume (mm³)  [BA scale: log] ---
@@ -337,44 +338,44 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Proportional bias r²:  0.003 [0.000, 0.158]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- CALC Volume (mm³)  [BA scale: untransformed] ---
+--- CALC Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            -3.18
-  LoA (raw):             [-63.84, 57.49]
+  Log-scale bias:        -0.0073
+  Log-scale LoA:         [-0.5564, 0.5417]
   Untransformed bias:    -3.18 (2.7% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           PASS
-  Proportional bias r²:  0.212 [0.000, 0.633]
+  Proportional bias r²:  0.001 [0.000, 0.200]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- LRNC Volume (mm³)  [BA scale: untransformed] ---
+--- LRNC Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            -4.18
-  LoA (raw):             [-57.93, 49.57]
+  Log-scale bias:        -0.1507
+  Log-scale LoA:         [-2.9700, 2.6686]
   Untransformed bias:    -4.18 (17.2% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.566 [0.002, 0.906]
+  Proportional bias r²:  0.005 [0.000, 0.158]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- NonCALC Matrix Volume (mm³)  [BA scale: untransformed] ---
+--- NonCALC Matrix Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            -108.89
-  LoA (raw):             [-300.88, 83.10]
+  Log-scale bias:        -0.5008
+  Log-scale LoA:         [-1.2669, 0.2653]
   Untransformed bias:    -108.89 (47.0% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.484 [0.188, 0.744]
-  Prop. bias result:     FAIL (threshold: 95% CI lower bound < 0.1)
+  Proportional bias r²:  0.028 [0.000, 0.309]
+  Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- Total Plaque Volume (mm³)  [BA scale: untransformed] ---
+--- Total Plaque Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            -116.25
-  LoA (raw):             [-362.20, 129.71]
+  Log-scale bias:        -0.3433
+  Log-scale LoA:         [-0.9839, 0.2972]
   Untransformed bias:    -116.25 (31.3% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.400 [0.071, 0.721]
+  Proportional bias r²:  0.025 [0.000, 0.277]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- Limits of Agreement Summary (per-variable scale; raw volumes) ---
@@ -625,8 +626,9 @@ GATE 4 — SYSTEMATIC BIAS & AGREEMENT
 ======================================================================
 N = 25 paired patients
 Method: Bland-Altman on raw volumes (PCCT minus EID), per-pair target intersection.
-  Process outputs (Lumen, Wall, Vessel): log(x+1) scale -- matches 730-CVV-040 Table 6.
-  Plaque (CALC, LRNC, NonCALC, Total): untransformed -- matches 4-B1P-033 Table 9.
+  Process outputs (Lumen, Wall, Vessel): log(x+1) scale.
+  Plaque (CALC, LRNC, NonCALC, Total): log(x+1) scale -- matches 730-CVV-040 Table 6
+    (raw plaque volumes are heteroscedastic; OQ plaque BA is log-scale).
 Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/10% of mean.
 
 --- Lumen Volume (mm³)  [BA scale: log] ---
@@ -649,44 +651,44 @@ Bias criterion: pct-threshold [project-specific, NOT OQ-derived] -- |bias| < 5%/
   Proportional bias r²:  0.002 [0.000, 0.172]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- CALC Volume (mm³)  [BA scale: untransformed] ---
+--- CALC Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            24.93
-  LoA (raw):             [-32.67, 82.54]
+  Log-scale bias:        0.2482
+  Log-scale LoA:         [-0.0943, 0.5907]
   Untransformed bias:    24.93 (21.3% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.384 [0.011, 0.859]
+  Proportional bias r²:  0.004 [0.000, 0.169]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- LRNC Volume (mm³)  [BA scale: untransformed] ---
+--- LRNC Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            6.46
-  LoA (raw):             [-39.62, 52.54]
+  Log-scale bias:        0.3930
+  Log-scale LoA:         [-2.5758, 3.3618]
   Untransformed bias:    6.46 (29.7% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.032 [0.001, 0.811]
+  Proportional bias r²:  0.017 [0.000, 0.182]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- NonCALC Matrix Volume (mm³)  [BA scale: untransformed] ---
+--- NonCALC Matrix Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            -76.62
-  LoA (raw):             [-307.90, 154.66]
+  Log-scale bias:        -0.3354
+  Log-scale LoA:         [-1.2368, 0.5660]
   Untransformed bias:    -76.62 (36.6% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.395 [0.068, 0.673]
+  Proportional bias r²:  0.026 [0.000, 0.244]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
---- Total Plaque Volume (mm³)  [BA scale: untransformed] ---
+--- Total Plaque Volume (mm³)  [BA scale: log] ---
   N:                     25
-  Bias (raw):            -45.22
-  LoA (raw):             [-299.22, 208.77]
+  Log-scale bias:        -0.1186
+  Log-scale LoA:         [-0.7881, 0.5508]
   Untransformed bias:    -45.22 (13.0% of mean)
   Bias threshold:        |bias| < 10% of mean [project-specific, not OQ-derived]
   Bias result:           FAIL
-  Proportional bias r²:  0.170 [0.003, 0.552]
+  Proportional bias r²:  0.000 [0.000, 0.139]
   Prop. bias result:     PASS (threshold: 95% CI lower bound < 0.1)
 
 --- Limits of Agreement Summary (per-variable scale; raw volumes) ---

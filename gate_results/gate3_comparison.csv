@@ -1,0 +1,9 @@
+endpoint,metric,oq_wcv,oq_ci_lo,oq_ci_hi,pcct_wcv,pcct_ci_lo,pcct_ci_hi,ci_overlap
+Lumen Volume (mm³),log-wCV,7.5,5.9,9.3,14.16,11.25,17.10,NO
+Wall Volume (mm³),log-wCV,13.1,10.2,16.0,27.51,20.96,33.60,NO
+Vessel Volume (mm³),log-wCV,8.7,6.8,10.6,18.53,15.02,21.72,NO
+Vessel Length (mm),untransf-wCV,13.88,10.72,17.38,24.79,18.65,30.84,NO
+CALC Volume (mm³),untransf-wCV,25.78,18.7,35.75,35.36,21.23,51.71,YES
+LRNC Volume (mm³),untransf-wCV,78.8,48.09,163.4,96.48,44.96,161.79,YES
+NonCALC Matrix Volume (mm³),untransf-wCV,32.61,24.87,41.94,57.73,39.56,74.25,YES
+Total Plaque Volume (mm³),untransf-wCV,27.08,20.68,34.74,48.29,30.43,65.16,YES
