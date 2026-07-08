@@ -4,6 +4,10 @@ Wall Volume (mm³),log-wCV,13.1,10.2,16.0,17.92,14.24,20.67,YES
 Vessel Volume (mm³),log-wCV,8.7,6.8,10.6,12.58,9.92,14.37,YES
 Vessel Length (mm),untransf-wCV,13.88,10.72,17.38,21.92,16.57,26.45,YES
 CALC Volume (mm³),untransf-wCV,25.78,18.7,35.75,33.60,20.73,46.73,YES
+CALC Volume (mm³),log-wCV,4.5,3.5,5.4,8.99,5.71,11.67,NO
 LRNC Volume (mm³),untransf-wCV,78.8,48.09,163.4,98.20,43.37,162.72,YES
+LRNC Volume (mm³),log-wCV,5.4,4.1,6.9,7.14,3.70,10.40,YES
 NonCALC Matrix Volume (mm³),untransf-wCV,32.61,24.87,41.94,40.76,27.14,52.28,YES
+NonCALC Matrix Volume (mm³),log-wCV,13.6,10.8,16.4,17.31,13.33,20.33,YES
 Total Plaque Volume (mm³),untransf-wCV,27.08,20.68,34.74,37.85,24.33,50.17,YES
+Total Plaque Volume (mm³),log-wCV,13.2,10.4,16.0,18.50,14.07,22.03,YES

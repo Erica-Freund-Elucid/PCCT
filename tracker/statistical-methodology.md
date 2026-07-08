@@ -47,13 +47,19 @@ the non-standard log calculation.
 
 ---
 
-## 2. Scanner term (`--scanner-term`)
+## 2. Scanner term (`--scanner-term`, DEFAULT ON)
 
 The PCCT−EID difference decomposes as
 **scanner bias + scanner random dispersion + operator differences + traced-extent
 differences + noise.** The OQ's wCV is *same-scanner inter-operator* dispersion
 with **no systematic bias**. To compare like-for-like, remove the systematic
 modality bias and compare only the random dispersion.
+
+**This is the default and the standard basis for the Gate 3 wCV-vs-OQ acceptance:**
+the OQ variability limit is a bias-free inter-operator dispersion, so the PCCT
+statistic compared against it must also exclude the systematic scanner bias (which
+is assessed separately in Gate 4). Use `--no-scanner-term` to see the raw,
+bias-inflated cross-scanner wCV.
 
 - **Implementation:** `σ²_w = Var(d)/2` (variance about the mean difference) instead
   of `mean(d²)/2`. The removed systematic bias is assessed separately in Gate 4.

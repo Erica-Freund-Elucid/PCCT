@@ -276,17 +276,22 @@ RANDOM_SEED = 42
 #       scale (it divides the log-difference by the mean of the logs).
 WCV_METHOD = "variance-component"
 
-# When True, include a scanner (PCCT vs EID) main effect: the within-subject
-# variance is taken ABOUT the mean PCCT-EID difference, i.e. the systematic
-# modality bias is removed (and belongs to Gate 4) so the wCV reflects only
-# random cross-scanner dispersion -- the like-for-like analogue of the OQ's
-# inter-operator wCV. Closed form for the balanced 2-condition case:
-#   sigma2_w = Var(d)/2   (vs mean(d^2)/2 without the scanner term).
+# Include a scanner (PCCT vs EID) main effect: the within-subject variance is
+# taken ABOUT the mean PCCT-EID difference, i.e. the systematic modality bias is
+# removed (and belongs to Gate 4) so the wCV reflects only random cross-scanner
+# dispersion -- the like-for-like analogue of the OQ's inter-operator wCV (which
+# is a same-scanner, bias-free dispersion). Closed form for the balanced
+# 2-condition case: sigma2_w = Var(d)/2 (vs mean(d^2)/2 without the scanner term).
+#
+# DEFAULT ON: the Gate 3 wCV-vs-OQ acceptance must compare like-for-like, so the
+# systematic scanner bias is excluded here and assessed in Gate 4. Disable with
+# --no-scanner-term to see the raw (bias-inflated) cross-scanner wCV.
+#
 # NOTE: with one read per patient*scanner (and different analysts/extent per
 # scanner) this residual still confounds scanner with operator and traced
 # extent -- it is an UPPER BOUND on scanner-only variability, not a clean
-# isolation. Only affects method="variance-component". Set via --scanner-term.
-SCANNER_TERM = False
+# isolation. Only affects method="variance-component".
+SCANNER_TERM = True
 
 # Gate 4 bias acceptance. Set via --bias-criterion.
 #   "pct-threshold" (default, legacy/project-specific): |untransformed bias| as a
@@ -1409,23 +1414,27 @@ def write_comparison_tables(paired, out_dir):
         w.writerow(["endpoint", "metric", "oq_wcv", "oq_ci_lo", "oq_ci_hi",
                     "pcct_wcv", "pcct_ci_lo", "pcct_ci_hi", "ci_overlap"])
         for group in (GATE3_PRIMARY, GATE3_DESCRIPTIVE, GATE3_SECONDARY):
+            is_plaque = group is GATE3_SECONDARY
             for var, cfg in group.items():
                 normalize = (var != "Len")
                 pv, ev, _ = _get_paired_values(paired, var, normalize=normalize)
                 if len(pv) < 2:
                     continue
-                use_log = cfg.get("metric", "log") in ("log", "both")
-                wcv = compute_wcv(pv, ev, log_transform=use_log)
-                lo, hi = bootstrap_wcv_ci(pv, ev, log_transform=use_log)
-                if use_log:
-                    oq, oq_ci = cfg.get("delta_log_wcv"), cfg.get("delta_log_ci")
-                else:
-                    oq, oq_ci = cfg.get("delta_untrans_wcv"), cfg.get("delta_untrans_ci")
-                overlap = ci_overlap((lo, hi), oq_ci) if (oq_ci and lo is not None) else ""
-                w.writerow([cfg["label"], "log-wCV" if use_log else "untransf-wCV",
-                            oq, oq_ci[0] if oq_ci else "", oq_ci[1] if oq_ci else "",
-                            f"{wcv:.2f}", f"{lo:.2f}", f"{hi:.2f}",
-                            "YES" if overlap else ("NO" if overlap == False else "")])
+                # Plaque reports BOTH scales; process/length report their primary.
+                primary_log = cfg.get("metric", "log") in ("log", "both")
+                scales = [False, True] if is_plaque else [primary_log]
+                for use_log in scales:
+                    wcv = compute_wcv(pv, ev, log_transform=use_log)
+                    lo, hi = bootstrap_wcv_ci(pv, ev, log_transform=use_log)
+                    if use_log:
+                        oq, oq_ci = cfg.get("delta_log_wcv"), cfg.get("delta_log_ci")
+                    else:
+                        oq, oq_ci = cfg.get("delta_untrans_wcv"), cfg.get("delta_untrans_ci")
+                    overlap = ci_overlap((lo, hi), oq_ci) if (oq_ci and lo is not None) else ""
+                    w.writerow([cfg["label"], "log-wCV" if use_log else "untransf-wCV",
+                                oq, oq_ci[0] if oq_ci else "", oq_ci[1] if oq_ci else "",
+                                f"{wcv:.2f}", f"{lo:.2f}", f"{hi:.2f}",
+                                "YES" if overlap else ("NO" if overlap == False else "")])
     # Gate 4 — plaque Bland-Altman bias (log scale) vs OQ Table 6
     g4_path = os.path.join(out_dir, "gate4_comparison.csv")
     with open(g4_path, "w", newline="", encoding="utf-8") as f:
@@ -1450,6 +1459,73 @@ def write_comparison_tables(paired, out_dir):
     print(f"Comparison tables: {g3_path}, {g4_path}")
 
 
+def run_scanner_attributable(paired, out_dir, region="canonical"):
+    """Scanner-attributable variance via variance-component subtraction.
+
+    On the log(x+1) scale, the cross-scanner within-subject variance decomposes as
+        Var(d_log)/2 = sigma2_scanner + sigma2_OQ,within
+    where sigma2_OQ,within = reader + repeat variance (the OQ inter-observer
+    dispersion) and sigma2_scanner = patient x scanner interaction (the quantity
+    of interest). The OQ term is imported from 730-CVV-040 ATTACHMENT 2 (patient
+    level) log-based %CV_inter (== cfg['delta_log_wcv']):
+        sigma2_OQ = ln(1 + (oq_log_wcv/100)^2)
+        sigma2_scanner = Var(d_log)/2 - sigma2_OQ
+        scanner wCV = sqrt(exp(max(sigma2_scanner,0)) - 1) * 100
+    Acceptance (a): scanner wCV <= OQ inter-observer wCV limit.
+    Acceptance (b): 95% CI of sigma2_scanner includes 0 (scanner variance not
+                    distinguishable from zero).
+    CI is bootstrap over patients; the OQ term is treated as a fixed external
+    reference. Requires an extent-controlled region (sub-segment) to avoid the
+    traced-extent term contaminating sigma2_scanner.
+    """
+    allg = {}
+    allg.update(GATE3_PRIMARY); allg.update(GATE3_DESCRIPTIVE); allg.update(GATE3_SECONDARY)
+    rng = np.random.RandomState(RANDOM_SEED + 21)
+    lines = ["=" * 70,
+             f"SCANNER-ATTRIBUTABLE VARIANCE ({region}) -- decomposition vs OQ inter-observer",
+             "=" * 70,
+             f"N = {len(paired)} paired patients.  sigma2_scanner = Var(d_log)/2 - ln(1+(OQ_logCV/100)^2).",
+             "OQ inter-observer log-CV from 730-CVV-040 ATTACHMENT 2 (patient level).",
+             "(a) scanner wCV <= OQ limit;  (b) sigma2_scanner 95% CI includes 0.", ""]
+    out_rows = []
+    for var, cfg in allg.items():
+        oq = cfg.get("delta_log_wcv")
+        if oq is None:
+            continue
+        pv, ev, _ = _get_paired_values(paired, var, normalize=(var != "Len"))
+        if len(pv) < 3:
+            continue
+        dlog = np.array([math.log(p + 1) - math.log(e + 1) for p, e in zip(pv, ev)])
+        s2_oq = math.log(1 + (oq / 100.0) ** 2)
+        s2_cross = float(np.var(dlog, ddof=1) / 2.0)
+        s2_scan = s2_cross - s2_oq
+        wcv = lambda s2: math.sqrt(math.exp(max(s2, 0.0)) - 1) * 100
+        n = len(dlog)
+        boots = [float(np.var(dlog[rng.randint(0, n, size=n)], ddof=1) / 2.0) - s2_oq
+                 for _ in range(N_BOOTSTRAP)]
+        lo, hi = float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))
+        a_pass = wcv(s2_scan) <= oq
+        b_pass = lo <= 0
+        out_rows.append([cfg["label"], f"{s2_cross:.5f}", f"{s2_oq:.5f}", f"{s2_scan:.5f}",
+                         f"{lo:.5f}", f"{hi:.5f}", f"{wcv(s2_scan):.2f}", f"{wcv(lo):.2f}",
+                         f"{wcv(hi):.2f}", oq, "YES" if a_pass else "NO", "YES" if b_pass else "NO"])
+        lines += [f"--- {cfg['label']} ---",
+                  f"  sigma2_cross={s2_cross:.5f}  sigma2_OQ={s2_oq:.5f}  "
+                  f"sigma2_scanner={s2_scan:.5f} [{lo:.5f}, {hi:.5f}]",
+                  f"  scanner wCV={wcv(s2_scan):.2f}% [{wcv(lo):.2f}%, {wcv(hi):.2f}%]   "
+                  f"OQ inter-observer limit={oq:.2f}%",
+                  f"  (a) scanner wCV <= OQ limit: {'PASS' if a_pass else 'FAIL'}",
+                  f"  (b) sigma2_scanner 95% CI includes 0: {'PASS' if b_pass else 'FAIL'}", ""]
+    suffix = "" if region == "canonical" else f"_{region}"
+    with open(os.path.join(out_dir, f"scanner_attributable{suffix}.csv"), "w", newline="", encoding="utf-8") as f:
+        wtr = csv.writer(f)
+        wtr.writerow(["endpoint", "sigma2_cross", "sigma2_OQ", "sigma2_scanner", "s2_ci_lo",
+                      "s2_ci_hi", "scanner_wcv", "scanner_wcv_lo", "scanner_wcv_hi", "oq_wcv",
+                      "a_scanner_le_oq", "b_ci_incl_0"])
+        wtr.writerows(out_rows)
+    return "\n".join(lines)
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 
@@ -1460,10 +1536,12 @@ if __name__ == "__main__":
                      default="variance-component",
                      help="wCV estimator: 'variance-component' (default, Quan & Shih / OQ method) "
                           "or 'rms-rel' (legacy per-subject relative-CV formula)")
-    _ap.add_argument("--scanner-term", action="store_true",
-                     help="include a PCCT-vs-EID scanner main effect: report wCV as the "
-                          "bias-removed residual dispersion (Var(d)/2), the like-for-like "
-                          "analogue of the OQ inter-operator wCV. variance-component only.")
+    _ap.add_argument("--scanner-term", dest="scanner_term",
+                     action=argparse.BooleanOptionalAction, default=True,
+                     help="include a PCCT-vs-EID scanner main effect: wCV = bias-removed "
+                          "residual dispersion (Var(d)/2), the like-for-like analogue of the "
+                          "OQ inter-operator wCV. DEFAULT ON; use --no-scanner-term for the "
+                          "raw bias-inflated wCV. variance-component only.")
     _ap.add_argument("--bias-criterion", choices=["pct-threshold", "oq-ci-overlap"],
                      default="pct-threshold",
                      help="Gate 4 bias acceptance: 'pct-threshold' (default, legacy "
@@ -1478,7 +1556,7 @@ if __name__ == "__main__":
     print("PCCT Qualification Gate Analyses")
     print("=" * 40)
     print(f"Reference: B.1P Delta Validation OQ (730-CVV-040)")
-    print(f"wCV method: {WCV_METHOD}")
+    print(f"wCV method: {WCV_METHOD}{' + scanner-term (bias-removed)' if SCANNER_TERM else ' (no scanner term)'}")
     print(f"PCCT summaries: {PCCT_DIR}")
     print(f"EID summaries:  {EID_DIR}")
     print()
@@ -1502,6 +1580,7 @@ if __name__ == "__main__":
     gate3_text, gate3_detail = run_gate3(paired)
     gate4_text, gate4_detail = run_gate4(paired)
     gate4_norm_text = run_gate4_length_normalized(paired)
+    scanner_attr_text = run_scanner_attributable(paired, OUTPUT_DIR, region="canonical")
 
     summary_parts = [
         "PCCT Qualification Gate Analysis Report",
@@ -1513,6 +1592,7 @@ if __name__ == "__main__":
         gate3_text,
         gate4_text,
         gate4_norm_text,
+        scanner_attr_text,
     ]
 
     # Sub-segment intersection — parallel Gate 3 + Gate 4 on PCCT/EID volumes
@@ -1542,7 +1622,8 @@ if __name__ == "__main__":
             "differences within shared named vessels.",
             f"N = {len(sub_paired)} paired patients with sub-segment data.",
         ])
-        summary_parts.extend([subseg_banner, sub_gate3_text, sub_gate4_text])
+        sub_scanner_attr = run_scanner_attributable(sub_paired, OUTPUT_DIR, region="subsegment")
+        summary_parts.extend([subseg_banner, sub_gate3_text, sub_gate4_text, sub_scanner_attr])
     else:
         print(f"\nSub-segment pass skipped: {len(sub_paired)} paired patients available")
 

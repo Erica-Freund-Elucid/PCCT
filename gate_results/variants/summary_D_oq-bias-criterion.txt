@@ -179,9 +179,9 @@ GATE 3 — CORE QUANTITATIVE REPRODUCIBILITY
 N = 25 paired patients (target: >=30)
 Acceptance: 95% CI overlap with B.1P Delta OQ (730-CVV-040)
 Primary metric: log-wCV for volumes, untransformed for length
-wCV method: variance-component / random-effects (Quan & Shih 1996; OQ 730-CVV-040)
+wCV method: variance-component / random-effects (Quan & Shih 1996; OQ 730-CVV-040) + scanner term (bias-removed residual)
   untransformed: sqrt(sigma2_w)/grand_mean; log(x+1): sqrt(exp(sigma2_w)-1)
-  sigma2_w = mean(d^2)/2
+  sigma2_w = Var(d)/2 (scanner bias removed)
 95% CI: 2000-sample bootstrap
 Volumes normalized to vessel length per 730-CVV-040 methodology
 
@@ -189,56 +189,56 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 
 --- Lumen Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  16.23% [12.93%, 19.56%]
-  Log-wCV:            14.16% [11.25%, 17.10%]
+  Untransformed wCV:  12.76% [9.46%, 15.27%]
+  Log-wCV:            11.23% [8.30%, 13.28%]
 
   Original OQ (4-B1P-033):  7.64% [5.52%, 8.55%] (log-transformed)
   Delta OQ (730-CVV-040):   7.5% [5.9%, 9.3%] (log-wCV)
   Delta OQ (730-CVV-040):   9.32% [7.09%, 11.58%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [11.25%, 17.10%]
+    PCCT:      [8.30%, 13.28%]
     Delta OQ:  [5.9%, 9.3%]
-    Overlap:   NO — FAIL
+    Overlap:   YES — PASS
 
 --- Wall Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  43.45% [29.40%, 56.22%]
-  Log-wCV:            27.51% [20.96%, 33.60%]
+  Untransformed wCV:  32.31% [22.34%, 40.28%]
+  Log-wCV:            17.92% [14.24%, 20.67%]
 
   Original OQ (4-B1P-033):  9.51% [6.60%, 11.16%] (log-transformed)
   Delta OQ (730-CVV-040):   13.1% [10.2%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   23.50% [17.88%, 29.71%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [20.96%, 33.60%]
+    PCCT:      [14.24%, 20.67%]
     Delta OQ:  [10.2%, 16.0%]
-    Overlap:   NO — FAIL
+    Overlap:   YES — PASS
 
 --- Vessel Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  20.98% [16.30%, 25.01%]
-  Log-wCV:            18.53% [15.02%, 21.72%]
+  Untransformed wCV:  14.84% [11.54%, 17.21%]
+  Log-wCV:            12.58% [9.92%, 14.37%]
 
   Original OQ (4-B1P-033):  6.03% [4.44%, 6.74%] (log-transformed)
   Delta OQ (730-CVV-040):   8.7% [6.8%, 10.6%] (log-wCV)
   Delta OQ (730-CVV-040):   10.18% [7.83%, 12.38%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [15.02%, 21.72%]
+    PCCT:      [9.92%, 14.37%]
     Delta OQ:  [6.8%, 10.6%]
-    Overlap:   NO — FAIL
+    Overlap:   YES — PASS
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [16.30%, 25.01%]
+    PCCT:      [11.54%, 17.21%]
     Delta OQ:  [7.83%, 12.38%]
-    Overlap:   NO — FAIL
+    Overlap:   YES — PASS
 
 --- DESCRIPTIVE (vessel length) ---
 
 --- Vessel Length (mm) (DESCRIPTIVE) ---
   N:                  25
-  Untransformed wCV:  24.79% [18.65%, 30.84%]
-  Log-wCV:            25.59% [19.37%, 31.09%]
+  Untransformed wCV:  21.92% [16.57%, 26.45%]
+  Log-wCV:            22.25% [16.40%, 26.78%]
 
   Original OQ (4-B1P-033):  5.27% [3.43%, 6.52%] (log-transformed)
   Delta OQ (730-CVV-040):   15.5% [12.2%, 18.8%] (log-wCV)
@@ -252,36 +252,36 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 
 --- CALC Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  35.36% [21.23%, 51.71%]
-  Log-wCV:            9.77% [6.21%, 13.30%]
+  Untransformed wCV:  33.60% [20.73%, 46.73%]
+  Log-wCV:            8.99% [5.71%, 11.67%]
 
   Original OQ (4-B1P-033):  13.9% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   4.5% [3.5%, 5.4%] (log-wCV)
   Delta OQ (730-CVV-040):   25.78% [18.70%, 35.75%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [21.23%, 51.71%]
+    PCCT:      [20.73%, 46.73%]
     Delta OQ:  [18.70%, 35.75%]
     Overlap:   YES — PASS
 
 --- LRNC Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  96.48% [44.96%, 161.79%]
-  Log-wCV:            7.02% [3.81%, 10.31%]
+  Untransformed wCV:  98.20% [43.37%, 162.72%]
+  Log-wCV:            7.14% [3.70%, 10.40%]
 
   Original OQ (4-B1P-033):  59.3% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   5.4% [4.1%, 6.9%] (log-wCV)
   Delta OQ (730-CVV-040):   78.80% [48.09%, 163.40%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [44.96%, 161.79%]
+    PCCT:      [43.37%, 162.72%]
     Delta OQ:  [48.09%, 163.40%]
     Overlap:   YES — PASS
 
 --- NonCALC Matrix Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  57.73% [39.56%, 74.25%]
-  Log-wCV:            27.42% [20.48%, 33.89%]
+  Untransformed wCV:  40.76% [27.14%, 52.28%]
+  Log-wCV:            17.31% [13.33%, 20.33%]
 
   Original OQ (4-B1P-033):  58.6% (untransformed, no CI reported)
     Note: Original reported as Total NCP (untransformed); improved in delta OQ
@@ -289,21 +289,21 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
   Delta OQ (730-CVV-040):   32.61% [24.87%, 41.94%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [39.56%, 74.25%]
+    PCCT:      [27.14%, 52.28%]
     Delta OQ:  [24.87%, 41.94%]
     Overlap:   YES — PASS
 
 --- Total Plaque Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  48.29% [30.43%, 65.16%]
-  Log-wCV:            27.00% [19.86%, 33.73%]
+  Untransformed wCV:  37.85% [24.33%, 50.17%]
+  Log-wCV:            18.50% [14.07%, 22.03%]
 
   Original OQ (4-B1P-033):  44.1% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   13.2% [10.4%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   27.08% [20.68%, 34.74%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [30.43%, 65.16%]
+    PCCT:      [24.33%, 50.17%]
     Delta OQ:  [20.68%, 34.74%]
     Overlap:   YES — PASS
 
@@ -499,9 +499,9 @@ GATE 3 — CORE QUANTITATIVE REPRODUCIBILITY
 N = 25 paired patients (target: >=30)
 Acceptance: 95% CI overlap with B.1P Delta OQ (730-CVV-040)
 Primary metric: log-wCV for volumes, untransformed for length
-wCV method: variance-component / random-effects (Quan & Shih 1996; OQ 730-CVV-040)
+wCV method: variance-component / random-effects (Quan & Shih 1996; OQ 730-CVV-040) + scanner term (bias-removed residual)
   untransformed: sqrt(sigma2_w)/grand_mean; log(x+1): sqrt(exp(sigma2_w)-1)
-  sigma2_w = mean(d^2)/2
+  sigma2_w = Var(d)/2 (scanner bias removed)
 95% CI: 2000-sample bootstrap
 Volumes normalized to vessel length per 730-CVV-040 methodology
 
@@ -509,47 +509,47 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 
 --- Lumen Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  13.50% [8.75%, 18.92%]
-  Log-wCV:            11.68% [8.01%, 15.40%]
+  Untransformed wCV:  11.74% [7.86%, 15.80%]
+  Log-wCV:            10.00% [6.99%, 12.58%]
 
   Original OQ (4-B1P-033):  7.64% [5.52%, 8.55%] (log-transformed)
   Delta OQ (730-CVV-040):   7.5% [5.9%, 9.3%] (log-wCV)
   Delta OQ (730-CVV-040):   9.32% [7.09%, 11.58%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [8.01%, 15.40%]
+    PCCT:      [6.99%, 12.58%]
     Delta OQ:  [5.9%, 9.3%]
     Overlap:   YES — PASS
 
 --- Wall Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  19.52% [15.08%, 23.62%]
-  Log-wCV:            12.46% [10.05%, 14.48%]
+  Untransformed wCV:  19.32% [13.32%, 23.75%]
+  Log-wCV:            12.01% [8.97%, 14.25%]
 
   Original OQ (4-B1P-033):  9.51% [6.60%, 11.16%] (log-transformed)
   Delta OQ (730-CVV-040):   13.1% [10.2%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   23.50% [17.88%, 29.71%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [10.05%, 14.48%]
+    PCCT:      [8.97%, 14.25%]
     Delta OQ:  [10.2%, 16.0%]
     Overlap:   YES — PASS
 
 --- Vessel Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  11.54% [8.07%, 14.76%]
-  Log-wCV:            10.64% [8.30%, 12.92%]
+  Untransformed wCV:  9.81% [6.96%, 12.24%]
+  Log-wCV:            9.05% [6.87%, 10.69%]
 
   Original OQ (4-B1P-033):  6.03% [4.44%, 6.74%] (log-transformed)
   Delta OQ (730-CVV-040):   8.7% [6.8%, 10.6%] (log-wCV)
   Delta OQ (730-CVV-040):   10.18% [7.83%, 12.38%] (untransformed)
 
   ACCEPTANCE (log-wCV CI overlap with delta OQ):
-    PCCT:      [8.30%, 12.92%]
+    PCCT:      [6.87%, 10.69%]
     Delta OQ:  [6.8%, 10.6%]
     Overlap:   YES — PASS
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [8.07%, 14.76%]
+    PCCT:      [6.96%, 12.24%]
     Delta OQ:  [7.83%, 12.38%]
     Overlap:   YES — PASS
 
@@ -557,8 +557,8 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 
 --- Vessel Length (mm) (DESCRIPTIVE) ---
   N:                  25
-  Untransformed wCV:  0.63% [0.50%, 0.76%]
-  Log-wCV:            0.67% [0.55%, 0.77%]
+  Untransformed wCV:  0.31% [0.22%, 0.38%]
+  Log-wCV:            0.31% [0.24%, 0.36%]
 
   Original OQ (4-B1P-033):  5.27% [3.43%, 6.52%] (log-transformed)
   Delta OQ (730-CVV-040):   15.5% [12.2%, 18.8%] (log-wCV)
@@ -572,36 +572,36 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
 
 --- CALC Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  24.14% [16.56%, 32.71%]
-  Log-wCV:            7.60% [5.34%, 9.65%]
+  Untransformed wCV:  18.65% [12.48%, 25.96%]
+  Log-wCV:            5.25% [3.69%, 6.27%]
 
   Original OQ (4-B1P-033):  13.9% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   4.5% [3.5%, 5.4%] (log-wCV)
   Delta OQ (730-CVV-040):   25.78% [18.70%, 35.75%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [16.56%, 32.71%]
+    PCCT:      [12.48%, 25.96%]
     Delta OQ:  [18.70%, 35.75%]
     Overlap:   YES — PASS
 
 --- LRNC Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  112.04% [36.24%, 207.92%]
-  Log-wCV:            9.70% [3.95%, 15.42%]
+  Untransformed wCV:  109.61% [36.38%, 199.01%]
+  Log-wCV:            9.40% [3.78%, 14.40%]
 
   Original OQ (4-B1P-033):  59.3% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   5.4% [4.1%, 6.9%] (log-wCV)
   Delta OQ (730-CVV-040):   78.80% [48.09%, 163.40%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [36.24%, 207.92%]
+    PCCT:      [36.38%, 199.01%]
     Delta OQ:  [48.09%, 163.40%]
     Overlap:   YES — PASS
 
 --- NonCALC Matrix Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  41.14% [30.14%, 52.57%]
-  Log-wCV:            20.56% [14.67%, 25.97%]
+  Untransformed wCV:  35.49% [26.42%, 44.51%]
+  Log-wCV:            17.05% [12.42%, 20.84%]
 
   Original OQ (4-B1P-033):  58.6% (untransformed, no CI reported)
     Note: Original reported as Total NCP (untransformed); improved in delta OQ
@@ -609,21 +609,21 @@ Volumes normalized to vessel length per 730-CVV-040 methodology
   Delta OQ (730-CVV-040):   32.61% [24.87%, 41.94%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [30.14%, 52.57%]
+    PCCT:      [26.42%, 44.51%]
     Delta OQ:  [24.87%, 41.94%]
     Overlap:   YES — PASS
 
 --- Total Plaque Volume (mm³) [length-normalized] ---
   N:                  25
-  Untransformed wCV:  25.98% [19.56%, 32.76%]
-  Log-wCV:            15.17% [11.96%, 17.97%]
+  Untransformed wCV:  25.71% [17.97%, 32.20%]
+  Log-wCV:            14.67% [11.05%, 17.48%]
 
   Original OQ (4-B1P-033):  44.1% (untransformed, no CI reported)
   Delta OQ (730-CVV-040):   13.2% [10.4%, 16.0%] (log-wCV)
   Delta OQ (730-CVV-040):   27.08% [20.68%, 34.74%] (untransformed)
 
   ACCEPTANCE (untransformed CI overlap with delta OQ):
-    PCCT:      [19.56%, 32.76%]
+    PCCT:      [17.97%, 32.20%]
     Delta OQ:  [20.68%, 34.74%]
     Overlap:   YES — PASS
 

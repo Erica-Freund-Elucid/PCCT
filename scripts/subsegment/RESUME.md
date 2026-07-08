@@ -2,6 +2,35 @@
 
 **Last update:** 2026-05-22 (post-rescue). N=25 sub-segment data now matches canonical cohort (PT-124 excluded both, per tracker). **Mitigation did NOT work** even with full cohort — see "Findings" section.
 
+---
+
+## STATUS 2026-07-08 — regeneration on latest (07-07) data: STARTED, then DEFERRED
+
+**Decision:** deferred. The CSV-level (canonical, vessel-overlap) analysis already tells the
+story cleanly — with the corrected variance-component estimator **+ scanner term**, the process
+outputs pass the OQ CI-overlap on the original *and* current data without any sub-segment
+alignment, and the variance decomposition shows the 07-07 re-work changed the *systematic bias*
+(Gate 4), not the *random dispersion* (Gate 3). Sub-segment is now tracked as **potential
+future granular work**, to (i) remove the traced-extent confound from the scanner-attributable
+minuend and (ii) confirm the process-output pass with extent matched.
+
+**What was set up (still on the box, resumable):**
+- Compute env re-provisioned on **ip3-manager `i-00ed8d06ee63ee937`**: venv at
+  `/var/tmp/pcct_subseg/venv` (numpy 2.5.1, SimpleITK 2.5.5, vtk 9.6.2, pynrrd); the 3 pipeline
+  scripts uploaded to `/var/tmp/pcct_subseg/scripts`; 26 PCCT/EID workitem-dir pairs resolved
+  (`/tmp/subseg_pairs.json` locally, `/var/tmp/pcct_subseg/pairs.txt` on box).
+- Batch run (`/var/tmp/pcct_subseg/out/<PID>/final/{left,right}/`): **16 of 26 both-target OK**,
+  8 failed — PT-124 (no vessel overlap; excluded anyway), PT-125 (duplicate `LeftCoronary` in
+  workitem.json), and PT-131/136/142/150/158/161 (most likely the wrapper's right-first `set -e`
+  bug that kills left-only/right-only cases).
+- `rebuild_subseg_csvs.py` is written and ready (verified mapping: `LumenVol=lumen`,
+  `LumenAndWallVol=wall`(LumenAndWall region), `WallVol=wall-lumen`, `TotalPlaque=CALC+NonCALCMATX`).
+
+**To resume:** recover the 6 non-obvious failures by running the left and right targets as
+independent invocations (bypassing the right-first `set -e`), then `rebuild_subseg_csvs.py`
+→ `workitem_summaries/subsegment/{PCCT,EID}` → `run_gate_analyses.py` (the scanner-attributable
+section already reads whatever paired data is loaded, incl. sub-segment).
+
 ## Goal
 
 Mitigate failing Gate 4 Bland–Altman bias tests in `gate_results/gate_summary.txt`:

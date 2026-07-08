@@ -477,6 +477,62 @@ NonCALC Matrix Volume (mm³)     untransformed      -0.6265      -1.8271       0
 Total Plaque Volume (mm³)       untransformed      -0.7303      -2.4828       1.0221   43.7%   FAIL   PASS
 
 
+======================================================================
+SCANNER-ATTRIBUTABLE VARIANCE (canonical) -- decomposition vs OQ inter-observer
+======================================================================
+N = 25 paired patients.  sigma2_scanner = Var(d_log)/2 - ln(1+(OQ_logCV/100)^2).
+OQ inter-observer log-CV from 730-CVV-040 ATTACHMENT 2 (patient level).
+(a) scanner wCV <= OQ limit;  (b) sigma2_scanner 95% CI includes 0.
+
+--- Lumen Volume (mm³) ---
+  sigma2_cross=0.01254  sigma2_OQ=0.00561  sigma2_scanner=0.00693 [0.00157, 0.01162]
+  scanner wCV=8.34% [3.97%, 10.81%]   OQ inter-observer limit=7.50%
+  (a) scanner wCV <= OQ limit: FAIL
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
+--- Wall Volume (mm³) ---
+  sigma2_cross=0.03159  sigma2_OQ=0.01702  sigma2_scanner=0.01458 [0.00284, 0.02463]
+  scanner wCV=12.12% [5.33%, 15.79%]   OQ inter-observer limit=13.10%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
+--- Vessel Volume (mm³) ---
+  sigma2_cross=0.01571  sigma2_OQ=0.00754  sigma2_scanner=0.00817 [0.00235, 0.01293]
+  scanner wCV=9.06% [4.85%, 11.41%]   OQ inter-observer limit=8.70%
+  (a) scanner wCV <= OQ limit: FAIL
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
+--- Vessel Length (mm) ---
+  sigma2_cross=0.04830  sigma2_OQ=0.02374  sigma2_scanner=0.02456 [0.00354, 0.04610]
+  scanner wCV=15.77% [5.95%, 21.72%]   OQ inter-observer limit=15.50%
+  (a) scanner wCV <= OQ limit: FAIL
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
+--- CALC Volume (mm³) ---
+  sigma2_cross=0.00805  sigma2_OQ=0.00202  sigma2_scanner=0.00603 [0.00121, 0.01158]
+  scanner wCV=7.77% [3.48%, 10.79%]   OQ inter-observer limit=4.50%
+  (a) scanner wCV <= OQ limit: FAIL
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
+--- LRNC Volume (mm³) ---
+  sigma2_cross=0.00508  sigma2_OQ=0.00291  sigma2_scanner=0.00217 [-0.00162, 0.00740]
+  scanner wCV=4.66% [0.00%, 8.62%]   OQ inter-observer limit=5.40%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- NonCALC Matrix Volume (mm³) ---
+  sigma2_cross=0.02954  sigma2_OQ=0.01833  sigma2_scanner=0.01121 [-0.00096, 0.02262]
+  scanner wCV=10.62% [0.00%, 15.12%]   OQ inter-observer limit=13.60%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- Total Plaque Volume (mm³) ---
+  sigma2_cross=0.03364  sigma2_OQ=0.01727  sigma2_scanner=0.01637 [0.00220, 0.03015]
+  scanner wCV=12.85% [4.69%, 17.50%]   OQ inter-observer limit=13.20%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: FAIL
+
+
 ######################################################################
 # SUB-SEGMENT INTERSECTION ANALYSIS (PARALLEL TO CANONICAL ABOVE)
 ######################################################################
@@ -704,3 +760,59 @@ NonCALC Matrix Volume (mm³)     untransformed     -76.62      -307.90       154
 Total Plaque Volume (mm³)       untransformed     -45.22      -299.22       208.77  0.170     [0.003, 0.552]     PASS
 
 Proportional bias: PASS if r2 95% CI lower bound < 0.1
+
+
+======================================================================
+SCANNER-ATTRIBUTABLE VARIANCE (subsegment) -- decomposition vs OQ inter-observer
+======================================================================
+N = 25 paired patients.  sigma2_scanner = Var(d_log)/2 - ln(1+(OQ_logCV/100)^2).
+OQ inter-observer log-CV from 730-CVV-040 ATTACHMENT 2 (patient level).
+(a) scanner wCV <= OQ limit;  (b) sigma2_scanner 95% CI includes 0.
+
+--- Lumen Volume (mm³) ---
+  sigma2_cross=0.00996  sigma2_OQ=0.00561  sigma2_scanner=0.00435 [-0.00070, 0.00966]
+  scanner wCV=6.60% [0.00%, 9.85%]   OQ inter-observer limit=7.50%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- Wall Volume (mm³) ---
+  sigma2_cross=0.01431  sigma2_OQ=0.01702  sigma2_scanner=-0.00270 [-0.00893, 0.00312]
+  scanner wCV=0.00% [0.00%, 5.59%]   OQ inter-observer limit=13.10%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- Vessel Volume (mm³) ---
+  sigma2_cross=0.00815  sigma2_OQ=0.00754  sigma2_scanner=0.00061 [-0.00274, 0.00375]
+  scanner wCV=2.47% [0.00%, 6.13%]   OQ inter-observer limit=8.70%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- Vessel Length (mm) ---
+  sigma2_cross=0.00001  sigma2_OQ=0.02374  sigma2_scanner=-0.02373 [-0.02374, -0.02373]
+  scanner wCV=0.00% [0.00%, 0.00%]   OQ inter-observer limit=15.50%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- CALC Volume (mm³) ---
+  sigma2_cross=0.00275  sigma2_OQ=0.00202  sigma2_scanner=0.00073 [-0.00061, 0.00191]
+  scanner wCV=2.70% [0.00%, 4.38%]   OQ inter-observer limit=4.50%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- LRNC Volume (mm³) ---
+  sigma2_cross=0.00879  sigma2_OQ=0.00291  sigma2_scanner=0.00588 [-0.00155, 0.01720]
+  scanner wCV=7.68% [0.00%, 13.17%]   OQ inter-observer limit=5.40%
+  (a) scanner wCV <= OQ limit: FAIL
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- NonCALC Matrix Volume (mm³) ---
+  sigma2_cross=0.02866  sigma2_OQ=0.01833  sigma2_scanner=0.01033 [-0.00280, 0.02378]
+  scanner wCV=10.19% [0.00%, 15.51%]   OQ inter-observer limit=13.60%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS
+
+--- Total Plaque Volume (mm³) ---
+  sigma2_cross=0.02129  sigma2_OQ=0.01727  sigma2_scanner=0.00402 [-0.00507, 0.01246]
+  scanner wCV=6.34% [0.00%, 11.20%]   OQ inter-observer limit=13.20%
+  (a) scanner wCV <= OQ limit: PASS
+  (b) sigma2_scanner 95% CI includes 0: PASS

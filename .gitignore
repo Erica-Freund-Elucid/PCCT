@@ -5,6 +5,8 @@ workitem_summaries/
 *.pdf
 *.xlsx
 *.pptx
+# Confidential OQ source attachments (Word); reference by doc number
+ATTACHMENT *.docx
 
 # SNR verification grids (large PNGs, generated on ip3)
 gate_results/SNR_verification_grids/

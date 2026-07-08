@@ -3,26 +3,29 @@
 Each file is the full `gate_summary.txt` from `run_gate_analyses.py` under a
 different estimator/criterion configuration, so the choices can be compared
 side by side. All use the same paired data; `gate_detail.txt`, `paired_data.csv`,
-and the Bland-Altman figures are config-invariant (they don't depend on the
-wCV/bias switches). The repo's top-level `gate_results/gate_summary.txt` matches
-**variant B** (the plain default).
+and the Gate-4 Bland-Altman figures are config-invariant (they don't depend on
+the wCV switches). The repo's top-level `gate_results/gate_summary.txt` matches
+**variant B** (the default).
 
 | File | Command | wCV estimator | scanner term | Gate 4 bias criterion |
 |---|---|---|---|---|
-| `summary_A_legacy-rmsrel.txt` | `--wcv-method rms-rel` | legacy rms-rel | no | pct-threshold |
-| `summary_B_variance-component_DEFAULT.txt` | *(defaults)* | variance-component (Quan-Shih / OQ) | no | pct-threshold |
-| `summary_C_variance-component_scanner-term.txt` | `--scanner-term` | variance-component | yes | pct-threshold |
-| `summary_D_oq-bias-criterion.txt` | `--bias-criterion oq-ci-overlap` | variance-component | no | oq-ci-overlap |
+| `summary_A_legacy-rmsrel.txt` | `--wcv-method rms-rel --no-scanner-term` | legacy rms-rel | no | pct-threshold |
+| `summary_B_default_var-comp_scanner-term.txt` | *(defaults)* | variance-component (Quan-Shih / OQ) | **yes (default)** | pct-threshold |
+| `summary_C_no-scanner-term.txt` | `--no-scanner-term` | variance-component | no | pct-threshold |
+| `summary_D_oq-bias-criterion.txt` | `--bias-criterion oq-ci-overlap` | variance-component | yes | oq-ci-overlap |
 
 See `../../tracker/statistical-methodology.md` for the rationale, the
 verdict-impact tables, and caveats. Key points:
-- Legacy → variance-component corrects the wCV (esp. the log branch); flips
-  Lumen/Vessel process outputs PASS→FAIL on the canonical region.
-- Scanner term removes the systematic modality bias from the wCV → process
-  outputs come within OQ (marginal).
-- oq-ci-overlap replaces the project-specific `|bias|<X%` Gate 4 threshold with
-  95% CI overlap vs 730-CVV-040 Table 6 (OQ-consistent). NonCALC Matrix and Total
-  Plaque bias FAIL under both criteria (real modality bias).
+- **Default (B)** is variance-component wCV **with the scanner term** — the
+  like-for-like basis for the Gate 3 wCV-vs-OQ acceptance (OQ limit is a bias-free
+  inter-operator dispersion, so the systematic scanner bias is excluded here and
+  assessed in Gate 4). Under it all 7 endpoints' PCCT wCV CIs overlap the delta OQ.
+- **B vs C** shows the scanner-term effect: without it (C) the raw cross-scanner
+  wCV is inflated by the systematic modality bias and Lumen/Vessel/Wall fail the
+  canonical CI-overlap.
+- **A** (legacy rms-rel) is the original method/behavior, retained for traceability.
+- **D** uses the OQ-consistent Gate 4 bias criterion: NonCALC Matrix and Total
+  Plaque bias FAIL (real modality bias).
 
 **Caveats:** N=25 preliminary (target ≥30); the SUB-SEGMENT section in every file
 is on stale (pre-07-07) segmentations and needs regeneration; process-output bias

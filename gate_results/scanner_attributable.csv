@@ -1,0 +1,9 @@
+endpoint,sigma2_cross,sigma2_OQ,sigma2_scanner,s2_ci_lo,s2_ci_hi,scanner_wcv,scanner_wcv_lo,scanner_wcv_hi,oq_wcv,a_scanner_le_oq,b_ci_incl_0
+Lumen Volume (mm³),0.01254,0.00561,0.00693,0.00157,0.01162,8.34,3.97,10.81,7.5,NO,NO
+Wall Volume (mm³),0.03159,0.01702,0.01458,0.00284,0.02463,12.12,5.33,15.79,13.1,YES,NO
+Vessel Volume (mm³),0.01571,0.00754,0.00817,0.00235,0.01293,9.06,4.85,11.41,8.7,NO,NO
+Vessel Length (mm),0.04830,0.02374,0.02456,0.00354,0.04610,15.77,5.95,21.72,15.5,NO,NO
+CALC Volume (mm³),0.00805,0.00202,0.00603,0.00121,0.01158,7.77,3.48,10.79,4.5,NO,NO
+LRNC Volume (mm³),0.00508,0.00291,0.00217,-0.00162,0.00740,4.66,0.00,8.62,5.4,YES,YES
+NonCALC Matrix Volume (mm³),0.02954,0.01833,0.01121,-0.00096,0.02262,10.62,0.00,15.12,13.6,YES,YES
+Total Plaque Volume (mm³),0.03364,0.01727,0.01637,0.00220,0.03015,12.85,4.69,17.50,13.2,YES,NO
