@@ -30,7 +30,7 @@ Open the `qualification_report.html` in either folder for a self-contained repor
 | | Version 1 — original | Version 2 — current |
 |---|---|---|
 | Folder | [`gate_results_v1_original/`](gate_results_v1_original/) (frozen snapshot of commit `7fe43dc`) | [`gate_results/`](gate_results/) (live, re-runnable) |
-| Report | `gate_results_v1_original/qualification_report.html` | `gate_results/qualification_report.html` |
+| Report | `gate_results_v1_original/qualification_report_v1_original.html` | `gate_results/qualification_report.html` |
 | wCV estimator | legacy `rms-rel` | variance-component (Quan-Shih / OQ) — plus `--scanner-term`, `--bias-criterion` |
 | Data | original workitem summaries (pre-2026-07) | latest 2026-07-07 workitem summaries |
 | Config variants | — | [`gate_results/variants/`](gate_results/variants/) — legacy / var-comp / +scanner-term / OQ-bias, side by side |

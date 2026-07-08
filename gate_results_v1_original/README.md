@@ -5,8 +5,10 @@ git commit **`7fe43dc`** ("Add sub-segment intersection analysis as parallel Gat
 3/4 pass"), the last state before the 2026-07 methodology corrections and data
 refresh.
 
-**Open `qualification_report.html`** for the comprehensive original report
-(self-contained, embedded figures + detailed results).
+**Open `qualification_report_v1_original.html`** for the comprehensive original
+report (self-contained, embedded figures + detailed results). *(Renamed from
+`qualification_report.html` so it doesn't collide with the current v2 report of
+the same name in `../gate_results/`.)*
 
 ## What this version is
 | Property | Value |
