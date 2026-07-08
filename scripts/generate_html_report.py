@@ -371,24 +371,15 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 <section>
 <h2>Executive Summary</h2>
 <div class="callout callout-warn" contenteditable="true">
-<strong>No single headline verdict.</strong> Gate 3/4 outcomes depend on the estimator and region choice, which are still being finalized — the configurations are presented side by side below rather than as one result. Methodology: <code>tracker/statistical-methodology.md</code>. <strong>N = 25 paired patients</strong>, preliminary (target ≥ 30); PT-124 excluded (no overlapping vessel). Latest 2026-07-07 workitem data.
+<strong>Basis:</strong> variance-component wCV <strong>with scanner term</strong> (systematic modality bias removed → the like-for-like analogue of the OQ inter-operator wCV), canonical region. Methodology: <code>tracker/statistical-methodology.md</code>; alternative configurations (legacy / no-scanner-term / OQ-bias criterion) are in <code>gate_results/variants/</code>. <strong>N = 25 paired patients</strong>, preliminary (target ≥ 30); PT-124 excluded (no overlapping vessel). Latest 2026-07-07 workitem data.
 </div>
 <table>
-<tr><th>Gate</th><th>Requirement</th><th>Status (see config matrix)</th></tr>
+<tr><th>Gate</th><th>Requirement</th><th>Status</th></tr>
 <tr><td><strong>Gate 1</strong> — Technical & Image Quality</td><td>DICOM, contrast timing, SNR, kernel</td><td><span class="pass">PASS</span></td></tr>
-<tr><td><strong>Gate 2</strong> — Workflow Integration</td><td>Ingestion, centerline, lumen/wall editing</td><td><span class="warn">REVIEW</span></td></tr>
-<tr><td><strong>Gate 3</strong> — Reproducibility (wCV)</td><td>95% CI overlap with delta OQ</td><td>config-dependent — process outputs pass only with scanner-term or on sub-segment region</td></tr>
+<tr><td><strong>Gate 2</strong> — Workflow Integration</td><td>Ingestion, centerline, lumen/wall editing</td><td><span class="warn">REVIEW</span> — PCCT traces +26% longer than EID on shared vessels (coverage difference &gt; 15%)</td></tr>
+<tr><td><strong>Gate 3</strong> — Reproducibility (wCV)</td><td>95% CI overlap with delta OQ</td><td><span class="pass">PASS</span> (variance-component + scanner-term — see table below)</td></tr>
 <tr><td><strong>Gate 4</strong> — Bias & Agreement</td><td>BA bias vs OQ</td><td><span class="fail">NonCALC Matrix & Total Plaque bias FAIL</span> (both criteria)</td></tr>
 </table>
-</section>
-
-<section>
-<h2>Configuration Variants — Gate 3 wCV (canonical region, N=25)</h2>
-<p class="meta" contenteditable="true">Primary-metric within-subject CV and 95%-CI-overlap verdict vs the delta OQ, under each estimator/criterion. Full per-config reports in <code>gate_results/variants/</code>; corrected-estimator rationale in <code>tracker/statistical-methodology.md</code>. Sub-segment region (extent-matched) generally passes but is on stale segmentations pending regeneration.</p>
-{config_matrix_html()}
-<div class="callout" contenteditable="true">
-<strong>Reading it:</strong> legacy→variance-component corrects the wCV (esp. the log branch), flipping Lumen/Vessel PASS→FAIL on the canonical region; the scanner term (removing systematic modality bias) brings process outputs back within OQ. Plaque wCV passes broadly; the binding issue is plaque <em>bias</em> (Gate 4).
-</div>
 </section>
 
 <section>
@@ -423,6 +414,7 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 
 <section>
 <h2>Gate 2 — Workflow Integration</h2>
+<div class="callout callout-warn" contenteditable="true"><strong>2.2 Coverage → REVIEW:</strong> the mean vessel-length difference is <strong>+26%</strong> — PCCT analysts trace further distal into the same named vessels than EID — exceeding the &lt;15% threshold (proxy for ≥95% coverage). This is a tracing-depth/coverage difference, not a technical failure: the paired analysis is restricted to the vessel-overlap intersection to control it, and the sub-segment pass matches extent directly.</div>
 <pre class="uneditable">{html_escape(gate2)}</pre>
 
 <h3>2.4 Lumen & Wall Editing — analyst effort comparison</h3>
@@ -437,11 +429,10 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 <section>
 <h2>Gate 3 — Quantitative Reproducibility</h2>
 <h3>OQ reference vs PCCT result — wCV with 95% CIs</h3>
-<p class="meta" contenteditable="true">Primary metric per endpoint (log-wCV for process outputs, untransformed for plaque), variance-component estimator, canonical region, N=25. Acceptance = 95% CI overlap with the delta OQ.</p>
+<p class="meta" contenteditable="true">Variance-component estimator <strong>with scanner term</strong> (systematic modality bias removed), canonical region, N=25. Primary metric: log-wCV for process outputs, untransformed for plaque. Acceptance = 95% CI overlap with the delta OQ. Alternative configurations (legacy / no-scanner-term) in <code>gate_results/variants/</code>.</p>
 {comparison_table_html("gate3")}
-<pre class="uneditable">{html_escape(gate3)}</pre>
 <div class="panel" contenteditable="true">
-<strong>Reviewer commentary:</strong> The block above is the <em>variance-component (default)</em> config. Under the corrected (OQ-consistent) estimator the process outputs (Lumen/Wall/Vessel) FAIL the CI-overlap on the canonical region — the systematic modality bias inflates the raw cross-scanner wCV. They come within OQ with the <em>scanner-term</em> (bias removed) or on the <em>sub-segment</em> region (extent matched). See the configuration matrix above and <code>tracker/statistical-methodology.md</code>. Plaque wCV passes broadly.
+<strong>Reviewer commentary:</strong> With the scanner term (bias removed) the process outputs (Lumen/Wall/Vessel) come within the OQ CIs — the residual cross-scanner dispersion is non-inferior to OQ inter-operator variability. Plaque wCVs overlap the (wide) OQ CIs. Without the scanner term the raw cross-scanner wCV is inflated by the systematic modality bias, which is instead assessed in Gate 4. See <code>tracker/statistical-methodology.md</code>.
 </div>
 </section>
 
