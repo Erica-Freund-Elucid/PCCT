@@ -38,6 +38,11 @@ CHARS = [
 ]
 
 
+# plaque endpoints for the pooled dataset-characteristics table
+PLAQUE = [("TotalPlaqueVolume", "Total plaque"), ("CALCVol", "CALC"),
+          ("LRNCVol", "LRNC"), ("NonCALCMATXVol", "NonCALC matrix")]
+
+
 def load(path):
     if not os.path.isfile(path):
         return []
@@ -66,6 +71,17 @@ def summ(p, e):
         m = f"{a.mean():+.{nd}f}" if signed else f"{a.mean():.{nd}f}"
         return f"{m}±{a.std(ddof=1):.{nd}f} ({a.min():.{nd}f}–{a.max():.{nd}f})"
     return cell(p), cell(e), cell(d, signed=True)
+
+
+def pooled_iqr(rows, var):
+    """Median [Q1–Q3] over the pooled PCCT+EID values for a metric."""
+    p, e = paired(rows, var)
+    if len(p) == 0:
+        return "—"
+    a = np.concatenate([p, e])
+    med = np.median(a); q1, q3 = np.percentile(a, [25, 75])
+    nd = 0 if a.max() > 20 else 1
+    return f"{med:.{nd}f} [{q1:.{nd}f}–{q3:.{nd}f}]"
 
 
 def main():
@@ -99,6 +115,26 @@ def main():
             md.append(f"| **{lab}** ({unit}) | {pr} | {er} | {dr} | {ps} | {es} | {ds} |")
         md.append("")
 
+    # ---- Dataset characteristics: plaque, pooled PCCT+EID, median [IQR] ----
+    cols = [("v1 raw", "v1", "raw"), ("v2 raw", "v2", "raw"),
+            ("v1 sub-seg", "v1", "sub-seg"), ("v2 sub-seg", "v2", "sub-seg")]
+    vmap = {"v1": "v1 (original)", "v2": "v2 (2026-07-07)"}
+    md.append("## Dataset characteristics — plaque burden (pooled PCCT+EID, median [Q1–Q3], mm³)\n")
+    md.append("| Plaque metric | " + " | ".join(c[0] for c in cols) + " |")
+    md.append("|---|" + "--:|" * len(cols))
+    plq_csv_rows = []
+    for var, lab in PLAQUE:
+        cells = [pooled_iqr(data[vmap[v]][b], var) for _, v, b in cols]
+        md.append(f"| **{lab}** | " + " | ".join(cells) + " |")
+        plq_csv_rows.append([lab] + cells)
+    md.append("\n*Pooled = PCCT and EID values combined (n = 2 × cohort per cell). Median [Q1–Q3] "
+              "across the pooled distribution.*\n")
+    plq_path = os.path.join(ROOT, "gate_results", "plaque_dataset_characteristics.csv")
+    with open(plq_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["plaque_metric"] + [c[0] for c in cols])
+        w.writerows(plq_csv_rows)
+
     # ---- Length variability callout ----
     md.append("## Length variability (the raw-vs-sub-seg point)\n")
     md.append("| Vintage | Basis | PCCT len CV% | EID len CV% | mean \\|PCCT−EID\\| len | % of mean |")
@@ -117,7 +153,8 @@ def main():
     md_path = os.path.join(ROOT, "gate_results", "cohort_characteristics.md")
     open(md_path, "w", encoding="utf-8").write("\n".join(md) + "\n")
     print("\n".join(md))
-    print(f"\nWrote {os.path.relpath(csv_path, ROOT)} and {os.path.relpath(md_path, ROOT)}")
+    print(f"\nWrote {os.path.relpath(csv_path, ROOT)}, {os.path.relpath(plq_path, ROOT)}, "
+          f"and {os.path.relpath(md_path, ROOT)}")
 
 
 if __name__ == "__main__":

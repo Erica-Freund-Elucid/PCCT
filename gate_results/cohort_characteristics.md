@@ -28,6 +28,17 @@
 | **NonCALC matrix** (mm³) | 177±118 (15–527) | 286±184 (50–805) | -109±98 (-278–61) | 117±95 (2–388) | 228±166 (20–689) | -111±114 (-324–51) |
 | **Vessel length** (mm) | 288±125 (110–536) | 241±123 (102–524) | +46±82 (-105–184) | 213±112 (19–497) | 213±112 (19–497) | +0±0 (0–0) |
 
+## Dataset characteristics — plaque burden (pooled PCCT+EID, median [Q1–Q3], mm³)
+
+| Plaque metric | v1 raw | v2 raw | v1 sub-seg | v2 sub-seg |
+|---|--:|--:|--:|--:|
+| **Total plaque** | 349 [196–582] | 296 [156–488] | 250 [146–468] | 178 [111–334] |
+| **CALC** | 85 [39–183] | 73 [33–142] | 66 [30–166] | 53 [23–120] |
+| **LRNC** | 12 [3–27] | 7 [2–21] | 6 [1–21] | 4 [0–14] |
+| **NonCALC matrix** | 217 [138–328] | 189 [116–307] | 161 [98–269] | 128 [61–214] |
+
+*Pooled = PCCT and EID values combined (n = 2 × cohort per cell). Median [Q1–Q3] across the pooled distribution.*
+
 ## Length variability (the raw-vs-sub-seg point)
 
 | Vintage | Basis | PCCT len CV% | EID len CV% | mean \|PCCT−EID\| len | % of mean |
