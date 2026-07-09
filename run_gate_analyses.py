@@ -1426,15 +1426,18 @@ def write_gate3_comparison(paired, path):
                                 "YES" if overlap else ("NO" if overlap == False else "")])
 
 
-def write_comparison_tables(paired, out_dir):
+def write_comparison_tables(paired, out_dir, sub_paired=None):
     """Emit side-by-side OQ-reference vs PCCT-result tables (with 95% CIs) for the
     report: gate3_comparison.csv (wCV) and gate4_comparison.csv (plaque BA bias)."""
     # Gate 3 — wCV (canonical, length-normalized), primary metric per endpoint
     write_gate3_comparison(paired, os.path.join(out_dir, "gate3_comparison.csv"))
     # Gate 4 — plaque Bland-Altman bias vs OQ. The OQ reference (ATTACHMENT 2
-    # "Untransformed analysis") is UNTRANSFORMED and LENGTH-NORMALIZED, so the
-    # like-for-like PCCT comparison is the untransformed, length-normalized bias.
-    # The raw-mm³ bias / % of mean (project-specific threshold) is reported alongside.
+    # "Untransformed analysis") is UNTRANSFORMED and LENGTH-NORMALIZED, from within-scan
+    # reader-repeat (no extent differential). The like-for-like PCCT comparison must be
+    # extent-matched, so pcct_bias_lennorm is computed on the SUB-SEGMENT (canonical
+    # per-mm is confounded by PCCT tracing ~+19% longer). Raw-mm³ bias / % of mean
+    # (project threshold) is reported from the canonical region as reference.
+    ln_src = sub_paired if sub_paired else paired
     g4_path = os.path.join(out_dir, "gate4_comparison.csv")
     with open(g4_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -1446,15 +1449,15 @@ def write_comparison_tables(paired, out_dir):
             oq_bias_ci = cfg.get("oq_bias_ut_ci")
             if not oq_bias_ci:
                 continue  # plaque endpoints only (have OQ untransformed BA refs)
-            # OQ comparison: untransformed, LENGTH-NORMALIZED (matches OQ basis)
-            pvn, evn, _ = _get_paired_values(paired, var, normalize=True)
+            # OQ comparison: untransformed, LENGTH-NORMALIZED on the extent-matched sub-segment
+            pvn, evn, _ = _get_paired_values(ln_src, var, normalize=True)
             if len(pvn) < 2:
                 continue
             mb, sd, lo, hi, _ = bland_altman(pvn, evn, log_transform=False)
             b_lo, b_hi = bootstrap_bias_ci(pvn, evn, log_transform=False)
             oq_loa = cfg.get("oq_loa_ut", ("", ""))
             overlap = ci_overlap((b_lo, b_hi), oq_bias_ci)
-            # secondary: raw-mm³ bias and % of mean vs project threshold (not OQ-derived)
+            # reference: raw-mm³ bias and % of mean vs project threshold (canonical, not OQ-derived)
             pvr, evr, _ = _get_paired_values(paired, var, normalize=False)
             mb_ut, _, _, _, _ = bland_altman(pvr, evr, log_transform=False)
             mean_ut = np.mean([(p + e) / 2 for p, e in zip(pvr, evr)])
@@ -1682,4 +1685,4 @@ if __name__ == "__main__":
             writer.writerow(row)
     print(f"Paired CSV:         {paired_csv_path}")
 
-    write_comparison_tables(paired, OUTPUT_DIR)
+    write_comparison_tables(paired, OUTPUT_DIR, sub_paired=sub_paired)

@@ -250,7 +250,8 @@ def build_docx():
     p("Results are on the sub-segment (extent-matched) region for v1 and v2. σ²_random / σ²_scanner "
       "are small (the extent term is removed by the sub-segment intersection) and stable v1→v2 — the "
       "07-07 re-work changed the systematic bias (Gate 4), not the random reproducibility (Gate 3). "
-      "Gate 4 bias (§8) is assessed on the canonical length-normalized scale to match the OQ.",
+      "Gate 4 bias (§8) is assessed on the extent-matched sub-segment length-normalized scale "
+      "(the OQ-comparable basis; canonical per-mm is confounded by the PCCT extent differential).",
       italic=True)
 
     def cell_g3(r, scale):
@@ -291,39 +292,40 @@ def build_docx():
 
     h("8. Gate 4 — systematic bias (untransformed) vs OQ")
     p("The OQ Bland-Altman bias reference (730-CVV-040 ATTACHMENT 2, \"Untransformed analysis\") is "
-      "UNTRANSFORMED and LENGTH-NORMALIZED. So the like-for-like PCCT comparison uses the "
-      "canonical length-normalized bias; length-normalization is not meaningful on the sub-segment "
-      "(extent is already matched), so the sub-segment bias is shown as a raw-mm³ reference column. "
-      "The OQ tabulates only the untransformed BA bias (transformed is plots-only), so no "
-      "transformed-bias comparison is possible. Plaque endpoints.", bold=True)
-    p("8a. Untransformed bias (length-normalized) — OQ 95% CI vs PCCT canonical; overlap P/F.",
-      bold=True)
+      "UNTRANSFORMED and LENGTH-NORMALIZED (per-mm), from within-scan reader-repeat — i.e. with NO "
+      "extent differential. The like-for-like PCCT comparison must therefore also be extent-matched: "
+      "the SUB-SEGMENT length-normalized bias. Canonical length-normalization is NOT used for the OQ "
+      "comparison because PCCT traces ~+19% longer than EID on the full vessel, so dividing by the "
+      "larger PCCT length spuriously depresses every PCCT per-mm value (e.g. CALC raw Δ ≈ 0 but "
+      "canonical per-mm −0.095, vs +0.006 on the extent-matched sub-segment). Canonical and "
+      "sub-segment RAW-mm³ biases are shown as reference. OQ tabulates only the untransformed BA "
+      "bias, so no transformed comparison is possible. Plaque endpoints.", bold=True)
+    p("8a. OQ comparison — sub-segment (extent-matched) length-normalized bias, per-mm. "
+      "OQ 95% CI vs PCCT v1/v2; overlap P/F.", bold=True)
     hdrb = ["Endpoint", "OQ bias [95% CI]",
-            "v1 canonical bias [95% CI]", "ov", "v2 canonical bias [95% CI]", "ov"]
+            "v1 sub-seg bias [95% CI]", "ov", "v2 sub-seg bias [95% CI]", "ov"]
     rows = []
     for v in PLAQUE:
         oqb = OQ[v]["bias_ci"]
-        r1, r2 = R["v1c"][v], R["v2c"][v]
+        r1, r2 = R["v1s"][v], R["v2s"][v]
         rows.append([OQ[v]["lab"], f'{OQ[v]["bias_ut"]:+.3f} [{oqb[0]}, {oqb[1]}]',
                      f'{r1["ut_bias_norm"]:+.3f} [{r1["ut_bias_norm_ci"][0]:+.3f},{r1["ut_bias_norm_ci"][1]:+.3f}]',
                      "P" if r1["ut_bias_norm_overlap"] else "F",
                      f'{r2["ut_bias_norm"]:+.3f} [{r2["ut_bias_norm_ci"][0]:+.3f},{r2["ut_bias_norm_ci"][1]:+.3f}]',
                      "P" if r2["ut_bias_norm_overlap"] else "F"])
     table(hdrb, rows)
-    p("8b. Sub-segment bias (raw mm³, extent-matched — length-norm not applicable), shown for "
-      "reference alongside the canonical/OQ comparison above.", bold=True)
-    hdrs = ["Endpoint", "v1 sub-seg bias (mm³) [95% CI]", "v2 sub-seg bias (mm³) [95% CI]"]
+    p("8b. Raw-mm³ bias reference (actual volume differences; not length-normalized). Canonical "
+      "retains the extent differential; sub-segment is extent-matched.", bold=True)
+    hdrs = ["Endpoint", "v1 canon (mm³)", "v2 canon (mm³)", "v1 sub-seg (mm³)", "v2 sub-seg (mm³)"]
     rows = []
     for v in PLAQUE:
-        s1, s2 = R["v1s"][v], R["v2s"][v]
-        rows.append([OQ[v]["lab"],
-                     f'{s1["ut_bias_raw"]:+.1f} [{s1["ut_bias_raw_ci"][0]:+.1f},{s1["ut_bias_raw_ci"][1]:+.1f}]',
-                     f'{s2["ut_bias_raw"]:+.1f} [{s2["ut_bias_raw_ci"][0]:+.1f},{s2["ut_bias_raw_ci"][1]:+.1f}]'])
+        rows.append([OQ[v]["lab"]] + [f'{R[k][v]["ut_bias_raw"]:+.1f}'
+                                      for k in ("v1c", "v2c", "v1s", "v2s")])
     table(hdrs, rows)
-    p("Note: canonical bias (length-normalized) is the OQ-comparable quantity; NonCALC Matrix and "
-      "Total Plaque do not overlap the OQ bias CI (real modality bias). The systematic plaque bias "
-      "grew v1→v2 (07-07 re-work) and is within the shared centerline, not the traced-extent tail — "
-      "so it persists on the sub-segment (raw bias column) rather than shrinking.", italic=True)
+    p("Note: on the extent-matched sub-segment (the OQ-comparable basis) CALC and LRNC overlap the OQ "
+      "bias CI (near-zero bias), while NonCALC Matrix and Total Plaque do not — a real modality bias "
+      "(PCCT lower). The bias grew v1→v2 (07-07 re-work) and persists on the sub-segment (raw column), "
+      "so it is within the shared centerline, not the traced-extent tail.", italic=True)
     # 8c. v1 -> v2 per-patient shift figures (untransformed & log)
     shift_dir = os.path.join(ROOT, "gate_results", "gate4_v1v2_shift")
     if os.path.isdir(shift_dir):
@@ -498,15 +500,15 @@ def build_pptx():
                 ["Endpoint", "OQ", "canonical  wCV a/b", "sub-segment  wCV a/b"], sa,
                 colw=[3.2, 1.6, 3.9, 3.9], size=13)
 
-    # 6b Gate 4 systematic bias (untransformed) — OQ vs v2 canonical (len-norm) + v2 sub-seg (raw)
+    # 6b Gate 4 systematic bias (untransformed) — OQ vs v2 SUB-SEG (len-norm) + raw mm³ (canon/sub)
     br = []
     for v in PLAQUE:
         oqb = OQ[v]["bias_ci"]; rc, rs = R["v2c"][v], R["v2s"][v]
         br.append([OQ[v]["lab"], f'{OQ[v]["bias_ut"]:+.3f} [{oqb[0]},{oqb[1]}]',
-                   f'{rc["ut_bias_norm"]:+.3f}  {"P" if rc["ut_bias_norm_overlap"] else "F"}',
-                   f'{rs["ut_bias_raw"]:+.1f} mm³'])
-    table_slide("Gate 4 — untransformed bias vs OQ (v2): canonical len-norm + sub-seg",
-                ["Endpoint", "OQ bias [95% CI]", "v2 canonical (len-norm) P/F", "v2 sub-seg (raw)"], br,
+                   f'{rs["ut_bias_norm"]:+.3f}  {"P" if rs["ut_bias_norm_overlap"] else "F"}',
+                   f'{rc["ut_bias_raw"]:+.0f} / {rs["ut_bias_raw"]:+.0f}'])
+    table_slide("Gate 4 — untransformed bias vs OQ (v2): sub-seg len-norm (OQ) + raw mm³",
+                ["Endpoint", "OQ bias [95% CI]", "v2 sub-seg (len-norm) P/F", "raw canon/sub (mm³)"], br,
                 colw=[2.8, 3.4, 3.8, 3.0], size=13)
 
     # 7 conclusions

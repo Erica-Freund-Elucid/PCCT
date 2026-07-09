@@ -18,7 +18,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-PAIRED = os.path.join(ROOT, "gate_results", "paired_data.csv")
+# Sub-segment (extent-matched) paired data: on the sub-segment PCCT Len = EID Len, so
+# length-normalization is clean and directly comparable to the OQ per-mm reference.
+# (Canonical per-mm is confounded by PCCT tracing ~+19% longer than EID.)
+PAIRED = os.path.join(ROOT, "gate_results", "paired_data_subsegment.csv")
 OUT = os.path.join(ROOT, "gate_results", "bland_altman_plots_oq")
 SEED, NBOOT = 12345, 5000
 
@@ -85,7 +88,7 @@ def main():
         ax.set_xlabel("Mean of PCCT & EID  (length-normalized, per-mm)", fontsize=9)
         ax.set_ylabel("Difference PCCT − EID  (per-mm)", fontsize=9)
         verdict = "OVERLAP (pass)" if overlap else "NO OVERLAP (bias exceeds OQ)"
-        ax.set_title(f"{label} — untransformed, length-normalized vs OQ\n{verdict}",
+        ax.set_title(f"{label} — sub-segment (extent-matched), length-normalized vs OQ\n{verdict}",
                      fontsize=11)
         ax.legend(fontsize=7.5, loc="best", framealpha=0.92)
         ax.grid(True, alpha=0.2)
