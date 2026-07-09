@@ -456,6 +456,15 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
             html += f'<figure><img class="fig" src="{ba_canonical[v]}" alt="BA {v}"><figcaption contenteditable="true">{v}</figcaption></figure>\n'
     html += """</div>
 
+<h3>Per-patient v1→v2 shift — untransformed &amp; log</h3>
+<p class="meta" contenteditable="true">Each patient's Bland-Altman point for v1 (light blue) and v2 / 2026-07-07 (dark blue); grey arrows show the per-patient shift. Dashed line = v1 mean bias, solid = v2 mean bias. Left panel untransformed (mm³), right panel log(x+1). Canonical region — shows how the systematic bias moved between data vintages.</p>
+"""
+    shift_dir = ROOT / "gate_results" / "gate4_v1v2_shift"
+    for v in ba_vars:
+        img = b64_image(shift_dir / f"BA_shift_{v}.png")
+        if img:
+            html += f'<img class="fig" src="{img}" alt="v1v2 shift {v}" style="width:100%">\n'
+    html += """
 <div class="panel" contenteditable="true">
 <strong>Reviewer commentary (latest 07-07 data):</strong> The Gate 4 bias criterion has two forms — the legacy project-specific <code>|bias|&lt;5%/10% of mean</code> and the OQ-consistent <code>oq-ci-overlap</code> (PCCT log-scale BA bias 95% CI vs 730-CVV-040 Table 6). <strong>NonCALC Matrix and Total Plaque bias FAIL under both</strong> — a real, statistically distinguishable modality bias (PCCT systematically lower). Wall bias has grown to ~28% across re-processing. LRNC "passes" the CI-overlap test only by low power (its CI is too wide to reject). Full detail in <code>gate_results/variants/</code> and <code>tracker/statistical-methodology.md §2.1</code>.
 </div>

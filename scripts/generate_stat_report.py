@@ -303,6 +303,16 @@ def build_docx():
       "plaque bias grew v1→v2 (07-07 re-work) and does NOT shrink to overlap on sub-segment — the "
       "bias is within the shared centerline, not at the traced-extent tail (consistent with the "
       "earlier sub-segment finding).", italic=True)
+    # 8c. v1 -> v2 per-patient shift figures (untransformed & log)
+    shift_dir = os.path.join(ROOT, "gate_results", "gate4_v1v2_shift")
+    if os.path.isdir(shift_dir):
+        p("8c. Per-patient v1→v2 shift (untransformed & log). v1 = light, v2 = dark; grey arrows "
+          "show each patient's shift; dashed = v1 mean bias, solid = v2 mean bias.", bold=True)
+        for v in ["CALCVol", "LRNCVol", "NonCALCMATXVol", "TotalPlaqueVolume",
+                  "LumenVol", "WallVol", "VesselVol"]:
+            fp = os.path.join(shift_dir, f"BA_shift_{v}.png")
+            if os.path.exists(fp):
+                doc.add_picture(fp, width=Inches(6.8))
 
     h("9. Interpretation")
     for b in [
