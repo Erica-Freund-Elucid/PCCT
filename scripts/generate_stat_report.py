@@ -347,7 +347,7 @@ def build_docx():
         "and just fails on v2. Both scales are reported.",
         "Scanner-attributable variance (Var(d)/2 − σ²_OQ) is ≤ the OQ limit / CI-includes-0 for most "
         "endpoints on the canonical region, and on the extent-controlled sub-segment region "
-        "(regenerated on v2, N=24) it is ≤ OQ / CI-includes-0 for nearly all endpoints — i.e. after "
+        "(regenerated on v2, N=25) it is ≤ OQ / CI-includes-0 for nearly all endpoints — i.e. after "
         "removing reader+repeat (OQ) and traced extent (sub-segment), the residual scanner-attributable "
         "variability is within the OQ envelope.",
     ]:
@@ -355,12 +355,13 @@ def build_docx():
 
     h("10. Caveats & future work")
     for b in [
-        "N = 25 canonical / 24 sub-segment, preliminary (target ≥ 30); passes are CI-overlap-driven "
+        "N = 25 canonical / 25 sub-segment, preliminary (target ≥ 30); passes are CI-overlap-driven "
         "with wide CIs.",
         "Canonical region retains a traced-extent differential (PCCT traces ~+26% longer within "
         "shared vessels; Gate 2 REVIEW). The sub-segment (distance-from-ostium) intersection removes "
-        "it; regenerated on v2 (2026-07-07) data, N=24 (PT-124 no vessel overlap, PT-136 duplicate "
-        "LeftCoronary in workitem.json — both excluded). Pipeline: scripts/subsegment/.",
+        "it; regenerated on v2 (2026-07-07) data, N=25 (PT-124 excluded — no PCCT∩EID vessel overlap; "
+        "PT-136 recovered as two left targets, LAD+Diagonal and Circumflex+Marginal). "
+        "Pipeline: scripts/subsegment/.",
         "Scanner-attributable subtraction assumes the OQ reader+repeat variance is transportable to "
         "the PCCT setting, and that PCCT/EID reads are by independent readers (single read per "
         "patient·scanner; true scanner isolation would need replicate reads).",
@@ -516,7 +517,7 @@ def build_pptx():
         ("Dispersion is vintage-stable; the 07-07 re-work increased systematic bias, not noise.", 0, None),
         ("Plaque: passes on untransformed scale (wide OQ CIs); CALC borderline on log scale — both reported.", 0, None),
         ("Scanner-attributable variance (Var(d)/2 − σ²_OQ) ≤ OQ / CI-includes-0 for most endpoints on "
-         "canonical, and nearly all on the extent-matched sub-segment (regenerated on v2, N=24).", 0, None),
+         "canonical, and nearly all on the extent-matched sub-segment (regenerated on v2, N=25).", 0, None),
         ("After removing reader+repeat (OQ) and traced extent (sub-segment), the residual scanner "
          "variability is within the OQ envelope. Next: expand to N ≥ 30.", 0, BLUE),
     ], top=1.5, size=17)
