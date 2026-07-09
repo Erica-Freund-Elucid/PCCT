@@ -271,16 +271,21 @@ def comparison_table_html(kind):
                      f"<td>{verdict(r['ci_overlap'])}</td></tr>")
         h.append("</table>")
         return "".join(h)
-    # gate4
-    h = ['<table><tr><th>Endpoint (log scale)</th><th>OQ bias [95% CI]</th><th>OQ LoA</th>'
-         '<th>PCCT bias [95% CI]</th><th>PCCT LoA</th><th>bias CI overlap</th></tr>']
+    # gate4 — log-scale (OQ Table 6 overlap) AND untransformed (% of mean vs threshold)
+    def utv(v):
+        return '<span class="pass">pass</span>' if v == "YES" else '<span class="fail">fail</span>'
+    h = ['<table><tr><th>Endpoint</th><th>OQ bias [95% CI] (log)</th><th>OQ LoA (log)</th>'
+         '<th>PCCT log bias [95% CI]</th><th>log CI overlap</th>'
+         '<th>PCCT untransf. bias (mm³)</th><th>% of mean</th><th>&lt;thr</th></tr>']
     for r in rows:
         h.append(f"<tr><td>{r['endpoint']}</td>"
                  f"<td>{r['oq_bias']} [{r['oq_bias_ci_lo']}, {r['oq_bias_ci_hi']}]</td>"
                  f"<td>[{r['oq_loa_lo']}, {r['oq_loa_hi']}]</td>"
                  f"<td>{r['pcct_bias']} [{r['pcct_bias_ci_lo']}, {r['pcct_bias_ci_hi']}]</td>"
-                 f"<td>[{r['pcct_loa_lo']}, {r['pcct_loa_hi']}]</td>"
-                 f"<td>{verdict(r['bias_ci_overlap'])}</td></tr>")
+                 f"<td>{verdict(r['bias_ci_overlap'])}</td>"
+                 f"<td>{r.get('ut_bias','')}</td>"
+                 f"<td>{r.get('ut_bias_pct','')}% (&lt;{r.get('ut_threshold_pct','')}%)</td>"
+                 f"<td>{utv(r.get('ut_bias_pass',''))}</td></tr>")
     h.append("</table>")
     return "".join(h)
 
@@ -439,7 +444,7 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 <section>
 <h2>Gate 4 — Bias & Agreement</h2>
 <h3>OQ reference vs PCCT result — plaque Bland-Altman bias (log scale) with 95% CIs</h3>
-<p class="meta" contenteditable="true">Plaque BA on log(x+1) scale (matches 730-CVV-040 Table 6; raw plaque volumes are heteroscedastic). Acceptance = PCCT bias 95% CI overlaps the OQ Table 6 bias 95% CI. The BA plots below overlay the OQ bias line, OQ bias CI, and OQ LoA band so overlap is visible.</p>
+<p class="meta" contenteditable="true">Reported on both scales. <strong>Log(x+1)</strong> (matches 730-CVV-040 Table 6; raw plaque volumes are heteroscedastic): acceptance = PCCT bias 95% CI overlaps the OQ Table 6 bias 95% CI (the BA plots below overlay the OQ bias line, OQ bias CI, and OQ LoA band so overlap is visible). <strong>Untransformed (non-log)</strong>: bias in mm³ and as % of mean vs the project-specific threshold (|bias| &lt; 5% lumen / 10% wall &amp; plaque; not OQ-derived).</p>
 {comparison_table_html("gate4")}
 <pre class="uneditable">{html_escape(gate4)}</pre>
 

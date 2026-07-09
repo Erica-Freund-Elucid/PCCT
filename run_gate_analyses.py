@@ -1441,7 +1441,8 @@ def write_comparison_tables(paired, out_dir):
         w = csv.writer(f)
         w.writerow(["endpoint", "oq_bias", "oq_bias_ci_lo", "oq_bias_ci_hi",
                     "oq_loa_lo", "oq_loa_hi", "pcct_bias", "pcct_bias_ci_lo",
-                    "pcct_bias_ci_hi", "pcct_loa_lo", "pcct_loa_hi", "bias_ci_overlap"])
+                    "pcct_bias_ci_hi", "pcct_loa_lo", "pcct_loa_hi", "bias_ci_overlap",
+                    "ut_bias", "ut_bias_pct", "ut_threshold_pct", "ut_bias_pass"])
         for var, cfg in GATE4_VARIABLES.items():
             oq_bias_ci = cfg.get("oq_bias_log_ci")
             if not oq_bias_ci:
@@ -1453,9 +1454,15 @@ def write_comparison_tables(paired, out_dir):
             b_lo, b_hi = bootstrap_bias_ci(pv, ev, log_transform=True)
             oq_loa = cfg.get("oq_loa_log", ("", ""))
             overlap = ci_overlap((b_lo, b_hi), oq_bias_ci)
+            # untransformed (non-log) bias: raw mm^3 and % of mean vs project threshold
+            mb_ut, _, _, _, _ = bland_altman(pv, ev, log_transform=False)
+            mean_ut = np.mean([(p + e) / 2 for p, e in zip(pv, ev)])
+            pct_ut = abs(mb_ut) / mean_ut * 100 if mean_ut else 0
+            thr = cfg.get("bias_threshold_pct", 10)
             w.writerow([cfg["label"], cfg.get("oq_bias_log", ""), oq_bias_ci[0], oq_bias_ci[1],
                         oq_loa[0], oq_loa[1], f"{mb:.4f}", f"{b_lo:.4f}", f"{b_hi:.4f}",
-                        f"{lo:.4f}", f"{hi:.4f}", "YES" if overlap else "NO"])
+                        f"{lo:.4f}", f"{hi:.4f}", "YES" if overlap else "NO",
+                        f"{mb_ut:.2f}", f"{pct_ut:.1f}", thr, "YES" if pct_ut < thr else "NO"])
     print(f"Comparison tables: {g3_path}, {g4_path}")
 
 

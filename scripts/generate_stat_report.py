@@ -50,6 +50,18 @@ def norm_pairs(rows, var):
     return np.array(pv), np.array(ev)
 
 
+def raw_pairs(rows, var):
+    """Raw (non-length-normalized) totals, same patient filter as norm_pairs."""
+    pv, ev = [], []
+    for r in rows:
+        p, e = _f(r, f"PCCT_{var}"), _f(r, f"EID_{var}")
+        pl, el = _f(r, "PCCT_Len"), _f(r, "EID_Len")
+        if None in (p, e, pl, el) or pl <= 0 or el <= 0:
+            continue
+        pv.append(p); ev.append(e)
+    return pv, ev
+
+
 def overlap(a, b):
     return a[0] <= b[1] and b[0] <= a[1]
 
@@ -60,6 +72,7 @@ def compute(path):
     out = {"n": None}
     for var, meta in OQ.items():
         pv, ev = norm_pairs(rows, var)
+        pvraw, evraw = raw_pairs(rows, var)
         out["n"] = len(pv)
         d = pv - ev
         dl = np.log(pv + 1) - np.log(ev + 1)
@@ -95,11 +108,20 @@ def compute(path):
         rec["gate3_pass_log"] = overlap(rec["wcv_rand_log_ci"], meta["log"][1:])
         rec["scan_a_pass"] = rec["wcv_scan_log"] <= meta["log"][0]     # (a) scanner wCV <= OQ
         rec["scan_b_pass"] = rec["s2_scan_ci"][0] <= 0                 # (b) CI includes 0
-        # untransformed (for plaque both-scales)
+        # untransformed (for plaque both-scales), length-normalized
         m = float(np.mean(np.concatenate([pv, ev])))
         s2r_ut = float(np.var(d, ddof=1) / 2)
         rec["mean_ut"] = m
         rec["wcv_rand_ut"] = math.sqrt(s2r_ut) / m * 100 if m else 0
+        # untransformed systematic bias (Gate 4, non-log). Report on RAW (non-
+        # normalized) volumes to match gate_summary/HTML and the traditional Gate 4.
+        praw = np.array([p for p, e in zip(pvraw, evraw)])
+        eraw = np.array([e for p, e in zip(pvraw, evraw)])
+        draw = praw - eraw
+        mraw = float(np.mean(np.concatenate([praw, eraw]))) if len(praw) else 0.0
+        rec["ut_bias_raw"] = float(draw.mean()) if len(draw) else 0.0
+        rec["ut_bias_pct"] = abs(rec["ut_bias_raw"]) / mraw * 100 if mraw else 0.0
+        rec["ut_bias_pass"] = rec["ut_bias_pct"] < 10.0   # plaque project threshold
         bt_ut = []
         for _ in range(NBOOT):
             idx = rng.randint(0, n, n)
@@ -249,12 +271,11 @@ def build_docx():
       "term; sub-segment removes it — scanner-attributable variance drops accordingly and is "
       "≤ OQ / CI-includes-0 for nearly all endpoints on sub-segment.", italic=True)
 
-    h("8. Gate 4 — systematic bias (log-scale Bland-Altman) vs OQ Table 6")
-    p("Systematic PCCT−EID bias Δ on the log(x+1), length-normalized scale (the Gate-4 quantity, "
-      "separated from dispersion). Acceptance: PCCT bias 95% CI overlaps the 730-CVV-040 Table 6 "
-      "inter-observer bias 95% CI (which essentially includes 0). Plaque endpoints only (Table 6 "
-      "provides plaque BA references; process-output bias has no OQ BA reference). "
-      "P=overlap/pass, F=no overlap/fail.")
+    h("8. Gate 4 — systematic bias, both scales (log Bland-Altman & untransformed)")
+    p("8a. LOG scale — systematic PCCT−EID bias Δ on the log(x+1), length-normalized scale. "
+      "Acceptance: PCCT bias 95% CI overlaps the 730-CVV-040 Table 6 inter-observer bias 95% CI "
+      "(which essentially includes 0). Plaque only (Table 6 = plaque BA refs). P=overlap/pass.",
+      bold=True)
     hdrb = ["Endpoint", "OQ bias [95% CI]"] + [c[1] for c in COLS]
     rows = []
     for v in PLAQUE:
@@ -266,6 +287,16 @@ def build_docx():
                          f'{"P" if r["bias_overlap"] else "F"}')
         rows.append([OQ[v]["lab"], f'[{oqb[0]}, {oqb[1]}]'] + cells)
     table(hdrb, rows)
+    p("8b. UNTRANSFORMED (non-log) scale — bias as % of mean on RAW (non-normalized) volumes "
+      "(matches gate_summary / HTML report / the traditional Gate 4), vs the project |bias| < 10% "
+      "of mean threshold. P=pass. No OQ untransformed BA-bias reference — project-specific criterion. "
+      "e.g. NonCALC Matrix v2 canonical bias ≈ −108.9 mm³ (47% of mean).", bold=True)
+    hdru = ["Endpoint", "threshold"] + [c[1] for c in COLS]
+    rows = []
+    for v in PLAQUE:
+        cells = [f'{R[k][v]["ut_bias_pct"]:.1f}% {"P" if R[k][v]["ut_bias_pass"] else "F"}' for k, _ in COLS]
+        rows.append([OQ[v]["lab"], "<10%"] + cells)
+    table(hdru, rows)
     p("Full BA bias/LoA/proportional-bias detail and the OQ-overlay plots are in "
       "gate_results/qualification_report.html (canonical) and the gate_summary.txt sub-segment "
       "section + gate_results/bland_altman_plots_subsegment/ (sub-segment). Note the systematic "
