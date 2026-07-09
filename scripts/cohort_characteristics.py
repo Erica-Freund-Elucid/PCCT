@@ -1,10 +1,10 @@
-"""Cohort summary of vessel & plaque characteristics across the paired PCCT/EID scans,
-for v1 (original) and v2 (2026-07-07), on the raw (full-vessel, with length variability)
-and sub-segment (extent-matched) bases.
+"""Cohort summary of vessel & plaque characteristics across the paired PCCT/EID scans.
 
-For each characteristic reports, across the paired cohort, PCCT mean±SD, EID mean±SD,
-and the paired bias Δ = PCCT−EID (mean±SD). Length is included with its coefficient of
-variation and the PCCT−EID extent differential, which the sub-segment removes.
+Two tables, one per data vintage (v1 = original, v2 = 2026-07-07). Within each table
+PCCT and EID are separate columns (side by side) for the raw (full-vessel, with length
+variability) and sub-segment (extent-matched) bases, plus the paired bias Δ = PCCT−EID.
+Length is also summarized with its coefficient of variation and the PCCT−EID extent
+differential, which the sub-segment removes.
 
 Writes gate_results/cohort_characteristics.csv and .md. Run:
     python scripts/cohort_characteristics.py
@@ -14,11 +14,16 @@ import os
 import numpy as np
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-DATASETS = [
-    ("v1 raw",      os.path.join(ROOT, "gate_results_v1_original", "paired_data.csv")),
-    ("v2 raw",      os.path.join(ROOT, "gate_results", "paired_data.csv")),
-    ("v1 sub-seg",  os.path.join(ROOT, "gate_results_v1_original", "paired_data_subsegment.csv")),
-    ("v2 sub-seg",  os.path.join(ROOT, "gate_results", "paired_data_subsegment.csv")),
+# vintage -> {basis: paired_data path}
+VINTAGES = [
+    ("v1 (original)", {
+        "raw":     os.path.join(ROOT, "gate_results_v1_original", "paired_data.csv"),
+        "sub-seg": os.path.join(ROOT, "gate_results_v1_original", "paired_data_subsegment.csv"),
+    }),
+    ("v2 (2026-07-07)", {
+        "raw":     os.path.join(ROOT, "gate_results", "paired_data.csv"),
+        "sub-seg": os.path.join(ROOT, "gate_results", "paired_data_subsegment.csv"),
+    }),
 ]
 # characteristic key -> (label, unit)
 CHARS = [
@@ -50,60 +55,62 @@ def paired(rows, var):
     return np.array(p), np.array(e)
 
 
-def cell(p, e):
-    """PCCT / EID / Δ summaries; returns (pcct, eid, delta) mean±SD strings + n."""
+def summ(p, e):
+    """Return (PCCT mean±SD, EID mean±SD, Δ mean±SD) strings; blank if empty."""
     if len(p) == 0:
-        return "—", "—", "—", 0
+        return "—", "—", "—"
     d = p - e
-    fmt = (lambda a: f"{a.mean():.0f}±{a.std(ddof=1):.0f}") if p.max() > 20 else \
-          (lambda a: f"{a.mean():.1f}±{a.std(ddof=1):.1f}")
-    dd = f"{d.mean():+.0f}±{d.std(ddof=1):.0f}" if abs(d).max() > 20 else f"{d.mean():+.1f}±{d.std(ddof=1):.1f}"
-    return fmt(p), fmt(e), dd, len(p)
+    big = p.max() > 20
+    f = (lambda a: f"{a.mean():.0f}±{a.std(ddof=1):.0f}") if big else \
+        (lambda a: f"{a.mean():.1f}±{a.std(ddof=1):.1f}")
+    dd = (f"{d.mean():+.0f}±{d.std(ddof=1):.0f}" if big else
+          f"{d.mean():+.1f}±{d.std(ddof=1):.1f}")
+    return f(p), f(e), dd
 
 
 def main():
-    data = {name: load(path) for name, path in DATASETS}
-    ns = {name: len(rows) for name, rows in data.items()}
+    data = {v: {b: load(p) for b, p in bases.items()} for v, bases in VINTAGES}
+    ns = {v: {b: len(rows) for b, rows in bases.items()} for v, bases in data.items()}
 
-    # CSV: one row per (characteristic, stat)
+    # ---- CSV: one row per (vintage, characteristic) ----
     csv_path = os.path.join(ROOT, "gate_results", "cohort_characteristics.csv")
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
-        w.writerow(["characteristic", "unit", "stat"] + [n for n, _ in DATASETS])
+        w.writerow(["vintage", "characteristic", "unit",
+                    "PCCT_raw", "EID_raw", "delta_raw",
+                    "PCCT_subseg", "EID_subseg", "delta_subseg"])
+        for vintage, _ in VINTAGES:
+            for var, lab, unit in CHARS:
+                pr, er, dr = summ(*paired(data[vintage]["raw"], var))
+                ps, es, ds = summ(*paired(data[vintage]["sub-seg"], var))
+                w.writerow([vintage, lab, unit, pr, er, dr, ps, es, ds])
+
+    # ---- Markdown: one table per vintage, PCCT vs EID side by side ----
+    md = ["# Cohort vessel & plaque characteristics — paired PCCT vs EID\n",
+          "Mean ± SD across the paired cohort. **Raw** = full traced vessel (retains length "
+          "variability); **sub-seg** = PCCT∩EID extent-matched intersection. Δ = paired PCCT − EID.\n"]
+    for vintage, _ in VINTAGES:
+        md.append(f"## {vintage}  (raw N={ns[vintage]['raw']}, sub-seg N={ns[vintage]['sub-seg']})\n")
+        md.append("| Characteristic | PCCT raw | EID raw | Δ raw | PCCT sub-seg | EID sub-seg | Δ sub-seg |")
+        md.append("|---|--:|--:|--:|--:|--:|--:|")
         for var, lab, unit in CHARS:
-            cells = {name: cell(*paired(data[name], var)) for name, _ in DATASETS}
-            for i, stat in enumerate(("PCCT mean±SD", "EID mean±SD", "Δ PCCT−EID")):
-                w.writerow([lab, unit, stat] + [cells[name][i] for name, _ in DATASETS])
+            pr, er, dr = summ(*paired(data[vintage]["raw"], var))
+            ps, es, ds = summ(*paired(data[vintage]["sub-seg"], var))
+            md.append(f"| **{lab}** ({unit}) | {pr} | {er} | {dr} | {ps} | {es} | {ds} |")
+        md.append("")
 
-    # Markdown table
-    md = []
-    md.append("# Cohort vessel & plaque characteristics — paired PCCT vs EID\n")
-    md.append("Mean ± SD across the paired cohort. **Raw** = full traced vessel "
-              "(retains length variability); **sub-seg** = PCCT∩EID extent-matched "
-              "intersection. Δ = paired PCCT − EID bias.\n")
-    md.append("N: " + ", ".join(f"{n}={ns[n]}" for n, _ in DATASETS) + "\n")
-    header = "| Characteristic | Stat | " + " | ".join(n for n, _ in DATASETS) + " |"
-    md.append(header)
-    md.append("|" + "---|" * (2 + len(DATASETS)))
-    for var, lab, unit in CHARS:
-        cells = {name: cell(*paired(data[name], var)) for name, _ in DATASETS}
-        for i, stat in enumerate(("PCCT", "EID", "Δ (bias)")):
-            first = f"**{lab}** ({unit})" if i == 0 else ""
-            md.append(f"| {first} | {stat} | " +
-                      " | ".join(cells[name][i] for name, _ in DATASETS) + " |")
-
-    # Length variability callout
-    md.append("\n## Length variability (the raw-vs-sub-seg point)\n")
-    md.append("| Dataset | PCCT len CV% | EID len CV% | mean \\|PCCT−EID\\| len | as % of mean len |")
-    md.append("|---|---|---|---|---|")
-    for name, _ in DATASETS:
-        p, e = paired(data[name], "Len")
-        if len(p) == 0:
-            continue
-        d = np.abs(p - e)
-        ml = np.concatenate([p, e]).mean()
-        md.append(f"| {name} | {p.std(ddof=1)/p.mean()*100:.1f}% | {e.std(ddof=1)/e.mean()*100:.1f}% | "
-                  f"{d.mean():.0f} mm | {d.mean()/ml*100:.0f}% |")
+    # ---- Length variability callout ----
+    md.append("## Length variability (the raw-vs-sub-seg point)\n")
+    md.append("| Vintage | Basis | PCCT len CV% | EID len CV% | mean \\|PCCT−EID\\| len | % of mean |")
+    md.append("|---|---|--:|--:|--:|--:|")
+    for vintage, _ in VINTAGES:
+        for basis in ("raw", "sub-seg"):
+            p, e = paired(data[vintage][basis], "Len")
+            if len(p) == 0:
+                continue
+            d = np.abs(p - e); ml = np.concatenate([p, e]).mean()
+            md.append(f"| {vintage} | {basis} | {p.std(ddof=1)/p.mean()*100:.1f}% | "
+                      f"{e.std(ddof=1)/e.mean()*100:.1f}% | {d.mean():.0f} mm | {d.mean()/ml*100:.0f}% |")
     md.append("\n*Raw retains a substantial PCCT−EID length differential; the sub-segment "
               "intersection matches extent, so its length differential ≈ 0.*")
 
