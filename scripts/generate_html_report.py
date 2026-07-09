@@ -271,19 +271,23 @@ def comparison_table_html(kind):
                      f"<td>{verdict(r['ci_overlap'])}</td></tr>")
         h.append("</table>")
         return "".join(h)
-    # gate4 — log-scale (OQ Table 6 overlap) AND untransformed (% of mean vs threshold)
+    # gate4 — OQ comparison is UNTRANSFORMED + LENGTH-NORMALIZED (the OQ ATTACHMENT 2
+    # basis); raw-mm³ bias / % of mean is a secondary project-specific criterion.
     def utv(v):
         return '<span class="pass">pass</span>' if v == "YES" else '<span class="fail">fail</span>'
-    h = ['<table><tr><th>Endpoint</th><th>OQ bias [95% CI] (log)</th><th>OQ LoA (log)</th>'
-         '<th>PCCT log bias [95% CI]</th><th>log CI overlap</th>'
-         '<th>PCCT untransf. bias (mm³)</th><th>% of mean</th><th>&lt;thr</th></tr>']
+    h = ['<table><tr><th>Endpoint</th>'
+         '<th>OQ bias [95% CI]<br><span style="font-weight:400;font-size:0.82em;color:#64748b">untransf., len-norm</span></th>'
+         '<th>OQ LoA</th>'
+         '<th>PCCT bias [95% CI]<br><span style="font-weight:400;font-size:0.82em;color:#64748b">untransf., len-norm</span></th>'
+         '<th>CI overlap</th>'
+         '<th>PCCT raw bias (mm³)</th><th>% of mean</th><th>&lt;thr</th></tr>']
     for r in rows:
         h.append(f"<tr><td>{r['endpoint']}</td>"
                  f"<td>{r['oq_bias']} [{r['oq_bias_ci_lo']}, {r['oq_bias_ci_hi']}]</td>"
                  f"<td>[{r['oq_loa_lo']}, {r['oq_loa_hi']}]</td>"
-                 f"<td>{r['pcct_bias']} [{r['pcct_bias_ci_lo']}, {r['pcct_bias_ci_hi']}]</td>"
+                 f"<td>{r['pcct_bias_lennorm']} [{r['pcct_bias_ci_lo']}, {r['pcct_bias_ci_hi']}]</td>"
                  f"<td>{verdict(r['bias_ci_overlap'])}</td>"
-                 f"<td>{r.get('ut_bias','')}</td>"
+                 f"<td>{r.get('ut_bias_raw','')}</td>"
                  f"<td>{r.get('ut_bias_pct','')}% (&lt;{r.get('ut_threshold_pct','')}%)</td>"
                  f"<td>{utv(r.get('ut_bias_pass',''))}</td></tr>")
     h.append("</table>")
@@ -302,6 +306,10 @@ def main():
     ba_vars = ["LumenVol", "WallVol", "VesselVol", "CALCVol", "LRNCVol",
                "NonCALCMATXVol", "TotalPlaqueVolume"]
     ba_canonical = {v: b64_image(plot_dir / f"BA_{v}.png") for v in ba_vars}
+    # OQ-overlay plots (plaque only): untransformed + length-normalized, OQ bias/CI/LoA
+    oq_dir = ROOT / "gate_results" / "bland_altman_plots_oq"
+    plaque_vars = ["CALCVol", "LRNCVol", "NonCALCMATXVol", "TotalPlaqueVolume"]
+    ba_oq = {v: b64_image(oq_dir / f"BA_oq_{v}.png") for v in plaque_vars}
 
     # New Gate 1 / Gate 2.4 plots — generate from raw data
     snr_pcct = load_snr_csv(ROOT / "gate_results" / "snr_pcct.csv")
@@ -443,12 +451,21 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 
 <section>
 <h2>Gate 4 — Bias & Agreement</h2>
-<h3>OQ reference vs PCCT result — plaque Bland-Altman bias (log scale) with 95% CIs</h3>
-<p class="meta" contenteditable="true">Reported on both scales. <strong>Log(x+1)</strong> (matches 730-CVV-040 Table 6; raw plaque volumes are heteroscedastic): acceptance = PCCT bias 95% CI overlaps the OQ Table 6 bias 95% CI (the BA plots below overlay the OQ bias line, OQ bias CI, and OQ LoA band so overlap is visible). <strong>Untransformed (non-log)</strong>: bias in mm³ and as % of mean vs the project-specific threshold (|bias| &lt; 5% lumen / 10% wall &amp; plaque; not OQ-derived).</p>
+<h3>OQ reference vs PCCT result — plaque Bland-Altman bias (untransformed, length-normalized) with 95% CIs</h3>
+<p class="meta" contenteditable="true">The 730-CVV-040 ATTACHMENT 2 Bland-Altman bias reference is <strong>untransformed and length-normalized</strong> (per-mm), so the like-for-like PCCT comparison uses the untransformed, length-normalized bias. <strong>Acceptance</strong> = PCCT bias 95% CI overlaps the OQ bias 95% CI (visualized in the overlay plots below: OQ bias line, OQ bias CI band, OQ LoA band). The <strong>raw-mm³ bias / % of mean</strong> is reported as a secondary project-specific criterion (not OQ-derived). The OQ tabulates only the untransformed BA bias (transformed is plots-only), so a transformed-bias comparison is not available.</p>
 {comparison_table_html("gate4")}
-<pre class="uneditable">{html_escape(gate4)}</pre>
 
-<h3>Bland-Altman plots</h3>
+<h3>Bland-Altman vs OQ — untransformed, length-normalized (OQ overlay)</h3>
+<p class="meta" contenteditable="true">Per-patient PCCT−EID differences (per-mm). Blue = PCCT mean bias + bootstrap 95% CI; green = OQ bias line, OQ bias 95% CI band, and OQ LoA band. Overlap of the blue CI with the green OQ bias CI = pass.</p>
+<div class="ba-grid">
+"""
+    for v in plaque_vars:
+        if ba_oq[v]:
+            html += f'<figure><img class="fig" src="{ba_oq[v]}" alt="BA-OQ {v}"><figcaption contenteditable="true">{v}</figcaption></figure>\n'
+    html += """</div>
+
+<h3>Bland-Altman distribution (log scale, no OQ overlay)</h3>
+<p class="meta" contenteditable="true">PCCT−EID agreement on the log(x+1) scale (heteroscedasticity view). No OQ overlay — the OQ BA reference is untransformed/length-normalized (see the overlay plots above).</p>
 <div class="ba-grid">
 """
     for v in ba_vars:
@@ -466,7 +483,7 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
             html += f'<img class="fig" src="{img}" alt="v1v2 shift {v}" style="width:100%">\n'
     html += """
 <div class="panel" contenteditable="true">
-<strong>Reviewer commentary (latest 07-07 data):</strong> The Gate 4 bias criterion has two forms — the legacy project-specific <code>|bias|&lt;5%/10% of mean</code> and the OQ-consistent <code>oq-ci-overlap</code> (PCCT log-scale BA bias 95% CI vs 730-CVV-040 Table 6). <strong>NonCALC Matrix and Total Plaque bias FAIL under both</strong> — a real, statistically distinguishable modality bias (PCCT systematically lower). Wall bias has grown to ~28% across re-processing. LRNC "passes" the CI-overlap test only by low power (its CI is too wide to reject). Full detail in <code>gate_results/variants/</code> and <code>tracker/statistical-methodology.md §2.1</code>.
+<strong>Reviewer commentary (latest 07-07 data):</strong> On the OQ-comparable basis (untransformed, length-normalized bias, 95% CI overlap with the OQ), <strong>NonCALC Matrix and Total Plaque do NOT overlap the OQ bias CI</strong> — a real, statistically distinguishable modality bias (PCCT systematically lower); CALC and LRNC overlap. The bias grew v1→v2 (07-07 re-work) and persists on the extent-matched sub-segment (raw column in the stat methods doc §8b) — i.e., it lives within the shared centerline, not at the traced-extent tail. The raw-mm³ % of mean is a project-specific reference only. Full detail in <code>PCCT_Statistical_Methods_and_Results.docx §8</code> and <code>tracker/statistical-methodology.md §2.1</code>.
 </div>
 </section>
 

@@ -212,42 +212,43 @@ GATE4_VARIABLES = {
         "ba_scale": "log",
         "project_specific": True,
     },
-    # Plaque BA is on the log(x+1) scale to match 730-CVV-040 Table 6 (the delta OQ
-    # plaque Bland-Altman is log-scale) and because raw plaque volumes are strongly
-    # heteroscedastic (spread grows with magnitude). oq_bias_log / oq_bias_log_ci /
-    # oq_loa_log are the Table 6 references (bias point, bias 95% CI, LoA band); they
-    # drive both the oq-ci-overlap acceptance and the OQ overlay on the BA plots.
+    # oq_bias_ut / oq_bias_ut_ci / oq_loa_ut are the 730-CVV-040 ATTACHMENT 2
+    # "Untransformed analysis" Bland-Altman references (bias point, bias 95% CI, LoA
+    # band). They are UNTRANSFORMED and LENGTH-NORMALIZED (per-mm) — the OQ tabulates
+    # only the untransformed BA bias (the transformed BA is plots-only). The Gate 4
+    # OQ comparison therefore uses the PCCT untransformed, length-normalized bias; the
+    # log-scale BA plots are kept only as a heteroscedasticity view (no OQ overlay).
     "CALCVol": {
         "label": "CALC Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "log",
-        "oq_bias_log": 0.02,
-        "oq_bias_log_ci": (-0.01, 0.05),
-        "oq_loa_log": (-0.17, 0.21),
+        "oq_bias_ut": 0.02,
+        "oq_bias_ut_ci": (-0.01, 0.05),
+        "oq_loa_ut": (-0.17, 0.21),
     },
     "LRNCVol": {
         "label": "LRNC Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "log",
-        "oq_bias_log": -0.03,
-        "oq_bias_log_ci": (-0.06, -0.01),
-        "oq_loa_log": (-0.21, 0.14),
+        "oq_bias_ut": -0.03,
+        "oq_bias_ut_ci": (-0.06, -0.01),
+        "oq_loa_ut": (-0.21, 0.14),
     },
     "NonCALCMATXVol": {
         "label": "NonCALC Matrix Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "log",
-        "oq_bias_log": -0.07,
-        "oq_bias_log_ci": (-0.19, 0.05),
-        "oq_loa_log": (-0.82, 0.67),
+        "oq_bias_ut": -0.07,
+        "oq_bias_ut_ci": (-0.19, 0.05),
+        "oq_loa_ut": (-0.82, 0.67),
     },
     "TotalPlaqueVolume": {
         "label": "Total Plaque Volume (mm³)",
         "bias_threshold_pct": 10,
         "ba_scale": "log",
-        "oq_bias_log": -0.05,
-        "oq_bias_log_ci": (-0.19, 0.08),
-        "oq_loa_log": (-0.89, 0.78),
+        "oq_bias_ut": -0.05,
+        "oq_bias_ut_ci": (-0.19, 0.08),
+        "oq_loa_ut": (-0.89, 0.78),
     },
 }
 
@@ -1186,13 +1187,13 @@ def run_gate4(paired, plot_dir=None):
             lines.append(f"  LoA (raw):             [{loa_lo:.2f}, {loa_hi:.2f}]")
         lines.append(f"  Untransformed bias:    {mean_bias_ut:.2f} ({bias_pct_ut:.1f}% of mean)")
 
-        oq_bias_ci = cfg.get("oq_bias_log_ci")
+        oq_bias_ci = cfg.get("oq_bias_ut_ci")
         if BIAS_CRITERION == "oq-ci-overlap" and oq_bias_ci:
             # OQ-consistent: PCCT log(x+1) BA bias 95% CI vs 730-CVV-040 Table 6 bias CI
             log_bias, _, _, _, _ = bland_altman(pcct_vals, eid_vals, log_transform=True)
             b_lb, b_ub = bootstrap_bias_ci(pcct_vals, eid_vals, log_transform=True)
             overlap = ci_overlap((b_lb, b_ub), oq_bias_ci)
-            oq_loa = cfg.get("oq_loa_log")
+            oq_loa = cfg.get("oq_loa_ut")
             lines.append(f"  Log(x+1) BA bias:      {log_bias:.4f} [{b_lb:.4f}, {b_ub:.4f}]")
             lines.append(f"  OQ Table 6 bias CI:    [{oq_bias_ci[0]}, {oq_bias_ci[1]}]" +
                          (f"; LoA [{oq_loa[0]}, {oq_loa[1]}]" if oq_loa else ""))
@@ -1213,25 +1214,15 @@ def run_gate4(paired, plot_dir=None):
             lines.append(f"  Proportional bias r²:  {r_sq:.3f} (CI not estimable)")
         lines.append("")
 
-        # OQ Table 6 overlay (log scale): bias line + LoA band + bias CIs, so the
-        # oq-ci-overlap acceptance is visible regardless of the active --bias-criterion.
-        ref_bias = cfg.get("oq_bias_log", cfg.get("ref_bias"))
-        ref_loa = cfg.get("oq_loa_log", cfg.get("ref_loa"))
-        oq_bias_ci_plot = cfg.get("oq_bias_log_ci")
-        pcct_bias_ci_plot = None
-        overlap_verdict = None
-        if log_t and oq_bias_ci_plot:
-            pcct_bias_ci_plot = bootstrap_bias_ci(pcct_vals, eid_vals, log_transform=True)
-            overlap_verdict = "PASS" if ci_overlap(pcct_bias_ci_plot, oq_bias_ci_plot) else "FAIL"
+        # NOTE: no OQ overlay here. The OQ BA reference is UNTRANSFORMED + LENGTH-
+        # NORMALIZED (per-mm), so it cannot be validly drawn on this raw log(x+1) plot.
+        # The OQ-comparison overlay lives in the dedicated untransformed length-normalized
+        # plots (scripts/generate_gate4_oq_overlay_figs.py). These plots are the
+        # PCCT−EID BA distribution only (log for heteroscedasticity).
         plot_bland_altman(
             pcct_vals, eid_vals, label,
             plot_dir / f"BA_{var}.png",
             log_transform=log_t,
-            ref_bias=(ref_bias if log_t else None),
-            ref_loa=(ref_loa if log_t else None),
-            ref_bias_ci=(oq_bias_ci_plot if log_t else None),
-            pcct_bias_ci=pcct_bias_ci_plot,
-            verdict=overlap_verdict,
             pids=pids,
         )
 
@@ -1435,31 +1426,36 @@ def write_comparison_tables(paired, out_dir):
                                 oq, oq_ci[0] if oq_ci else "", oq_ci[1] if oq_ci else "",
                                 f"{wcv:.2f}", f"{lo:.2f}", f"{hi:.2f}",
                                 "YES" if overlap else ("NO" if overlap == False else "")])
-    # Gate 4 — plaque Bland-Altman bias (log scale) vs OQ Table 6
+    # Gate 4 — plaque Bland-Altman bias vs OQ. The OQ reference (ATTACHMENT 2
+    # "Untransformed analysis") is UNTRANSFORMED and LENGTH-NORMALIZED, so the
+    # like-for-like PCCT comparison is the untransformed, length-normalized bias.
+    # The raw-mm³ bias / % of mean (project-specific threshold) is reported alongside.
     g4_path = os.path.join(out_dir, "gate4_comparison.csv")
     with open(g4_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["endpoint", "oq_bias", "oq_bias_ci_lo", "oq_bias_ci_hi",
-                    "oq_loa_lo", "oq_loa_hi", "pcct_bias", "pcct_bias_ci_lo",
+                    "oq_loa_lo", "oq_loa_hi", "pcct_bias_lennorm", "pcct_bias_ci_lo",
                     "pcct_bias_ci_hi", "pcct_loa_lo", "pcct_loa_hi", "bias_ci_overlap",
-                    "ut_bias", "ut_bias_pct", "ut_threshold_pct", "ut_bias_pass"])
+                    "ut_bias_raw", "ut_bias_pct", "ut_threshold_pct", "ut_bias_pass"])
         for var, cfg in GATE4_VARIABLES.items():
-            oq_bias_ci = cfg.get("oq_bias_log_ci")
+            oq_bias_ci = cfg.get("oq_bias_ut_ci")
             if not oq_bias_ci:
-                continue  # plaque endpoints only (have OQ Table 6 refs)
-            pv, ev, _ = _get_paired_values(paired, var, normalize=False)
-            if len(pv) < 2:
+                continue  # plaque endpoints only (have OQ untransformed BA refs)
+            # OQ comparison: untransformed, LENGTH-NORMALIZED (matches OQ basis)
+            pvn, evn, _ = _get_paired_values(paired, var, normalize=True)
+            if len(pvn) < 2:
                 continue
-            mb, sd, lo, hi, _ = bland_altman(pv, ev, log_transform=True)
-            b_lo, b_hi = bootstrap_bias_ci(pv, ev, log_transform=True)
-            oq_loa = cfg.get("oq_loa_log", ("", ""))
+            mb, sd, lo, hi, _ = bland_altman(pvn, evn, log_transform=False)
+            b_lo, b_hi = bootstrap_bias_ci(pvn, evn, log_transform=False)
+            oq_loa = cfg.get("oq_loa_ut", ("", ""))
             overlap = ci_overlap((b_lo, b_hi), oq_bias_ci)
-            # untransformed (non-log) bias: raw mm^3 and % of mean vs project threshold
-            mb_ut, _, _, _, _ = bland_altman(pv, ev, log_transform=False)
-            mean_ut = np.mean([(p + e) / 2 for p, e in zip(pv, ev)])
+            # secondary: raw-mm³ bias and % of mean vs project threshold (not OQ-derived)
+            pvr, evr, _ = _get_paired_values(paired, var, normalize=False)
+            mb_ut, _, _, _, _ = bland_altman(pvr, evr, log_transform=False)
+            mean_ut = np.mean([(p + e) / 2 for p, e in zip(pvr, evr)])
             pct_ut = abs(mb_ut) / mean_ut * 100 if mean_ut else 0
             thr = cfg.get("bias_threshold_pct", 10)
-            w.writerow([cfg["label"], cfg.get("oq_bias_log", ""), oq_bias_ci[0], oq_bias_ci[1],
+            w.writerow([cfg["label"], cfg.get("oq_bias_ut", ""), oq_bias_ci[0], oq_bias_ci[1],
                         oq_loa[0], oq_loa[1], f"{mb:.4f}", f"{b_lo:.4f}", f"{b_hi:.4f}",
                         f"{lo:.4f}", f"{hi:.4f}", "YES" if overlap else "NO",
                         f"{mb_ut:.2f}", f"{pct_ut:.1f}", thr, "YES" if pct_ut < thr else "NO"])
