@@ -23,3 +23,6 @@ desktop.ini
 
 # Scratch run/stdout logs in gate_results (regenerable debug output)
 gate_results/_*.txt
+
+# OneDrive conflict copies
+*-ef.docx
