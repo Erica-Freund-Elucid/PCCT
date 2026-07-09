@@ -261,7 +261,7 @@ def comparison_table_html(kind):
             return '<span class="fail">no overlap ✗</span>'
         return v
 
-    if kind == "gate3":
+    if kind.startswith("gate3"):
         h = ['<table><tr><th>Endpoint</th><th>Metric</th>'
              '<th>OQ delta wCV [95% CI]</th><th>PCCT wCV [95% CI]</th><th>CI overlap</th></tr>']
         for r in rows:
@@ -441,11 +441,14 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 
 <section>
 <h2>Gate 3 — Quantitative Reproducibility</h2>
-<h3>OQ reference vs PCCT result — wCV with 95% CIs</h3>
-<p class="meta" contenteditable="true">Variance-component estimator <strong>with scanner term</strong> (systematic modality bias removed), canonical region, N=25. Primary metric: log-wCV for process outputs, untransformed for plaque. Acceptance = 95% CI overlap with the delta OQ. Alternative configurations (legacy / no-scanner-term) in <code>gate_results/variants/</code>.</p>
+<h3>OQ reference vs PCCT result — wCV with 95% CIs (sub-segment, extent-matched)</h3>
+<p class="meta" contenteditable="true">Variance-component estimator <strong>with scanner term</strong> (systematic modality bias removed), on the <strong>sub-segment (extent-matched) region</strong> — matching the statistical methods doc §6. Primary metric: log-wCV for process outputs, untransformed for plaque. Acceptance = 95% CI overlap with the delta OQ. The sub-segment isolates reproducibility from the traced-extent differential; canonical (full-vessel) results are shown below as a reference. (Vessel Length is matched by construction on the sub-segment intersection, so its wCV is ≈0 and its OQ overlap is not meaningful.) Alternative configurations (legacy / no-scanner-term) in <code>gate_results/variants/</code>.</p>
+{comparison_table_html("gate3_subseg")}
+<h4>Canonical (full-vessel) reference</h4>
+<p class="meta" contenteditable="true">Same estimator on the full named-vessel region (N=25) — retains the traced-extent term.</p>
 {comparison_table_html("gate3")}
 <div class="panel" contenteditable="true">
-<strong>Reviewer commentary:</strong> With the scanner term (bias removed) the process outputs (Lumen/Wall/Vessel) come within the OQ CIs — the residual cross-scanner dispersion is non-inferior to OQ inter-operator variability. Plaque wCVs overlap the (wide) OQ CIs. Without the scanner term the raw cross-scanner wCV is inflated by the systematic modality bias, which is instead assessed in Gate 4. See <code>tracker/statistical-methodology.md</code>.
+<strong>Reviewer commentary:</strong> On the extent-matched sub-segment, the process outputs (Lumen/Wall/Vessel) come within the OQ CIs — the residual cross-scanner dispersion is non-inferior to OQ inter-operator variability. Plaque wCVs overlap the (wide) OQ CIs. Without the scanner term the raw cross-scanner wCV is inflated by the systematic modality bias, which is instead assessed in Gate 4. See <code>tracker/statistical-methodology.md</code> and <code>PCCT_Statistical_Methods_and_Results.docx §6</code>.
 </div>
 </section>
 

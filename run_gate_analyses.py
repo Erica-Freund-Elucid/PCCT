@@ -1395,12 +1395,10 @@ def run_gate4_length_normalized(paired):
     return "\n".join(lines)
 
 
-def write_comparison_tables(paired, out_dir):
-    """Emit side-by-side OQ-reference vs PCCT-result tables (with 95% CIs) for the
-    report: gate3_comparison.csv (wCV) and gate4_comparison.csv (plaque BA bias)."""
-    # Gate 3 — wCV (canonical, length-normalized), primary metric per endpoint
-    g3_path = os.path.join(out_dir, "gate3_comparison.csv")
-    with open(g3_path, "w", newline="", encoding="utf-8") as f:
+def write_gate3_comparison(paired, path):
+    """Emit the Gate 3 wCV comparison CSV (scanner-term, length-normalized) for a
+    given paired structure — used for both canonical and sub-segment regions."""
+    with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(["endpoint", "metric", "oq_wcv", "oq_ci_lo", "oq_ci_hi",
                     "pcct_wcv", "pcct_ci_lo", "pcct_ci_hi", "ci_overlap"])
@@ -1426,6 +1424,13 @@ def write_comparison_tables(paired, out_dir):
                                 oq, oq_ci[0] if oq_ci else "", oq_ci[1] if oq_ci else "",
                                 f"{wcv:.2f}", f"{lo:.2f}", f"{hi:.2f}",
                                 "YES" if overlap else ("NO" if overlap == False else "")])
+
+
+def write_comparison_tables(paired, out_dir):
+    """Emit side-by-side OQ-reference vs PCCT-result tables (with 95% CIs) for the
+    report: gate3_comparison.csv (wCV) and gate4_comparison.csv (plaque BA bias)."""
+    # Gate 3 — wCV (canonical, length-normalized), primary metric per endpoint
+    write_gate3_comparison(paired, os.path.join(out_dir, "gate3_comparison.csv"))
     # Gate 4 — plaque Bland-Altman bias vs OQ. The OQ reference (ATTACHMENT 2
     # "Untransformed analysis") is UNTRANSFORMED and LENGTH-NORMALIZED, so the
     # like-for-like PCCT comparison is the untransformed, length-normalized bias.
@@ -1459,7 +1464,7 @@ def write_comparison_tables(paired, out_dir):
                         oq_loa[0], oq_loa[1], f"{mb:.4f}", f"{b_lo:.4f}", f"{b_hi:.4f}",
                         f"{lo:.4f}", f"{hi:.4f}", "YES" if overlap else "NO",
                         f"{mb_ut:.2f}", f"{pct_ut:.1f}", thr, "YES" if pct_ut < thr else "NO"])
-    print(f"Comparison tables: {g3_path}, {g4_path}")
+    print(f"Comparison tables: {os.path.join(out_dir, 'gate3_comparison.csv')}, {g4_path}")
 
 
 def run_scanner_attributable(paired, out_dir, region="canonical"):
@@ -1626,6 +1631,7 @@ if __name__ == "__main__":
             f"N = {len(sub_paired)} paired patients with sub-segment data.",
         ])
         sub_scanner_attr = run_scanner_attributable(sub_paired, OUTPUT_DIR, region="subsegment")
+        write_gate3_comparison(sub_paired, os.path.join(OUTPUT_DIR, "gate3_subseg_comparison.csv"))
         summary_parts.extend([subseg_banner, sub_gate3_text, sub_gate4_text, sub_scanner_attr])
     else:
         print(f"\nSub-segment pass skipped: {len(sub_paired)} paired patients available")
