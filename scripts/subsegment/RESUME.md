@@ -4,14 +4,29 @@
 
 ---
 
-## STATUS 2026-07-08 — regeneration on latest (07-07) data: COMPLETED (N=24)
+## STATUS 2026-07-09 — PT-136 recovered → v2 sub-segment now N=25
+
+PT-136 was the one 25-cohort case missing from v2 sub-seg. Its v2 workitems have TWO
+`LeftCoronary` targetDefinitions — not a duplicate but the left system split into two
+target traces: **LeftCoronary = LAD + Diagonal1** and **LeftCoronary2 = Circumflex +
+LeftMarginal1** (verified disjoint vessels). PCCT also has a RightCoronary that EID
+never traced, so the RCA can't be intersected. Recovered by calling the pipeline
+(`common_vessel_sections_plaque_volume.py`) directly per left target with explicit
+`--study-a/--study-b` 5-path specs (bypassing the wrapper's single-target-per-side
+check), then summing the two left intersections. Result (extent-matched, Len 155.3 mm
+both scanners): PCCT TotalPlaque 56.5 / EID 84.2, NonCALCMATX 47.0 / 71.4 mm³ (PCCT
+lower, consistent with cohort). Wrote `workitem_summaries/subsegment/{PCCT,EID}/PT-136_*`,
+re-exported `gate_results/paired_data_subsegment.csv` (N=25), regenerated gate outputs,
+stat doc, HTML, and cohort table. Box artifacts: `/var/tmp/pcct_subseg/fix136/`.
+
+## STATUS 2026-07-08 — regeneration on latest (07-07) data: COMPLETED (N=24; superseded by N=25 above)
 
 **Done.** Regenerated the sub-segment intersection volumes on the current (2026-07-07) workitem
 data and rebuilt the sub-segment CSVs (`workitem_summaries/subsegment/{PCCT,EID}`, N=24). Fixed
 the wrapper's `set -e` right-first bug (targets now run independently — see the two
 `run_for_target ... || echo skip` lines) which recovered the left-only/right-only patients.
-Excluded: PT-124 (no vessel overlap) and PT-136 (duplicate `LeftCoronary` in both workitems,
-left-only → unrecoverable). Exported paired data to `gate_results/paired_data_subsegment.csv`
+Excluded: PT-124 (no vessel overlap) and — at the time — PT-136 (two `LeftCoronary` targets;
+now RECOVERED, see 2026-07-09 status above). Exported paired data to `gate_results/paired_data_subsegment.csv`
 (v2) and `gate_results_v1_original/paired_data_subsegment.csv` (v1 vintage, preserved). The
 scanner-attributable analysis and the statistical-method report now show canonical vs sub-segment
 for both v1 and v2. Result: on the extent-matched sub-segment, scanner-attributable variance is
