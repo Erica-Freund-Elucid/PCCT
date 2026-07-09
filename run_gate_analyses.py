@@ -1432,12 +1432,12 @@ def write_comparison_tables(paired, out_dir, sub_paired=None):
     # Gate 3 — wCV (canonical, length-normalized), primary metric per endpoint
     write_gate3_comparison(paired, os.path.join(out_dir, "gate3_comparison.csv"))
     # Gate 4 — plaque Bland-Altman bias vs OQ. The OQ reference (ATTACHMENT 2
-    # "Untransformed analysis") is UNTRANSFORMED and LENGTH-NORMALIZED, from within-scan
-    # reader-repeat (no extent differential). The like-for-like PCCT comparison must be
-    # extent-matched, so pcct_bias_lennorm is computed on the SUB-SEGMENT (canonical
-    # per-mm is confounded by PCCT tracing ~+19% longer). Raw-mm³ bias / % of mean
-    # (project threshold) is reported from the canonical region as reference.
-    ln_src = sub_paired if sub_paired else paired
+    # "Untransformed analysis") is a fixed UNTRANSFORMED, LENGTH-NORMALIZED quantity on
+    # the full traced vessel. The apples-to-apples PCCT comparison is therefore the
+    # CANONICAL (full-vessel) length-normalized bias — the same processing as the OQ.
+    # Raw-mm³ bias / % of mean (project threshold) is reported as reference. (sub_paired
+    # is accepted for the separate extent-controlled sub-segment view but is not the OQ
+    # comparator.)
     g4_path = os.path.join(out_dir, "gate4_comparison.csv")
     with open(g4_path, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -1449,8 +1449,8 @@ def write_comparison_tables(paired, out_dir, sub_paired=None):
             oq_bias_ci = cfg.get("oq_bias_ut_ci")
             if not oq_bias_ci:
                 continue  # plaque endpoints only (have OQ untransformed BA refs)
-            # OQ comparison: untransformed, LENGTH-NORMALIZED on the extent-matched sub-segment
-            pvn, evn, _ = _get_paired_values(ln_src, var, normalize=True)
+            # OQ comparison: canonical (full-vessel) untransformed, LENGTH-NORMALIZED (matches OQ)
+            pvn, evn, _ = _get_paired_values(paired, var, normalize=True)
             if len(pvn) < 2:
                 continue
             mb, sd, lo, hi, _ = bland_altman(pvn, evn, log_transform=False)

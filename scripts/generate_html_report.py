@@ -278,7 +278,7 @@ def comparison_table_html(kind):
     h = ['<table><tr><th>Endpoint</th>'
          '<th>OQ bias [95% CI]<br><span style="font-weight:400;font-size:0.82em;color:#64748b">untransf., len-norm</span></th>'
          '<th>OQ LoA</th>'
-         '<th>PCCT bias [95% CI]<br><span style="font-weight:400;font-size:0.82em;color:#64748b">untransf., len-norm (sub-seg)</span></th>'
+         '<th>PCCT bias [95% CI]<br><span style="font-weight:400;font-size:0.82em;color:#64748b">untransf., len-norm (canonical)</span></th>'
          '<th>CI overlap</th>'
          '<th>PCCT raw bias (mm³)</th><th>% of mean</th><th>&lt;thr</th></tr>']
     for r in rows:
@@ -454,11 +454,11 @@ img.fig {{ max-width: 100%; height: auto; border: 1px solid var(--border); borde
 
 <section>
 <h2>Gate 4 — Bias & Agreement</h2>
-<h3>OQ reference vs PCCT result — plaque Bland-Altman bias (untransformed, length-normalized, sub-segment) with 95% CIs</h3>
-<p class="meta" contenteditable="true">The 730-CVV-040 ATTACHMENT 2 Bland-Altman bias reference is <strong>untransformed and length-normalized</strong> (per-mm), from within-scan reader-repeat (no extent differential). The like-for-like PCCT comparison is therefore the <strong>sub-segment (extent-matched) length-normalized bias</strong>. Canonical per-mm is <em>not</em> used for the OQ comparison because PCCT traces ~+19% longer than EID, which spuriously depresses PCCT per-mm values (e.g. CALC raw Δ ≈ 0 but canonical per-mm −0.095, vs +0.006 on the sub-segment). <strong>Acceptance</strong> = PCCT sub-segment bias 95% CI overlaps the OQ bias 95% CI (visualized in the overlay plots below). The <strong>raw-mm³ bias / % of mean</strong> (canonical) is a secondary project-specific reference (not OQ-derived).</p>
+<h3>OQ reference vs PCCT result — plaque Bland-Altman bias (untransformed, length-normalized, canonical) with 95% CIs</h3>
+<p class="meta" contenteditable="true">The 730-CVV-040 ATTACHMENT 2 Bland-Altman bias reference is a fixed <strong>untransformed, length-normalized</strong> (per-mm) quantity computed on the full traced vessel. The apples-to-apples PCCT comparison is therefore the <strong>canonical (full-vessel) length-normalized bias</strong> — the same processing as the OQ (length-normalization carries each read's traced extent, exactly as in the OQ reader-repeat). <strong>Acceptance</strong> = PCCT bias 95% CI overlaps the OQ bias 95% CI (visualized in the overlay plots below). The <strong>raw-mm³ bias / % of mean</strong> is a secondary project-specific reference (not OQ-derived); the extent-matched sub-segment (Gate 3 section) is a separate view that disentangles composition from extent.</p>
 {comparison_table_html("gate4")}
 
-<h3>Bland-Altman vs OQ — sub-segment (extent-matched), length-normalized (OQ overlay)</h3>
+<h3>Bland-Altman vs OQ — canonical (full-vessel), length-normalized (OQ overlay)</h3>
 <p class="meta" contenteditable="true">Per-patient PCCT−EID differences (per-mm). Blue = PCCT mean bias + bootstrap 95% CI; green = OQ bias line, OQ bias 95% CI band, and OQ LoA band. Overlap of the blue CI with the green OQ bias CI = pass.</p>
 <div class="ba-grid">
 """
