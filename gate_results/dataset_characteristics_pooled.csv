@@ -1,0 +1,9 @@
+characteristic,unit,median_IQR_v2raw_pooled
+Vessel (lumen+wall),mm³,1850 [1332–2658]
+Lumen,mm³,1452 [936–2225]
+Wall,mm³,393 [241–609]
+Total plaque,mm³,296 [156–488]
+CALC,mm³,73 [33–142]
+LRNC,mm³,7 [2–21]
+NonCALC matrix,mm³,189 [116–307]
+Vessel length,mm,210 [164–342]
