@@ -1,0 +1,7 @@
+ratio,mean,CV%,min,max,Bv_mean,Qr_mean,Qr_minus_Bv_%
+PlaqueBurden_TP_over_LW,0.1846,10.3,0.1664,0.2503,0.1869,0.1823,-3
+WallToLumen,0.2731,11.4,0.2498,0.3859,0.2711,0.2751,+1
+CALCfrac_of_plaque,0.6900,3.5,0.6431,0.7325,0.7073,0.6726,-5
+NonCALCfrac_of_plaque,0.3094,8.0,0.2675,0.3569,0.2914,0.3274,+12
+CALC_over_Wall,0.5943,4.9,0.5606,0.6401,0.6201,0.5684,-9
+NonCALCMATX_over_Wall,0.2662,7.6,0.2338,0.3207,0.2555,0.2769,+8

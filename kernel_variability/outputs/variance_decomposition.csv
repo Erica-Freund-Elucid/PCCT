@@ -1,0 +1,6 @@
+endpoint,SD_logV_total%,SD_logLen_extent%,SD_logDensity_permm%,corr_Len_density
+TotalPlaqueVolume,2.4,21.9,22.2,-0.99
+CALCVol,3.0,21.9,19.7,-1.00
+NonCALCMATXVol,9.4,21.9,28.9,-0.97
+WallVol,3.5,21.9,22.6,-0.99
+LumenVol,11.1,21.9,18.4,-0.86
