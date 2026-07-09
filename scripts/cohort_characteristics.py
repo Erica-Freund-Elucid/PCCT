@@ -56,16 +56,16 @@ def paired(rows, var):
 
 
 def summ(p, e):
-    """Return (PCCT mean±SD, EID mean±SD, Δ mean±SD) strings; blank if empty."""
+    """Return (PCCT, EID, Δ) cell strings 'mean±SD (min–max)'; blank if empty."""
     if len(p) == 0:
         return "—", "—", "—"
     d = p - e
     big = p.max() > 20
-    f = (lambda a: f"{a.mean():.0f}±{a.std(ddof=1):.0f}") if big else \
-        (lambda a: f"{a.mean():.1f}±{a.std(ddof=1):.1f}")
-    dd = (f"{d.mean():+.0f}±{d.std(ddof=1):.0f}" if big else
-          f"{d.mean():+.1f}±{d.std(ddof=1):.1f}")
-    return f(p), f(e), dd
+    nd = 0 if big else 1
+    def cell(a, signed=False):
+        m = f"{a.mean():+.{nd}f}" if signed else f"{a.mean():.{nd}f}"
+        return f"{m}±{a.std(ddof=1):.{nd}f} ({a.min():.{nd}f}–{a.max():.{nd}f})"
+    return cell(p), cell(e), cell(d, signed=True)
 
 
 def main():
@@ -87,8 +87,8 @@ def main():
 
     # ---- Markdown: one table per vintage, PCCT vs EID side by side ----
     md = ["# Cohort vessel & plaque characteristics — paired PCCT vs EID\n",
-          "Mean ± SD across the paired cohort. **Raw** = full traced vessel (retains length "
-          "variability); **sub-seg** = PCCT∩EID extent-matched intersection. Δ = paired PCCT − EID.\n"]
+          "**Mean ± SD (min–max)** across the paired cohort. **Raw** = full traced vessel (retains "
+          "length variability); **sub-seg** = PCCT∩EID extent-matched intersection. Δ = paired PCCT − EID.\n"]
     for vintage, _ in VINTAGES:
         md.append(f"## {vintage}  (raw N={ns[vintage]['raw']}, sub-seg N={ns[vintage]['sub-seg']})\n")
         md.append("| Characteristic | PCCT raw | EID raw | Δ raw | PCCT sub-seg | EID sub-seg | Δ sub-seg |")
