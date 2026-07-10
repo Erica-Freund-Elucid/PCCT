@@ -276,19 +276,25 @@ def build_docx():
     p("Cells: scanner-term wCV% and overlap verdict; 95% CIs are in §5 / gate3_comparison.csv.",
       italic=True)
 
-    h("7. Scanner-attributable variance vs OQ — SUB-SEGMENT (a: wCV≤OQ, b: CI∋0)")
-    hdrsa = ["Endpoint", "OQ limit"] + [c[1] for c in COLS]
+    h("7. Scanner-attributable variance vs OQ — SUB-SEGMENT (variance scale; a: σ²_scan ≤ σ²_OQ, b: CI∋0)")
+    hdrsa = ["Endpoint", "σ²_OQ"] + [f"{c[1]} σ²_scanner [95% CI]  a/b" for c in COLS]
     rows = []
     for v in OQ:
         cells = []
         for k, _ in COLS:
             r = R[k][v]
-            cells.append(f'{r["wcv_scan_log"]:.1f} {"P" if r["scan_a_pass"] else "F"}/{"P" if r["scan_b_pass"] else "F"}')
-        rows.append([OQ[v]["lab"], f'{OQ[v]["log"][0]}'] + cells)
+            lo, hi = r["s2_scan_ci"]
+            cells.append(f'{r["s2_scan"]:+.4f} [{lo:+.4f},{hi:+.4f}] '
+                         f'{"P" if r["scan_a_pass"] else "F"}/{"P" if r["scan_b_pass"] else "F"}')
+        rows.append([OQ[v]["lab"], f'{R["v2s"][v]["s2_oq"]:.4f}'] + cells)
     table(hdrsa, rows)
-    p("Cells: scanner-attributable wCV%  a/b (P/F), on the extent-matched sub-segment. σ²_scanner = "
-      "Var(d_log)/2 − σ²_OQ; with reader+repeat (OQ) and extent (sub-segment) removed, the residual "
-      "scanner-attributable variability is ≤ OQ / CI-includes-0 for nearly all endpoints.", italic=True)
+    p("Cells: scanner-attributable variance σ²_scanner = Var(d_log)/2 − σ²_OQ (log scale) with bootstrap "
+      "95% CI, on the extent-matched sub-segment. a: σ²_scanner ≤ σ²_OQ (P/F); b: CI includes 0 (P/F). "
+      "On the variance scale the estimate and its CI lower bound can be NEGATIVE — a negative value / "
+      "lower bound ≤ 0 means the residual cross-scanner variance is indistinguishable from (or below) the "
+      "OQ reader+repeat variance. (The equivalent floored wCV% = √(exp(max(σ²,0))−1)×100 is in "
+      "gate_results/scanner_attributable_subsegment.csv.) After removing reader+repeat (OQ) and traced "
+      "extent (sub-segment), σ²_scanner is ≤ σ²_OQ and CI-includes-0 for nearly all endpoints.", italic=True)
 
     h("8. Gate 4 — systematic bias (untransformed) vs OQ")
     p("The OQ Bland-Altman bias reference (730-CVV-040 ATTACHMENT 2, \"Untransformed analysis\") is a "
@@ -492,13 +498,15 @@ def build_pptx():
                 ["Endpoint", "Δ bias (log)", "σ²_random", "wCV scanner-term %"], dec,
                 colw=[3.0, 4.0, 3.6, 3.0])
 
-    # 6 scanner-attributable — v2 canonical vs sub-segment
+    # 6 scanner-attributable — variance scale, v2 canonical vs sub-segment
     def sacell(r):
-        return f'{r["wcv_scan_log"]:.1f}  {"P" if r["scan_a_pass"] else "F"}/{"P" if r["scan_b_pass"] else "F"}'
-    sa = [[OQ[v]["lab"], f'{OQ[v]["log"][0]}', sacell(R["v2c"][v]), sacell(R["v2s"][v])] for v in OQ]
-    table_slide("Scanner-attributable variance vs OQ (v2): canonical vs sub-segment",
-                ["Endpoint", "OQ", "canonical  wCV a/b", "sub-segment  wCV a/b"], sa,
-                colw=[3.2, 1.6, 3.9, 3.9], size=13)
+        lo, hi = r["s2_scan_ci"]
+        return (f'{r["s2_scan"]:+.4f} [{lo:+.4f},{hi:+.4f}]  '
+                f'{"P" if r["scan_a_pass"] else "F"}/{"P" if r["scan_b_pass"] else "F"}')
+    sa = [[OQ[v]["lab"], f'{R["v2s"][v]["s2_oq"]:.4f}', sacell(R["v2c"][v]), sacell(R["v2s"][v])] for v in OQ]
+    table_slide("Scanner-attributable variance σ²_scanner vs OQ (v2): canonical vs sub-segment",
+                ["Endpoint", "σ²_OQ", "canonical  σ²_scan [95% CI] a/b", "sub-segment  σ²_scan [95% CI] a/b"], sa,
+                colw=[2.6, 1.4, 4.5, 4.5], size=11)
 
     # 6b Gate 4 systematic bias (untransformed) — OQ vs v2 CANONICAL (len-norm) + raw mm³ (canon/sub)
     br = []
